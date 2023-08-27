@@ -221,18 +221,28 @@ void test('ijru.speed@3.0.0', async t => {
           entryId: '2',
           result: { a: 10, m: 0, R: 10 },
           flags: { withinThree: true }
+        },
+        {
+          entryId: '3',
+          result: { a: 5, m: 0, R: 5 },
+          flags: { withinThree: true }
         }
       ]
       const result = mod.default.rankEntries(scores, options)
       assert.deepStrictEqual(result, [
         {
           entryId: '1',
-          result: { a: 10, m: 0, R: 10, S: 1, N: 1 },
+          result: { a: 10, m: 0, R: 10, S: 1, N: 100 },
           flags: { withinThree: true }
         },
         {
           entryId: '2',
-          result: { a: 10, m: 0, R: 10, S: 1, N: 1 },
+          result: { a: 10, m: 0, R: 10, S: 1, N: 100 },
+          flags: { withinThree: true }
+        },
+        {
+          entryId: '3',
+          result: { a: 5, m: 0, R: 5, S: 3, N: 1 },
           flags: { withinThree: true }
         }
       ])

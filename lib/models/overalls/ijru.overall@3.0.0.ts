@@ -1,5 +1,5 @@
 import { roundTo, roundToCurry } from '../../helpers'
-import { type TableHeaderGroup, type OverallModel, TableDefinition, type TableDefinitionGetter, type TableHeader, type EntryResult } from '../types'
+import { type TableHeaderGroup, type OverallModel, type TableDefinitionGetter, type TableHeader, type EntryResult } from '../types'
 
 type Option = never
 
