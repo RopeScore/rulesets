@@ -2,12 +2,9 @@ import { type JudgeTypeGetter, type CompetitionEventModel, type OverallModel } f
 
 export type CompetitionEventDefinition = `e.${string}.${'fs' | 'sp' | 'oa'}.${'sr' | 'dd' | 'wh' | 'ts' | 'xd'}.${string}.${number}.${`${number}x${number}` | number}`
 
-export interface CompetitionEvent extends Omit<CompetitionEventModel, 'id' | 'name'> {
+export interface CompetitionEvent extends Omit<CompetitionEventModel, 'id'> {
   id: `${CompetitionEventDefinition}@${string}`
-  name: string
 }
-
-export interface Overall extends OverallModel {}
 
 export interface PartiallyConfigureCompetitionEventModelOptions<Option extends string> {
   id: CompetitionEvent['id']
@@ -28,6 +25,29 @@ export function partiallyConfigureCompetitionEventModel <Schema extends string, 
     },
     previewTable (o) {
       return model.previewTable({ ...o, ...options.options })
+    },
+    resultTable (o) {
+      return model.resultTable({ ...o, ...options.options })
+    }
+  }
+}
+
+export interface Overall extends Omit<OverallModel, 'id'> {
+  id: `${CompetitionEventDefinition}@${string}`
+}
+
+export interface PartiallyConfigureOverallModelOptions<Option extends string> {
+  id: Overall['id']
+  name: string
+  options: Partial<Record<Option, unknown>>
+}
+export function partiallyConfigureOverallModel <Option extends string> (model: OverallModel<Option>, options: PartiallyConfigureCompetitionEventModelOptions<Option>): Overall {
+  return {
+    id: options.id,
+    name: options.name,
+    options: model.options.filter(o => !(o.id in options.options)),
+    rankOverall (results, o) {
+      return model.rankOverall(results, { ...o, ...options.options })
     },
     resultTable (o) {
       return model.resultTable({ ...o, ...options.options })
