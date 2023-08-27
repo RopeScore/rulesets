@@ -8,6 +8,24 @@
   "repository": "https://github.com/RopeScore/rulesets",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    "./models/competition-events/*.js": {
+      "types": "./dist/models/competition-events/*.d.ts",
+      "require": "./dist/models/competition-events/*.js"
+    },
+    "./models/overalls/*.js": {
+      "types": "./dist/models/overalls/*.d.ts",
+      "require": "./dist/models/overalls/*.js"
+    },
+    "./preconfigured/competition-events/*.js": {
+      "types": "./dist/preconfigured/competition-events/*.d.ts",
+      "require": "./dist/preconfigured/competition-events/*.js"
+    },
+    "./preconfigured/overalls/*.js": {
+      "types": "./dist/preconfigured/overalls/*.d.ts",
+      "require": "./dist/preconfigured/overalls/*.js"
+    }
+  },
   "scripts": {
     "test": "c8 -r lcov -r text node --loader=tsx -r @esbuild-kit/cjs-loader --test $(find lib -name '*.test.ts' -type f -printf '%p ')",
     "postversion": "git push && git push --tags",

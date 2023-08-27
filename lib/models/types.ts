@@ -197,6 +197,8 @@ export interface CompetitionEventModel<Schema extends string = string, Option ex
 export interface OverallModel<Option extends string = string> extends BaseModel<Option> {
   // TODO: how do we track what the component events are so we know the input?
   // competitionEvents: Array<[string, { rankMultiplier?: number, resultMultiplier?: number, normalisationMultiplier?: number }]>
+  // TODO: information about events and their human readable names also need to
+  // be passed to the table getter
   resultTable: TableDefinitionGetter<Option>
   rankOverall: (results: Readonly<Array<Readonly<EntryResult>>>, options: Partial<Record<Option, unknown>>) => OverallResult[]
 }

@@ -6,7 +6,8 @@
       "esnext",
       "dom"
     ],
-    "outDir": "dist"
+    "outDir": "dist",
+    "declaration": true
   },
   "include": [
     "lib/**/*.ts",
