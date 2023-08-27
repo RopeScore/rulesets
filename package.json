@@ -24,6 +24,10 @@
     "./preconfigured/overalls/*.js": {
       "types": "./dist/preconfigured/overalls/*.d.ts",
       "require": "./dist/preconfigured/overalls/*.js"
+    },
+    "./rulesets/*.js": {
+      "types": "./dist/rulesets/*.d.ts",
+      "require": "./dist/rulesets/*.js"
     }
   },
   "scripts": {
