@@ -1,0 +1,30 @@
+{
+  "name": "@ropescore/rulesets",
+  "version": "0.0.0",
+  "description": "Collection of rulesets to calculate rope skipping results",
+  "author": "Svante Bengtson <svante@swantzter.se> (https://swantzter.se)",
+  "license": "MIT",
+  "homepage": "https://ropescore.com",
+  "repository": "https://github.com/RopeScore/rulesets",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "c8 -r lcov -r text node --loader=tsx -r @esbuild-kit/cjs-loader --test  lib/*.test.ts lib/**/*.test.ts",
+    "postversion": "git push && git push --tags",
+    "lint": "eslint . --ignore-path .gitignore --ext .ts,.vue,.js",
+    "lint:fix": "npm run lint -- --fix",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.production.json",
+    "watch": "tsc --watch -p tsconfig.production.json",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.2",
+    "@types/node": "^20.5.6",
+    "c8": "^8.0.1",
+    "eslint": "^8.48.0",
+    "eslint-config-standard-with-typescript": "^39.0.0",
+    "tsx": "^3.12.7",
+    "typescript": "^5.2.2"
+  }
+}

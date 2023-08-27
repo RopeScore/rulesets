@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "outDir": "dist"
+  },
+  "include": [
+    "lib/**/*.ts",
+    "**/.*.js"
+  ]
+}
