@@ -1,5 +1,5 @@
-import { calculateTally, formatFactor, roundTo, roundToCurry } from '../helpers'
-import type { CompetitionEventModel, JudgeFieldDefinition, JudgeTypeGetter, ScoreTally, TableDefinition } from './types'
+import { calculateTally, formatFactor, roundTo, roundToCurry } from '../../helpers.js'
+import type { CompetitionEventModel, JudgeFieldDefinition, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
 
 type Option = 'noMusicality' | 'discipline' | 'interactions'
 

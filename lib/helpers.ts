@@ -1,4 +1,4 @@
-import { type JudgeFieldDefinition, type ScoreTally, type Scoresheet, isClearMark, isMarkScoresheet, isTallyScoresheet, isUndoMark } from './models/types'
+import { type JudgeFieldDefinition, type ScoreTally, type Scoresheet, isClearMark, isMarkScoresheet, isTallyScoresheet, isUndoMark } from './models/types.js'
 
 export function isObject (x: unknown): x is Record<string, unknown> {
   return typeof x === 'object' && x != null && !Array.isArray(x)
@@ -84,7 +84,7 @@ export function calculateTally <Schema extends string> (scoresheet: Scoresheet<S
     for (const mark of scoresheet.marks) {
       if (isUndoMark(mark)) {
         const target = scoresheet.marks[mark.target]
-        if (!target || isUndoMark(target) || isClearMark(target)) continue
+        if (target == null || isUndoMark(target) || isClearMark(target)) continue
         tally[target.schema] = (tally[target.schema] ?? 0) - (target.value ?? 1)
       } else if (isClearMark(mark)) {
         tally = {}
@@ -94,14 +94,14 @@ export function calculateTally <Schema extends string> (scoresheet: Scoresheet<S
     }
   }
 
-  if (fieldDefinitions) {
+  if (fieldDefinitions != null) {
     for (const field of fieldDefinitions) {
       if (typeof tally[field.schema] !== 'number') continue
       tally[field.schema] = clampNumber(tally[field.schema] as number, field)
     }
   }
 
-  if (allowedSchemas) {
+  if (allowedSchemas != null) {
     const extra = Object.keys(tally).filter(schema => !allowedSchemas.includes(schema))
 
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete

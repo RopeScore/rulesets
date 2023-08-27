@@ -9,9 +9,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "c8 -r lcov -r text node --loader=tsx -r @esbuild-kit/cjs-loader --test  lib/*.test.ts lib/**/*.test.ts",
+    "test": "c8 -r lcov -r text node --loader=tsx -r @esbuild-kit/cjs-loader --test lib/*.test.ts lib/**/*.test.ts",
     "postversion": "git push && git push --tags",
-    "lint": "eslint . --ignore-path .gitignore --ext .ts,.vue,.js",
+    "lint": "eslint . --ignore-path .gitignore --ext .ts,.js",
     "lint:fix": "npm run lint -- --fix",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.production.json",
@@ -25,6 +25,6 @@
     "eslint": "^8.48.0",
     "eslint-config-standard-with-typescript": "^39.0.0",
     "tsx": "^3.12.7",
-    "typescript": "^5.2.2"
+    "typescript": "5.1"
   }
 }

@@ -1,4 +1,4 @@
-import { isObject } from '../helpers'
+import { isObject } from '../helpers.js'
 
 export interface JudgeType<Schema extends string> {
   /**
@@ -129,6 +129,14 @@ export interface EntryResult {
   // TODO: messages/warnings/metadata?
 }
 
+export interface OverallResult {
+  // participantId: Participant['id']
+  // competitionEvent: CompetitionEvent
+  result: Record<string, number>
+  componentResults: Record<string, EntryResult>
+  // TODO: messages/warnings/metadata?
+}
+
 export interface CalculateEntryMeta {
   entryId: string // TODO: meta is arbitrary and set by the implementer?
 }
@@ -157,15 +165,17 @@ export interface ModelOptionNumber<Option extends string> extends ModelOptionBas
 
 export type ModelOption<Option extends string> = ModelOptionBoolean<Option> | ModelOptionEnum<Option> | ModelOptionNumber<Option>
 
-// TODO: optional panel configuration
-export interface CompetitionEventModel<Schema extends string = string, Option extends string = string> {
+export interface BaseModel<Option extends string> {
   /**
    * Takes the form <rulebook-identifer>.<model-name>@<version>
    */
   id: `${string}.${string}@${string}`
   name: string
   options: Readonly<Array<ModelOption<Option>>>
+}
 
+// TODO: optional panel configuration to be used for checks that all judges have scored
+export interface CompetitionEventModel<Schema extends string = string, Option extends string = string> extends BaseModel<Option> {
   judges: Array<JudgeTypeGetter<Schema, Option>>
 
   previewTable: TableDefinitionGetter<Option>
@@ -181,6 +191,13 @@ export interface CompetitionEventModel<Schema extends string = string, Option ex
    * @returns
    */
   rankEntries: (results: Readonly<Array<Readonly<EntryResult>>>, options: Partial<Record<Option, unknown>>) => EntryResult[]
+}
+
+export interface OverallModel<Option extends string = string> extends BaseModel<Option> {
+  // TODO: how do we track what the component events are so we know the input?
+  // competitionEvents: Array<[string, { rankMultiplier?: number, resultMultiplier?: number, normalisationMultiplier?: number }]>
+  resultTable: TableDefinitionGetter<Option>
+  rankOverall: (results: Readonly<Array<Readonly<EntryResult>>>, options: Partial<Record<Option, unknown>>) => OverallResult[]
 }
 
 export type TableDefinitionGetter<Option extends string> = (options: Partial<Record<Option, unknown>>) => TableDefinition

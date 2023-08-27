@@ -1,5 +1,7 @@
 # RopeScore Rulesets
 
+[![codecov](https://codecov.io/gh/RopeScore/rulesets/graph/badge.svg?token=4OQJQODHGR)](https://codecov.io/gh/RopeScore/rulesets)
+
 RopeScore rulesets provides a library of calculations for Rope Skipping
 competition rules.
 

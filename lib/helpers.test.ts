@@ -1,6 +1,7 @@
-import { calculateTally, clampNumber, formatFactor, isObject, roundTo, roundToCurry, roundToMultiple } from './helpers'
+import { calculateTally, clampNumber, formatFactor, isObject, roundTo, roundToCurry, roundToMultiple } from './helpers.js'
 import assert from 'node:assert'
 import test from 'node:test'
+import type { Mark } from './models/types.js'
 
 void test('helpers', async t => {
   await t.test('isObject', async t => {
@@ -72,11 +73,11 @@ void test('helpers', async t => {
   await t.test('calculateTally', async t => {
     await t.test('Should return tally for a TallyScoresheet', () => {
       const tally = { entPlus: 2, entMinus: 1 }
-      assert.deepStrictEqual(calculateTally({ tally } as unknown as TallyScoresheet), tally)
+      assert.deepStrictEqual(calculateTally({ judgeId: '1', tally }), tally)
     })
 
     await t.test('Should return tally for MarkScoresheet', () => {
-      const marks: Mark[] = [
+      const marks: Array<Mark<string>> = [
         { sequence: 0, schema: 'formPlus', timestamp: 1 },
         { sequence: 1, schema: 'formCheck', timestamp: 15 },
         { sequence: 2, schema: 'formPlus', timestamp: 30 }
@@ -85,11 +86,11 @@ void test('helpers', async t => {
         formPlus: 2,
         formCheck: 1
       }
-      assert.deepStrictEqual(calculateTally({ marks } as unknown as MarkScoresheet), tally)
+      assert.deepStrictEqual(calculateTally({ judgeId: '1', marks }), tally)
     })
 
     await t.test('Should return tally for MarkScoresheet with undo marks', () => {
-      const marks: Mark[] = [
+      const marks: Array<Mark<string>> = [
         { sequence: 0, schema: 'formPlus', timestamp: 1 },
         { sequence: 1, schema: 'formCheck', timestamp: 15 },
         { sequence: 2, schema: 'formPlus', timestamp: 30 },
@@ -99,7 +100,7 @@ void test('helpers', async t => {
         formPlus: 1,
         formCheck: 1
       }
-      assert.deepStrictEqual(calculateTally({ marks } as unknown as MarkScoresheet), tally)
+      assert.deepStrictEqual(calculateTally({ judgeId: '1', marks }), tally)
     })
   })
 })
