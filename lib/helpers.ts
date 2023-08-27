@@ -85,11 +85,11 @@ export function calculateTally <Schema extends string> (scoresheet: Scoresheet<S
       if (isUndoMark(mark)) {
         const target = scoresheet.marks.find(m => m.sequence === mark.target)
         if (target == null || isUndoMark(target) || isClearMark(target)) continue
-        tally[target.schema] = (tally[target.schema] ?? 0) - (target.value ?? 1)
+        tally[target.schema as Schema] = (tally[target.schema as Schema] ?? 0) - (target.value ?? 1)
       } else if (isClearMark(mark)) {
         tally = {}
       } else {
-        tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
+        tally[mark.schema as Schema] = (tally[mark.schema as Schema] ?? 0) + (mark.value ?? 1)
       }
     }
   }
@@ -102,8 +102,9 @@ export function calculateTally <Schema extends string> (scoresheet: Scoresheet<S
   }
 
   if (allowedSchemas != null) {
-    const extra = Object.keys(tally).filter(schema => !allowedSchemas.includes(schema))
+    const extra = Object.keys(tally).filter(schema => !allowedSchemas.includes(schema as Schema))
 
+    // @ts-expect-error Yes I know schema doesn't exist in the target object, I'm deleting the schemas that shouldn't be there
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     for (const schema of extra) delete tally[schema]
   }
