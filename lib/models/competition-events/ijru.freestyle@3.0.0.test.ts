@@ -39,6 +39,10 @@ void test('ijru.freestyle@3.0.0', async t => {
       assert.strictEqual(mod.ijruAverage([1, 10, 8]), 9)
     })
 
+    await t.test('Should average the highest two of three numbers, when the numbers are equidistant', () => {
+      assert.strictEqual(mod.ijruAverage([1, 1 + 3, 1 + 3 + 3]), 5.5)
+    })
+
     await t.test('Should average all except highest and lowest for four numbers', () => {
       assert.strictEqual(mod.ijruAverage([119, 114, 111, 118]), 116)
     })

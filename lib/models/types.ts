@@ -126,6 +126,7 @@ export interface JudgeResult {
 export interface EntryResult {
   entryId: string
   result: Record<string, number>
+  flags: Record<string, unknown>
   // TODO: messages/warnings/metadata?
 }
 
@@ -157,7 +158,7 @@ export interface ModelOptionEnum<Option extends string> extends ModelOptionBase<
 }
 
 export interface ModelOptionNumber<Option extends string> extends ModelOptionBase<Option> {
-  type: 'enum'
+  type: 'number'
   min?: number
   max?: number
   step?: number

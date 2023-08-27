@@ -32,7 +32,7 @@ export const ijruAverage = (scores: number[]): number => {
     const score = scores.reduce((a, b) => a + b)
     return score / scores.length
   } else if (scores.length === 3) {
-    const closest = scores[1] - scores[0] <= scores[2] - scores[1] ? scores[1] + scores[0] : scores[2] + scores[1]
+    const closest = scores[1] - scores[0] < scores[2] - scores[1] ? scores[1] + scores[0] : scores[2] + scores[1]
     return closest / 2
   } else if (scores.length === 2) {
     const score = scores.reduce((a, b) => a + b)
@@ -334,13 +334,13 @@ export const freestyleResultTableHeaders: TableDefinition = {
 
 export default {
   id: 'ijru.freestyle@3.0.0',
-  name: 'IJRU Freestyle',
+  name: 'IJRU Freestyle v3.0.0',
   options: [
     { id: 'noMusicality', name: 'No Musicality', type: 'boolean' },
     { id: 'discipline', name: 'Discipline', type: 'enum', enum: ['sr', 'dd', 'wh', 'ts', 'xd'] },
     { id: 'interactions', name: 'Has Interactions', type: 'boolean' }
   ],
-  judges: [routinePresentationJudge],
+  judges: [routinePresentationJudge, athletePresentationJudge, requiredElementsJudge, difficultyJudge],
 
   calculateEntry (meta, results, options) {
     if (!results.length) return
@@ -365,7 +365,8 @@ export default {
 
     return {
       entryId: meta.entryId,
-      result: raw
+      result: raw,
+      flags: {}
     }
   },
   rankEntries (res, options) {

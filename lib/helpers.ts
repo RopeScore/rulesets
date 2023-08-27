@@ -83,7 +83,7 @@ export function calculateTally <Schema extends string> (scoresheet: Scoresheet<S
   if (isMarkScoresheet(scoresheet)) {
     for (const mark of scoresheet.marks) {
       if (isUndoMark(mark)) {
-        const target = scoresheet.marks[mark.target]
+        const target = scoresheet.marks.find(m => m.sequence === mark.target)
         if (target == null || isUndoMark(target) || isClearMark(target)) continue
         tally[target.schema] = (tally[target.schema] ?? 0) - (target.value ?? 1)
       } else if (isClearMark(mark)) {

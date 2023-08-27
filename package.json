@@ -9,7 +9,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "c8 -r lcov -r text node --loader=tsx -r @esbuild-kit/cjs-loader --test lib/*.test.ts lib/**/*.test.ts",
+    "test": "c8 -r lcov -r text node --loader=tsx -r @esbuild-kit/cjs-loader --test $(find lib -name '*.test.ts' -type f -printf '%p ')",
     "postversion": "git push && git push --tags",
     "lint": "eslint . --ignore-path .gitignore --ext .ts,.js",
     "lint:fix": "npm run lint -- --fix",
