@@ -1,6 +1,6 @@
-import { filterParticipatingInAll, roundTo, roundToCurry } from '../../helpers'
-import { type CompetitionEventDefinition } from '../../preconfigured/types'
-import { type TableHeaderGroup, type OverallModel, type TableDefinitionGetter, type TableHeader, type EntryResult } from '../types'
+import { roundTo, roundToCurry } from '../../helpers.js'
+import { type CompetitionEventDefinition } from '../../preconfigured/types.js'
+import { type TableHeaderGroup, type OverallModel, type TableDefinitionGetter, type TableHeader, type EntryResult } from '../types.js'
 
 type Option = never
 type CompetitionEventOptions = 'name' | 'rankMultiplier' | 'resultMultiplier' | 'normalisationMultiplier'
@@ -99,23 +99,11 @@ export default {
     { id: 'normalisationMultiplier', name: 'Normalisation Multiplier', type: 'number' }
   ],
   resultTable: overallTableFactory,
-  rankOverall (meta, res, options, competitionEventOptions) {
+  rankOverall (meta, results, options, competitionEventOptions) {
     const components: Partial<Record<CompetitionEventDefinition, EntryResult[]>> = {}
     const competitionEventIds = Object.keys(competitionEventOptions) as CompetitionEventDefinition[]
 
-    const results = filterParticipatingInAll(res, competitionEventIds)
     const participantIds = [...new Set(results.map(r => r.meta.participantId))]
-
-    // for (const [cEvtDef] of overallObj.competitionEvents) {
-    //   const eventObj = ruleset.competitionEvents[cEvtDef]
-    //   if (!eventObj) {
-    //     console.warn('Component event', cEvtDef, 'for overall', oEvtDef, 'not found')
-    //     continue
-    //   }
-    //   const ranked = eventObj.rankEntries(results.filter(result => result.competitionEvent === cEvtDef))
-
-    //   components[cEvtDef] = ranked
-    // }
 
     const ranked = participantIds.map(participantId => {
       const cRes = competitionEventIds

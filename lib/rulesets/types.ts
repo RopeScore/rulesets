@@ -1,4 +1,4 @@
-import { type Overall, type CompetitionEvent } from '../preconfigured/types'
+import { type Overall, type CompetitionEvent } from '../preconfigured/types.js'
 
 export interface Ruleset {
   id: string

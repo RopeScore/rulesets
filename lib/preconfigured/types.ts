@@ -1,4 +1,4 @@
-import { type JudgeTypeGetter, type CompetitionEventModel, type OverallModel, type CompetitionEventsOptions, type Options } from '../models/types'
+import { type JudgeTypeGetter, type CompetitionEventModel, type OverallModel, type CompetitionEventsOptions, type Options } from '../models/types.js'
 
 export type CompetitionEventDefinition = `e.${string}.${'fs' | 'sp' | 'oa'}.${'sr' | 'dd' | 'wh' | 'ts' | 'xd'}.${string}.${number}.${`${number}x${number}` | number}`
 

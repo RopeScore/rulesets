@@ -1,5 +1,5 @@
-import ijruSpeed300 from '../../models/competition-events/ijru.speed@3.0.0'
-import { partiallyConfigureCompetitionEventModel } from '../types'
+import ijruSpeed300 from '../../models/competition-events/ijru.speed@3.0.0.js'
+import { partiallyConfigureCompetitionEventModel } from '../types.js'
 
 export default partiallyConfigureCompetitionEventModel(ijruSpeed300, {
   options: {

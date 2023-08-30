@@ -1,5 +1,5 @@
-import ijruOverall300 from '../../models/overalls/ijru.overall@3.0.0'
-import { partiallyConfigureOverallModel } from '../types'
+import ijruOverall300 from '../../models/overalls/ijru.overall@3.0.0.js'
+import { partiallyConfigureOverallModel } from '../types.js'
 
 export default partiallyConfigureOverallModel(ijruOverall300, {
   options: {},
