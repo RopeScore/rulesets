@@ -1,4 +1,5 @@
-import { type JudgeFieldDefinition, type ScoreTally, type Scoresheet, isClearMark, isMarkScoresheet, isTallyScoresheet, isUndoMark } from './models/types.js'
+import { type JudgeFieldDefinition, type ScoreTally, type Scoresheet, isClearMark, isMarkScoresheet, isTallyScoresheet, isUndoMark, type Meta, type EntryResult } from './models/types.js'
+import { type CompetitionEventDefinition } from './preconfigured/types.js'
 
 export function isObject (x: unknown): x is Record<string, unknown> {
   return typeof x === 'object' && x != null && !Array.isArray(x)
@@ -111,3 +112,54 @@ export function calculateTally <Schema extends string> (scoresheet: Scoresheet<S
 
   return tally
 }
+
+/**
+ * Given two meta objects this function returns true if all the expected meta
+ * fields are present and matching the expected value in the actual meta object.
+ */
+export function matchMeta (actual: Meta, expected: Partial<Meta>): boolean {
+  for (const [k, v] of Object.entries(expected)) {
+    if (actual[k] !== v) return false
+  }
+  return true
+}
+
+/**
+ * Filters an array of scoresheets returning only scoresheets for the specified
+ * competition event and only the newest scoresheet for each judge assignment.
+ *
+ * For example if J001 is judge type S and has submitted a MarkScoresheet at
+ * timestamp 1 and a TallyScoresheet at timestamp 5, only the TallyScoresheet
+ * will be left
+ */
+// export function filterLatestScoresheets<T extends Pick<ScoresheetBaseFragment, 'createdAt' | 'excludedAt' | 'competitionEventId' | 'judgeType'> & { judge: Pick<Judge, 'id'> }> (scoresheets: T[], cEvtDef: CompetitionEvent): T[] {
+//   return [...scoresheets]
+//     .sort((a, b) => b.createdAt - a.createdAt)
+//     .filter(scsh => scsh.excludedAt == null)
+//     .filter((scsh, idx, arr) =>
+//       scsh.competitionEventId === cEvtDef &&
+//       idx === arr.findIndex(s => s.judge.id === scsh.judge.id && s.judgeType === scsh.judgeType)
+//     )
+// }
+
+/**
+ * Filters an array of all results into only results of component entries where
+ * that participant has results for every competition event of competitionEvents
+ */
+export function filterParticipatingInAll (results: Readonly<EntryResult[]>, competitionEvents: CompetitionEventDefinition[]) {
+  const participants = [...new Set(results.map(res => res.meta.participantId))]
+    .filter(pId => competitionEvents.every(cEvt =>
+      results.find(res => res.meta.participantId === pId && res.meta.competitionEvent === cEvt)
+    ))
+
+  return results.filter(res =>
+    participants.includes(res.meta.participantId) &&
+    competitionEvents.includes(res.meta.competitionEvent)
+  )
+}
+
+// TODO
+export function validateOptions () {}
+
+// TODO
+export function validateCompetitionEventOptions () {}

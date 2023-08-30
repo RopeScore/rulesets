@@ -1,4 +1,5 @@
 import { isObject } from '../helpers.js'
+import { type CompetitionEventDefinition } from '../preconfigured/types.js'
 
 export interface JudgeType<Schema extends string> {
   /**
@@ -21,7 +22,7 @@ export interface JudgeType<Schema extends string> {
   calculateScoresheet: (scoresheet: Scoresheet<Schema>) => JudgeResult
 }
 
-export type JudgeTypeGetter<Schema extends string = string, Option extends string = string> = (options: Partial<Record<Option, unknown>>) => Readonly<JudgeType<Schema>>
+export type JudgeTypeGetter<Schema extends string = string, Option extends string = string> = (options: Options<Option>) => Readonly<JudgeType<Schema>>
 
 export interface JudgeFieldDefinition<Schema extends string> {
   /**
@@ -99,7 +100,7 @@ export function isUndoMark (x: unknown): x is UndoMark { return isObject(x) && x
 export type Mark<Schema extends string> = GenericMark<Schema> | UndoMark | ClearMark
 
 export interface MarkScoresheet<Schema extends string> {
-  judgeId: string
+  meta: JudgeMeta
   marks: Readonly<Array<Mark<Schema>>>
 }
 export function isMarkScoresheet <Schema extends string = string> (scoresheet: unknown): scoresheet is MarkScoresheet<Schema> {
@@ -107,7 +108,7 @@ export function isMarkScoresheet <Schema extends string = string> (scoresheet: u
 }
 
 export interface TallyScoresheet<Schema extends string> {
-  judgeId: string
+  meta: JudgeMeta
   tally: Readonly<ScoreTally<Schema>>
 }
 export function isTallyScoresheet <Schema extends string = string> (scoresheet: unknown): scoresheet is TallyScoresheet<Schema> {
@@ -115,31 +116,44 @@ export function isTallyScoresheet <Schema extends string = string> (scoresheet: 
 }
 
 export type Scoresheet<Schema extends string> = MarkScoresheet<Schema> | TallyScoresheet<Schema>
+export type Meta = JudgeMeta | EntryMeta | OverallMeta
+
+// TODO: it might be possible to type the values
+export type Options<Option extends string> = Partial<Record<Option, unknown>>
+export type CompetitionEventsOptions <Option extends string> = Record<CompetitionEventDefinition, Partial<Record<Option, unknown>>>
+
+export interface JudgeMeta extends EntryMeta {
+  judgeId: string | number
+  judgeTypeId: string
+}
 
 export interface JudgeResult {
-  judgeId: string
-  judgeTypeId: string
+  meta: JudgeMeta
   result: Record<string, number>
-  // TODO: messages/warnings/metadata?
+  statuses: Record<string, unknown>
+}
+
+export interface EntryMeta extends OverallMeta {
+  entryId: string | number
+  competitionEvent: CompetitionEventDefinition
 }
 
 export interface EntryResult {
-  entryId: string
+  meta: EntryMeta
   result: Record<string, number>
-  flags: Record<string, unknown>
-  // TODO: messages/warnings/metadata?
+  statuses: Record<string, unknown>
+}
+
+export interface OverallMeta {
+  participantId: string | number
+  [prop: string]: unknown
 }
 
 export interface OverallResult {
-  // participantId: Participant['id']
-  // competitionEvent: CompetitionEvent
+  meta: OverallMeta
   result: Record<string, number>
-  componentResults: Record<string, EntryResult>
-  // TODO: messages/warnings/metadata?
-}
-
-export interface CalculateEntryMeta {
-  entryId: string // TODO: meta is arbitrary and set by the implementer?
+  componentResults: Record<CompetitionEventDefinition, EntryResult>
+  statuses: Record<string, unknown>
 }
 
 export interface ModelOptionBase<Option extends string> {
@@ -147,16 +161,16 @@ export interface ModelOptionBase<Option extends string> {
   name: string
   type: string
 }
-
 export interface ModelOptionBoolean<Option extends string> extends ModelOptionBase<Option> {
   type: 'boolean'
 }
-
+export interface ModelOptionString<Option extends string> extends ModelOptionBase<Option> {
+  type: 'string'
+}
 export interface ModelOptionEnum<Option extends string> extends ModelOptionBase<Option> {
   type: 'enum'
   enum: unknown[]
 }
-
 export interface ModelOptionNumber<Option extends string> extends ModelOptionBase<Option> {
   type: 'number'
   min?: number
@@ -164,7 +178,7 @@ export interface ModelOptionNumber<Option extends string> extends ModelOptionBas
   step?: number
 }
 
-export type ModelOption<Option extends string> = ModelOptionBoolean<Option> | ModelOptionEnum<Option> | ModelOptionNumber<Option>
+export type ModelOption<Option extends string> = ModelOptionBoolean<Option> | ModelOptionEnum<Option> | ModelOptionNumber<Option> | ModelOptionString<Option>
 
 export interface BaseModel<Option extends string> {
   /**
@@ -182,7 +196,7 @@ export interface CompetitionEventModel<Schema extends string = string, Option ex
   previewTable: TableDefinitionGetter<Option>
   resultTable: TableDefinitionGetter<Option>
 
-  calculateEntry: (meta: CalculateEntryMeta, judgeResults: Readonly<Array<Readonly<JudgeResult>>>, options: Partial<Record<Option, unknown>>) => EntryResult | undefined
+  calculateEntry: (meta: Readonly<EntryMeta>, judgeResults: Readonly<Array<Readonly<JudgeResult>>>, options: Options<Option>) => EntryResult | undefined
   /**
    * Note that this generally adds some property to the result indicating the
    * rank, the index/order of the array should not be used to show the rank.
@@ -191,19 +205,16 @@ export interface CompetitionEventModel<Schema extends string = string, Option ex
    * @param results the return values of multiple calculateEntry calls
    * @returns
    */
-  rankEntries: (results: Readonly<Array<Readonly<EntryResult>>>, options: Partial<Record<Option, unknown>>) => EntryResult[]
+  rankEntries: (results: Readonly<Array<Readonly<EntryResult>>>, options: Options<Option>) => EntryResult[]
 }
 
-export interface OverallModel<Option extends string = string> extends BaseModel<Option> {
-  // TODO: how do we track what the component events are so we know the input?
-  // competitionEvents: Array<[string, { rankMultiplier?: number, resultMultiplier?: number, normalisationMultiplier?: number }]>
-  // TODO: information about events and their human readable names also need to
-  // be passed to the table getter
-  resultTable: TableDefinitionGetter<Option>
-  rankOverall: (results: Readonly<Array<Readonly<EntryResult>>>, options: Partial<Record<Option, unknown>>) => OverallResult[]
+export interface OverallModel<Option extends string = string, CompetitionEventOption extends string = string> extends BaseModel<Option> {
+  competitionEventOptions: Readonly<Array<ModelOption<CompetitionEventOption>>>
+  resultTable: TableDefinitionGetter<Option, CompetitionEventOption>
+  rankOverall: (meta: Readonly<OverallMeta>, results: Readonly<Array<Readonly<EntryResult>>>, options: Options<Option>, competitionEventOptions: CompetitionEventsOptions<CompetitionEventOption>) => OverallResult[]
 }
 
-export type TableDefinitionGetter<Option extends string> = (options: Partial<Record<Option, unknown>>) => TableDefinition
+export type TableDefinitionGetter<Option extends string, CompetitionEventOption extends string = never> = (options: Options<Option>, competitionEventOptions?: CompetitionEventsOptions<CompetitionEventOption>) => TableDefinition
 
 export interface TableDefinition {
   groups?: TableHeaderGroup[][]
@@ -215,7 +226,7 @@ export interface TableHeader {
   key: string
   formatter?: (n: number) => string
   color?: 'red' | 'green' | 'gray'
-  component?: string // TODO: use competitionEntryId? Some other ID?
+  component?: CompetitionEventDefinition
 }
 
 export interface TableHeaderGroup {

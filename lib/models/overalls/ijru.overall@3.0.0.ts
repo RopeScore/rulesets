@@ -1,10 +1,14 @@
-import { roundTo, roundToCurry } from '../../helpers'
+import { filterParticipatingInAll, roundTo, roundToCurry } from '../../helpers'
+import { type CompetitionEventDefinition } from '../../preconfigured/types'
 import { type TableHeaderGroup, type OverallModel, type TableDefinitionGetter, type TableHeader, type EntryResult } from '../types'
 
 type Option = never
+type CompetitionEventOptions = 'name' | 'rankMultiplier' | 'resultMultiplier' | 'normalisationMultiplier'
 
-export const overallTableFactory: TableDefinitionGetter<Option> = options => {
+export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEventOptions> = (options, cEvtOptions) => {
+  if (cEvtOptions == null) throw new TypeError('Missing competitionEventOptions argument')
   const groups: TableHeaderGroup[][] = []
+  const cEvtDefs = Object.keys(cEvtOptions) as CompetitionEventDefinition[]
 
   const srEvts = cEvtDefs.filter(cEvt => cEvt.split('.')[3] === 'sr')
   const ddEvts = cEvtDefs.filter(cEvt => cEvt.split('.')[3] === 'dd')
@@ -40,7 +44,7 @@ export const overallTableFactory: TableDefinitionGetter<Option> = options => {
 
   for (const cEvt of [...srEvts, ...ddEvts]) {
     evtGroup.push({
-      text: cEvtToName[cEvt].replace(/^(Double Dutch|Single Rope) /, ''),
+      text: typeof cEvtOptions[cEvt].name === 'string' ? (cEvtOptions[cEvt].name as string).replace(/^(Double Dutch|Single Rope) /, '') : '',
       key: cEvt,
       colspan: 2
     })
@@ -88,55 +92,60 @@ export default {
   id: 'ijru.overall@3.0.0',
   name: 'IJRU Overall',
   options: [],
+  competitionEventOptions: [
+    { id: 'name', name: 'Name', type: 'string' },
+    { id: 'rankMultiplier', name: 'Rank Multiplier', type: 'number' },
+    { id: 'resultMultiplier', name: 'Result Multiplier', type: 'number' },
+    { id: 'normalisationMultiplier', name: 'Normalisation Multiplier', type: 'number' }
+  ],
   resultTable: overallTableFactory,
-  rankOverall (res) {
-    const overallObj = ruleset.overalls[oEvtDef]
-    if (!overallObj) throw new TypeError('Invalid Overall Event Definition provided')
-    const components: Partial<Record<CompetitionEvent, EntryResult[]>> = {}
+  rankOverall (meta, res, options, competitionEventOptions) {
+    const components: Partial<Record<CompetitionEventDefinition, EntryResult[]>> = {}
+    const competitionEventIds = Object.keys(competitionEventOptions) as CompetitionEventDefinition[]
 
-    const results = filterParticipatingInAll(res, overallObj.competitionEvents.map(([cEvtDef]) => cEvtDef))
-    const participantIds = [...new Set(results.map(r => r.participantId))]
+    const results = filterParticipatingInAll(res, competitionEventIds)
+    const participantIds = [...new Set(results.map(r => r.meta.participantId))]
 
-    for (const [cEvtDef] of overallObj.competitionEvents) {
-      const eventObj = ruleset.competitionEvents[cEvtDef]
-      if (!eventObj) {
-        console.warn('Component event', cEvtDef, 'for overall', oEvtDef, 'not found')
-        continue
-      }
-      const ranked = eventObj.rankEntries(results.filter(result => result.competitionEvent === cEvtDef))
+    // for (const [cEvtDef] of overallObj.competitionEvents) {
+    //   const eventObj = ruleset.competitionEvents[cEvtDef]
+    //   if (!eventObj) {
+    //     console.warn('Component event', cEvtDef, 'for overall', oEvtDef, 'not found')
+    //     continue
+    //   }
+    //   const ranked = eventObj.rankEntries(results.filter(result => result.competitionEvent === cEvtDef))
 
-      components[cEvtDef] = ranked
-    }
+    //   components[cEvtDef] = ranked
+    // }
 
     const ranked = participantIds.map(participantId => {
-      const cRes = overallObj.competitionEvents
-        .map(([cEvt]) => components[cEvt]?.find(r => r.participantId === participantId))
+      const cRes = competitionEventIds
+        .map((cEvt) => components[cEvt]?.find(r => r.meta.participantId === participantId))
         .filter(r => !!r) as EntryResult[]
 
       const R = roundTo(cRes.reduce((acc, curr) =>
         acc + (
           (curr.result.R ?? 0) *
-        (overallObj.competitionEvents.find(([cEvt]) => cEvt === curr.competitionEvent)?.[1].resultMultiplier ?? 1)
+        (Number.isInteger(competitionEventOptions[curr.meta.competitionEvent]?.resultMultiplier) ? competitionEventOptions[curr.meta.competitionEvent]?.resultMultiplier as number : 1)
         )
       , 0), 4)
       const T = cRes.reduce((acc, curr) =>
         acc + (
           (curr.result.S ?? 0) *
-        (overallObj.competitionEvents.find(([cEvt]) => cEvt === curr.competitionEvent)?.[1].rankMultiplier ?? 1)
+        (Number.isInteger(competitionEventOptions[curr.meta.competitionEvent]?.rankMultiplier) ? competitionEventOptions[curr.meta.competitionEvent]?.rankMultiplier as number : 1)
         )
       , 0)
       const B = roundTo(cRes.reduce((acc, curr) =>
         acc + (
           (curr.result.N ?? 0) *
-        (overallObj.competitionEvents.find(([cEvt]) => cEvt === curr.competitionEvent)?.[1].normalisationMultiplier ?? 1)
+        (Number.isInteger(competitionEventOptions[curr.meta.competitionEvent]?.normalisationMultiplier) ? competitionEventOptions[curr.meta.competitionEvent]?.normalisationMultiplier as number : 1)
         )
       , 0), 2)
 
       return {
-        participantId,
-        competitionEvent: oEvtDef,
+        meta,
         result: { R, T, B, S: 0 },
-        componentResults: Object.fromEntries(cRes.map(r => [r.competitionEvent, r]))
+        componentResults: Object.fromEntries(cRes.map(r => [r.meta.competitionEvent, r])),
+        statuses: {}
       }
     })
 
@@ -151,4 +160,4 @@ export default {
 
     return ranked
   }
-} satisfies OverallModel<Option>
+} satisfies OverallModel<Option, CompetitionEventOptions>

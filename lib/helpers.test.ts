@@ -1,7 +1,7 @@
 import { calculateTally, clampNumber, formatFactor, isObject, roundTo, roundToCurry, roundToMultiple } from './helpers.js'
 import assert from 'node:assert'
 import test from 'node:test'
-import type { Mark } from './models/types.js'
+import type { JudgeMeta, Mark } from './models/types.js'
 
 void test('helpers', async t => {
   await t.test('isObject', async t => {
@@ -71,9 +71,16 @@ void test('helpers', async t => {
   })
 
   await t.test('calculateTally', async t => {
+    const meta: JudgeMeta = {
+      judgeId: '1',
+      judgeTypeId: 'S',
+      entryId: '1',
+      participantId: '1',
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+    }
     await t.test('Should return tally for a TallyScoresheet', () => {
       const tally = { entPlus: 2, entMinus: 1 }
-      assert.deepStrictEqual(calculateTally({ judgeId: '1', tally }), tally)
+      assert.deepStrictEqual(calculateTally({ meta, tally }), tally)
     })
 
     await t.test('Should return tally for MarkScoresheet', () => {
@@ -86,7 +93,7 @@ void test('helpers', async t => {
         formPlus: 2,
         formCheck: 1
       }
-      assert.deepStrictEqual(calculateTally({ judgeId: '1', marks }), tally)
+      assert.deepStrictEqual(calculateTally({ meta, marks }), tally)
     })
 
     await t.test('Should return tally for MarkScoresheet with undo marks', () => {
@@ -100,7 +107,7 @@ void test('helpers', async t => {
         formPlus: 1,
         formCheck: 1
       }
-      assert.deepStrictEqual(calculateTally({ judgeId: '1', marks }), tally)
+      assert.deepStrictEqual(calculateTally({ meta, marks }), tally)
     })
   })
 })

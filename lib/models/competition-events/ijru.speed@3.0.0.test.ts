@@ -1,29 +1,45 @@
 import assert from 'node:assert'
 import test from 'node:test'
 import * as mod from './ijru.speed@3.0.0.js'
+import type { EntryMeta, EntryResult, JudgeMeta } from '../types.js'
+import { RSRWrongJudgeTypeError } from '../../errors.js'
 
 void test('ijru.speed@3.0.0', async t => {
   await t.test('speedJudge', async t => {
+    const meta: JudgeMeta = {
+      judgeId: '1',
+      judgeTypeId: 'S',
+      entryId: '1',
+      participantId: '1',
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+    }
     assert.strictEqual(mod.speedJudge({}).id, 'S')
+
+    await t.test('Throws on incorrect meta.judgeTypeId', () => {
+      assert.throws(
+        () => mod.speedJudge({}).calculateScoresheet({ meta: { ...meta, judgeTypeId: 'Shj' }, tally: { step: 5 } }),
+        new RSRWrongJudgeTypeError('Shj', 'S')
+      )
+    })
 
     await t.test('calculates a tally scoresheet', () => {
       assert.deepStrictEqual(
-        mod.speedJudge({}).calculateScoresheet({ judgeId: '1', tally: { step: 5 } }),
-        { judgeId: '1', judgeTypeId: 'S', result: { a: 5 } }
+        mod.speedJudge({}).calculateScoresheet({ meta, tally: { step: 5 } }),
+        { meta, result: { a: 5 }, statuses: {} }
       )
     })
 
     await t.test('default to 0 for blank scoresheet', () => {
       assert.deepStrictEqual(
-        mod.speedJudge({}).calculateScoresheet({ judgeId: '1', tally: {} }),
-        { judgeId: '1', judgeTypeId: 'S', result: { a: 0 } }
+        mod.speedJudge({}).calculateScoresheet({ meta, tally: {} }),
+        { meta, result: { a: 0 }, statuses: {} }
       )
     })
 
     await t.test('calculates a mark scoresheet', () => {
       assert.deepStrictEqual(
         mod.speedJudge({}).calculateScoresheet({
-          judgeId: '1',
+          meta,
           marks: [
             { timestamp: Date.now(), sequence: 1, schema: 'step' },
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
@@ -31,46 +47,60 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 4, schema: 'step' }
           ]
         }),
-        { judgeId: '1', judgeTypeId: 'S', result: { a: 2 } }
+        { meta, result: { a: 2 }, statuses: {} }
       )
     })
   })
 
   await t.test('speedHeadJudge', async t => {
+    const meta: JudgeMeta = {
+      judgeId: '1',
+      judgeTypeId: 'Shj',
+      entryId: '1',
+      participantId: '1',
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+    }
     assert.strictEqual(mod.speedHeadJudge({}).id, 'Shj')
+
+    await t.test('Throws on incorrect meta.judgeTypeId', () => {
+      assert.throws(
+        () => mod.speedHeadJudge({}).calculateScoresheet({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
+        new RSRWrongJudgeTypeError('S', 'Shj')
+      )
+    })
 
     await t.test('calculates a tally scoresheet', () => {
       assert.deepStrictEqual(
-        mod.speedHeadJudge({}).calculateScoresheet({ judgeId: '1', tally: { step: 5 } }),
-        { judgeId: '1', judgeTypeId: 'Shj', result: { a: 5, m: 0 } }
+        mod.speedHeadJudge({}).calculateScoresheet({ meta, tally: { step: 5 } }),
+        { meta, result: { a: 5, m: 0 }, statuses: {} }
       )
     })
 
     await t.test('calculates a tally scoresheet with false start', () => {
       assert.deepStrictEqual(
-        mod.speedHeadJudge({}).calculateScoresheet({ judgeId: '1', tally: { step: 11, falseStart: 2 } }),
-        { judgeId: '1', judgeTypeId: 'Shj', result: { a: 11, m: 10 } }
+        mod.speedHeadJudge({}).calculateScoresheet({ meta, tally: { step: 11, falseStart: 2 } }),
+        { meta, result: { a: 11, m: 10 }, statuses: {} }
       )
     })
 
     await t.test('calculates a tally scoresheet with false switches and false start', () => {
       assert.deepStrictEqual(
-        mod.speedHeadJudge({ falseSwitches: 2 }).calculateScoresheet({ judgeId: '1', tally: { step: 11, falseSwitch: 2, falseStart: 1 } }),
-        { judgeId: '1', judgeTypeId: 'Shj', result: { a: 11, m: 30 } }
+        mod.speedHeadJudge({ falseSwitches: 2 }).calculateScoresheet({ meta, tally: { step: 11, falseSwitch: 2, falseStart: 1 } }),
+        { meta, result: { a: 11, m: 30 }, statuses: {} }
       )
     })
 
     await t.test('calculates a tally scoresheet with capped false switches', () => {
       assert.deepStrictEqual(
-        mod.speedHeadJudge({ falseSwitches: 1 }).calculateScoresheet({ judgeId: '1', tally: { step: 11, falseSwitch: 2 } }),
-        { judgeId: '1', judgeTypeId: 'Shj', result: { a: 11, m: 10 } }
+        mod.speedHeadJudge({ falseSwitches: 1 }).calculateScoresheet({ meta, tally: { step: 11, falseSwitch: 2 } }),
+        { meta, result: { a: 11, m: 10 }, statuses: {} }
       )
     })
 
     await t.test('calculates a mark scoresheet', () => {
       assert.deepStrictEqual(
         mod.speedHeadJudge({}).calculateScoresheet({
-          judgeId: '1',
+          meta,
           marks: [
             { timestamp: Date.now(), sequence: 1, schema: 'step' },
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
@@ -78,14 +108,14 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 4, schema: 'step' }
           ]
         }),
-        { judgeId: '1', judgeTypeId: 'Shj', result: { a: 2, m: 0 } }
+        { meta, result: { a: 2, m: 0 }, statuses: {} }
       )
     })
 
     await t.test('calculates a mark scoresheet with false start', () => {
       assert.deepStrictEqual(
         mod.speedHeadJudge({}).calculateScoresheet({
-          judgeId: '1',
+          meta,
           marks: [
             { timestamp: Date.now(), sequence: 1, schema: 'falseStart' },
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
@@ -94,14 +124,14 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 5, schema: 'step' }
           ]
         }),
-        { judgeId: '1', judgeTypeId: 'Shj', result: { a: 2, m: 10 } }
+        { meta, result: { a: 2, m: 10 }, statuses: {} }
       )
     })
 
     await t.test('calculates a mark scoresheet with false switches', () => {
       assert.deepStrictEqual(
         mod.speedHeadJudge({ falseSwitches: 1 }).calculateScoresheet({
-          judgeId: '1',
+          meta,
           marks: [
             { timestamp: Date.now(), sequence: 1, schema: 'step' },
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
@@ -110,14 +140,14 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 5, schema: 'step' }
           ]
         }),
-        { judgeId: '1', judgeTypeId: 'Shj', result: { a: 2, m: 10 } }
+        { meta, result: { a: 2, m: 10 }, statuses: {} }
       )
     })
 
     await t.test('calculates a mark scoresheet with capped false switches', () => {
       assert.deepStrictEqual(
         mod.speedHeadJudge({ falseSwitches: 1 }).calculateScoresheet({
-          judgeId: '1',
+          meta,
           marks: [
             { timestamp: Date.now(), sequence: 1, schema: 'step' },
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
@@ -127,84 +157,115 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 6, schema: 'falseSwitch' }
           ]
         }),
-        { judgeId: '1', judgeTypeId: 'Shj', result: { a: 2, m: 10 } }
+        { meta, result: { a: 2, m: 10 }, statuses: {} }
       )
     })
   })
 
   await t.test('calculateEntry', async t => {
     {
+      const jMeta = (jId: string, jTId: string = 'S'): JudgeMeta => ({
+        judgeId: jId,
+        judgeTypeId: jTId,
+        entryId: '1',
+        participantId: '1',
+        competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+      })
+      const eMeta: EntryMeta = {
+        entryId: '1',
+        participantId: '1',
+        competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+      }
       const options = { falseSwitches: 3 }
       const scores = [
-        mod.speedHeadJudge(options).calculateScoresheet({ judgeId: '1', tally: { step: 11, falseStart: 0, falseSwitch: 0 } }),
-        mod.speedJudge(options).calculateScoresheet({ judgeId: '2', tally: { step: 10 } }),
-        mod.speedJudge(options).calculateScoresheet({ judgeId: '3', tally: { step: 10 } })
+        mod.speedHeadJudge(options).calculateScoresheet({ meta: jMeta('1', 'Shj'), tally: { step: 11, falseStart: 0, falseSwitch: 0 } }),
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('2'), tally: { step: 10 } }),
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 10 } })
       ]
-      const result = mod.default.calculateEntry({ entryId: '1' }, scores, options)
+      const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
-        entryId: '1',
+        meta: eMeta,
         result: { a: 10, m: 0, R: 10 },
-        flags: { withinThree: true }
+        statuses: { withinThree: true }
       })
     }
 
+    const jMeta = (jId: string, jTId: string = 'S'): JudgeMeta => ({
+      judgeId: jId,
+      judgeTypeId: jTId,
+      entryId: '1',
+      participantId: '1',
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+    })
+    const eMeta: EntryMeta = {
+      entryId: '1',
+      participantId: '1',
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+    }
     await t.test('With false starts and switches', () => {
       const options = { falseSwitches: 3 }
       const scores = [
-        mod.speedHeadJudge(options).calculateScoresheet({ judgeId: '1', tally: { step: 24, falseStart: 1, falseSwitch: 1 } }),
-        mod.speedJudge(options).calculateScoresheet({ judgeId: '2', tally: { step: 25 } }),
-        mod.speedJudge(options).calculateScoresheet({ judgeId: '3', tally: { step: 26 } })
+        mod.speedHeadJudge(options).calculateScoresheet({ meta: jMeta('1', 'Shj'), tally: { step: 24, falseStart: 1, falseSwitch: 1 } }),
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('2'), tally: { step: 25 } }),
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 26 } })
       ]
-      const result = mod.default.calculateEntry({ entryId: '1' }, scores, options)
+      const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
-        entryId: '1',
+        meta: eMeta,
         result: { a: 25.5, m: 20, R: 5.5 },
-        flags: { withinThree: true }
+        statuses: { withinThree: true }
       })
     })
 
     await t.test('Not within three', () => {
       const options = { falseSwitches: 3 }
       const scores = [
-        mod.speedHeadJudge(options).calculateScoresheet({ judgeId: '1', tally: { step: 10, falseStart: 0, falseSwitch: 0 } }),
-        mod.speedJudge(options).calculateScoresheet({ judgeId: '2', tally: { step: 15 } }),
-        mod.speedJudge(options).calculateScoresheet({ judgeId: '3', tally: { step: 20 } })
+        mod.speedHeadJudge(options).calculateScoresheet({ meta: jMeta('1', 'Shj'), tally: { step: 10, falseStart: 0, falseSwitch: 0 } }),
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('2'), tally: { step: 15 } }),
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 20 } })
       ]
-      const result = mod.default.calculateEntry({ entryId: '1' }, scores, options)
+      const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
-        entryId: '1',
+        meta: eMeta,
         result: { a: 17.5, m: 0, R: 17.5 },
-        flags: { withinThree: false }
+        statuses: { withinThree: false }
       })
     })
   })
 
   await t.test('rankEntries', async t => {
-    {
+    const meta = (id: string): EntryMeta => ({
+      entryId: id,
+      participantId: id,
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+    })
+
+    // eslint-disable-next-line @typescript-eslint/semi
+    ; {
       const options = { falseSwitches: 3 }
-      const scores = [
+      const scores: EntryResult[] = [
         {
-          entryId: '1',
+          meta: meta('1'),
           result: { a: 10, m: 0, R: 10 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         },
         {
-          entryId: '2',
+          meta: meta('2'),
           result: { a: 20, m: 0, R: 20 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         }
       ]
       const result = mod.default.rankEntries(scores, options)
       assert.deepStrictEqual(result, [
         {
-          entryId: '2',
+          meta: meta('2'),
           result: { a: 20, m: 0, R: 20, S: 1, N: 100 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         },
         {
-          entryId: '1',
+          meta: meta('1'),
           result: { a: 10, m: 0, R: 10, S: 2, N: 1 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         }
       ])
     }
@@ -213,37 +274,37 @@ void test('ijru.speed@3.0.0', async t => {
       const options = { falseSwitches: 3 }
       const scores = [
         {
-          entryId: '1',
+          meta: meta('1'),
           result: { a: 10, m: 0, R: 10 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         },
         {
-          entryId: '2',
+          meta: meta('2'),
           result: { a: 10, m: 0, R: 10 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         },
         {
-          entryId: '3',
+          meta: meta('3'),
           result: { a: 5, m: 0, R: 5 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         }
       ]
       const result = mod.default.rankEntries(scores, options)
       assert.deepStrictEqual(result, [
         {
-          entryId: '1',
+          meta: meta('1'),
           result: { a: 10, m: 0, R: 10, S: 1, N: 100 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         },
         {
-          entryId: '2',
+          meta: meta('2'),
           result: { a: 10, m: 0, R: 10, S: 1, N: 100 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         },
         {
-          entryId: '3',
+          meta: meta('3'),
           result: { a: 5, m: 0, R: 5, S: 3, N: 1 },
-          flags: { withinThree: true }
+          statuses: { withinThree: true }
         }
       ])
     })

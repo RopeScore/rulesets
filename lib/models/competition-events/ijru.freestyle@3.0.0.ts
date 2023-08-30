@@ -1,4 +1,5 @@
-import { calculateTally, formatFactor, roundTo, roundToCurry } from '../../helpers.js'
+import { RSRWrongJudgeTypeError } from '../../errors.js'
+import { calculateTally, formatFactor, matchMeta, roundTo, roundToCurry } from '../../helpers.js'
 import type { CompetitionEventModel, JudgeFieldDefinition, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
 
 type Option = 'noMusicality' | 'discipline' | 'interactions'
@@ -98,6 +99,7 @@ export const routinePresentationJudge: JudgeTypeGetter<string, Option> = options
     name: 'Routine Presentation',
     fieldDefinitions,
     calculateScoresheet: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally: ScoreTally<Schema> = calculateTally(scsh, fieldDefinitions)
       const enTop = 3 * ((tally.entertainmentPlus ?? 0) - (tally.entertainmentMinus ?? 0))
       const enBottom = (tally.entertainmentPlus ?? 0) + (tally.entertainmentCheck ?? 0) + (tally.entertainmentMinus ?? 0)
@@ -108,8 +110,7 @@ export const routinePresentationJudge: JudgeTypeGetter<string, Option> = options
       const muAvg = muTop / (muBottom || 1)
 
       return {
-        judgeTypeId: id,
-        judgeId: scsh.judgeId,
+        meta: scsh.meta,
         result: noMusicality
           ? {
               aE: roundTo((enAvg * (FpE + FpM)), 6),
@@ -118,7 +119,8 @@ export const routinePresentationJudge: JudgeTypeGetter<string, Option> = options
           : {
               aE: roundTo((enAvg * FpE), 6),
               aM: roundTo((muAvg * FpM), 6)
-            }
+            },
+        statuses: {}
       }
     }
   }
@@ -157,18 +159,19 @@ export const athletePresentationJudge: JudgeTypeGetter<string, Option> = options
     name: 'Athlete Presentation',
     fieldDefinitions,
     calculateScoresheet: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
       const top = 3 * ((tally.formExecutionPlus ?? 0) - (tally.formExecutionMinus ?? 0))
       const bottom = (tally.formExecutionPlus ?? 0) + (tally.formExecutionCheck ?? 0) + (tally.formExecutionMinus ?? 0)
       const avg = top / (bottom || 1)
 
       return {
-        judgeTypeId: id,
-        judgeId: scsh.judgeId,
+        meta: scsh.meta,
         result: {
           m: roundTo(1 - ((tally.miss ?? 0) * Fd), 3),
           aF: roundTo(avg * FpF, 6)
-        }
+        },
+        statuses: {}
       }
     }
   }
@@ -244,6 +247,7 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
     name: 'Required Elements',
     fieldDefinitions,
     calculateScoresheet: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
 
       let score = rqFields.map(f => tally[f.schema] ?? 0).reduce((a, b) => a + b)
@@ -251,13 +255,13 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
       const missing = max - score
 
       return {
-        judgeTypeId: id,
-        judgeId: scsh.judgeId,
+        meta: scsh.meta,
         result: {
           Q: roundTo(1 - (missing * Fq), 3),
           m: roundTo(1 - ((tally.miss ?? 0) * Fd), 3),
           v: roundTo(1 - (((tally.spaceViolation ?? 0) + (tally.timeViolation ?? 0)) * Fd), 3)
-        }
+        },
+        statuses: {}
       }
     }
   }
@@ -294,14 +298,15 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
     name: 'Difficulty',
     fieldDefinitions,
     calculateScoresheet: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
       const D = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
       return {
-        judgeTypeId: id,
-        judgeId: scsh.judgeId,
+        meta: scsh.meta,
         result: {
           D: roundTo(D, 2)
-        }
+        },
+        statuses: {}
       }
     }
   }
@@ -342,7 +347,8 @@ export default {
   ],
   judges: [routinePresentationJudge, athletePresentationJudge, requiredElementsJudge, difficultyJudge],
 
-  calculateEntry (meta, results, options) {
+  calculateEntry (meta, res, options) {
+    const results = res.filter(r => matchMeta(r.meta, meta))
     if (!results.length) return
 
     const raw: Record<string, number> = {}
@@ -364,9 +370,9 @@ export default {
     raw.R = raw.R < 0 ? 0 : raw.R
 
     return {
-      entryId: meta.entryId,
+      meta,
       result: raw,
-      flags: {}
+      statuses: {}
     }
   },
   rankEntries (res, options) {

@@ -1,4 +1,5 @@
-import { calculateTally, roundTo } from '../../helpers.js'
+import { RSRWrongJudgeTypeError } from '../../errors.js'
+import { calculateTally, matchMeta, roundTo } from '../../helpers.js'
 import type { CompetitionEventModel, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
 import { ijruAverage } from './ijru.freestyle@3.0.0.js'
 
@@ -23,13 +24,14 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
     name: 'Speed',
     fieldDefinitions,
     calculateScoresheet: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
       return {
-        judgeTypeId: id,
-        judgeId: scsh.judgeId,
+        meta: scsh.meta,
         result: {
           a: tally.step ?? 0
-        }
+        },
+        statuses: {}
       }
     }
   }
@@ -67,14 +69,15 @@ export const speedHeadJudge: JudgeTypeGetter<string, Option> = options => {
     name: 'Speed Head Judge',
     fieldDefinitions,
     calculateScoresheet: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
       return {
-        judgeTypeId: id,
-        judgeId: scsh.judgeId,
+        meta: scsh.meta,
         result: {
           a: tally.step ?? 0,
           m: ((tally.falseStart ?? 0) + (tally.falseSwitch ?? 0)) * SpeedDed
-        }
+        },
+        statuses: {}
       }
     }
   }
@@ -108,7 +111,8 @@ export default {
   ],
   judges: [speedJudge, speedHeadJudge],
 
-  calculateEntry (meta, results, options) {
+  calculateEntry (meta, res, options) {
+    const results = res.filter(r => matchMeta(r.meta, meta))
     if (!results.length) return
 
     // Calc a
@@ -128,13 +132,13 @@ export default {
     const withinThree = minDiff <= 3
 
     return {
-      entryId: meta.entryId,
+      meta,
       result: {
         a,
         m,
         R: roundTo(a - m, 2)
       },
-      flags: {
+      statuses: {
         withinThree
       }
     }
