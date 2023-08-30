@@ -1,5 +1,5 @@
-import ijruFreestyle300 from '../../models/competition-events/ijru.freestyle@3.0.0.js'
-import { partiallyConfigureCompetitionEventModel } from '../types.js'
+import ijruFreestyle300 from '../../../../models/competition-events/ijru.freestyle@3.0.0.js'
+import { partiallyConfigureCompetitionEventModel } from '../../../types.js'
 
 export default partiallyConfigureCompetitionEventModel(ijruFreestyle300, {
   options: {

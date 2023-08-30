@@ -12,26 +12,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./models/competition-events/*.js": {
-      "types": "./dist/models/competition-events/*.d.ts",
-      "default": "./dist/models/competition-events/*.js"
-    },
-    "./models/overalls/*.js": {
-      "types": "./dist/models/overalls/*.d.ts",
-      "default": "./dist/models/overalls/*.js"
-    },
-    "./preconfigured/competition-events/*.js": {
-      "types": "./dist/preconfigured/competition-events/*.d.ts",
-      "default": "./dist/preconfigured/competition-events/*.js"
-    },
-    "./preconfigured/overalls/*.js": {
-      "types": "./dist/preconfigured/overalls/*.d.ts",
-      "default": "./dist/preconfigured/overalls/*.js"
-    },
-    "./rulesets/*.js": {
-      "types": "./dist/rulesets/*.d.ts",
-      "default": "./dist/rulesets/*.js"
     }
   },
   "files": [

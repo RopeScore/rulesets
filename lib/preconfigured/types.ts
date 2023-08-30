@@ -37,6 +37,8 @@ export function partiallyConfigureCompetitionEventModel <Schema extends string, 
 export interface Overall extends Omit<OverallModel, 'id' | 'competitionEventOptions'> {
   id: `${CompetitionEventDefinition}@${string}`
   modelId: OverallModel['id']
+  competitionEvents: CompetitionEventDefinition[]
+  rankOverall: (results: Parameters<OverallModel['rankOverall']>[0], options: Parameters<OverallModel['rankOverall']>[1]) => ReturnType<OverallModel['rankOverall']>
 }
 
 export interface PartiallyConfigureOverallModelOptions<Option extends string, CompetitionEventOption extends string> {
@@ -51,8 +53,9 @@ export function partiallyConfigureOverallModel <Option extends string, Competiti
     modelId: model.id,
     name: options.name,
     options: model.options.filter(o => !(o.id in options.options)),
-    rankOverall (meta, results, o) {
-      return model.rankOverall(meta, results, { ...o, ...options.options }, options.competitionEventOptions)
+    competitionEvents: Object.keys(options.competitionEventOptions) as CompetitionEventDefinition[],
+    rankOverall (results, o) {
+      return model.rankOverall(results, { ...o, ...options.options }, options.competitionEventOptions)
     },
     resultTable (o) {
       return model.resultTable({ ...o, ...options.options }, options.competitionEventOptions)

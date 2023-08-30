@@ -99,7 +99,7 @@ export default {
     { id: 'normalisationMultiplier', name: 'Normalisation Multiplier', type: 'number' }
   ],
   resultTable: overallTableFactory,
-  rankOverall (meta, results, options, competitionEventOptions) {
+  rankOverall (results, options, competitionEventOptions) {
     const components: Partial<Record<CompetitionEventDefinition, EntryResult[]>> = {}
     const competitionEventIds = Object.keys(competitionEventOptions) as CompetitionEventDefinition[]
 
@@ -130,7 +130,7 @@ export default {
       , 0), 2)
 
       return {
-        meta,
+        meta: { participantId },
         result: { R, T, B, S: 0 },
         componentResults: Object.fromEntries(cRes.map(r => [r.meta.competitionEvent, r])),
         statuses: {}

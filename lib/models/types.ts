@@ -211,7 +211,7 @@ export interface CompetitionEventModel<Schema extends string = string, Option ex
 export interface OverallModel<Option extends string = string, CompetitionEventOption extends string = string> extends BaseModel<Option> {
   competitionEventOptions: Readonly<Array<ModelOption<CompetitionEventOption>>>
   resultTable: TableDefinitionGetter<Option, CompetitionEventOption>
-  rankOverall: (meta: Readonly<OverallMeta>, results: Readonly<Array<Readonly<EntryResult>>>, options: Options<Option>, competitionEventOptions: CompetitionEventsOptions<CompetitionEventOption>) => OverallResult[]
+  rankOverall: (results: Readonly<Array<Readonly<EntryResult>>>, options: Options<Option>, competitionEventOptions: CompetitionEventsOptions<CompetitionEventOption>) => OverallResult[]
 }
 
 export type TableDefinitionGetter<Option extends string, CompetitionEventOption extends string = never> = (options: Options<Option>, competitionEventOptions?: CompetitionEventsOptions<CompetitionEventOption>) => TableDefinition

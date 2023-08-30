@@ -125,24 +125,6 @@ export function matchMeta (actual: Meta, expected: Partial<Meta>): boolean {
 }
 
 /**
- * Filters an array of scoresheets returning only scoresheets for the specified
- * competition event and only the newest scoresheet for each judge assignment.
- *
- * For example if J001 is judge type S and has submitted a MarkScoresheet at
- * timestamp 1 and a TallyScoresheet at timestamp 5, only the TallyScoresheet
- * will be left
- */
-// export function filterLatestScoresheets<T extends Pick<ScoresheetBaseFragment, 'createdAt' | 'excludedAt' | 'competitionEventId' | 'judgeType'> & { judge: Pick<Judge, 'id'> }> (scoresheets: T[], cEvtDef: CompetitionEvent): T[] {
-//   return [...scoresheets]
-//     .sort((a, b) => b.createdAt - a.createdAt)
-//     .filter(scsh => scsh.excludedAt == null)
-//     .filter((scsh, idx, arr) =>
-//       scsh.competitionEventId === cEvtDef &&
-//       idx === arr.findIndex(s => s.judge.id === scsh.judge.id && s.judgeType === scsh.judgeType)
-//     )
-// }
-
-/**
  * Filters an array of all results into only results of component entries where
  * that participant has results for every competition event of competitionEvents
  */

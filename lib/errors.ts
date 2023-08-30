@@ -5,3 +5,9 @@ export class RSRWrongJudgeTypeError extends RSRError {
     super(`Scoresheet for JudgeType ${actual} provided to calculation function for JudgeType ${expected}`)
   }
 }
+
+export class RSUnsupported extends RSRError {
+  constructor (type: 'model' | 'preconfigured' | 'ruleset', id: string) {
+    super(`Unsupported ${type}: ${id}`)
+  }
+}
