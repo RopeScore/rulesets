@@ -100,8 +100,13 @@ export default {
   ],
   resultTable: overallTableFactory,
   rankOverall (results, options, competitionEventOptions) {
-    const components: Partial<Record<CompetitionEventDefinition, EntryResult[]>> = {}
-    const competitionEventIds = Object.keys(competitionEventOptions) as CompetitionEventDefinition[]
+    const components: Partial<Record<CompetitionEventDefinition, Readonly<EntryResult[]>>> = {}
+    const competitionEventIds: CompetitionEventDefinition[] = Object.keys(competitionEventOptions) as CompetitionEventDefinition[]
+
+    for (const cEvtDef of competitionEventIds) {
+      const ranked = results.filter(result => result.meta.competitionEvent === cEvtDef)
+      components[cEvtDef] = ranked
+    }
 
     const participantIds = [...new Set(results.map(r => r.meta.participantId))]
 

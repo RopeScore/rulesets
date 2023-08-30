@@ -7,7 +7,7 @@ export class RSRWrongJudgeTypeError extends RSRError {
 }
 
 export class RSUnsupported extends RSRError {
-  constructor (type: 'model' | 'preconfigured' | 'ruleset', id: string) {
+  constructor (type: `${'competition-event' | 'overall'}-${'model' | 'preconfigured'}` | 'ruleset', id: string) {
     super(`Unsupported ${type}: ${id}`)
   }
 }

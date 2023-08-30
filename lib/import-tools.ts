@@ -12,7 +12,7 @@ export async function importCompetitionEventModel (modelId: string): Promise<Com
   try {
     return (await import(`./models/competition-events/${modelId}.js`)).default.default
   } catch {
-    throw new RSUnsupported('preconfigured', modelId)
+    throw new RSUnsupported('competition-event-model', modelId)
   }
 }
 export async function importOverallModel (modelId: string): Promise<OverallModel> {
@@ -20,7 +20,7 @@ export async function importOverallModel (modelId: string): Promise<OverallModel
   try {
     return (await import(`./models/overalls/${modelId}.js`)).default.default
   } catch {
-    throw new RSUnsupported('preconfigured', modelId)
+    throw new RSUnsupported('overall-model', modelId)
   }
 }
 
@@ -30,7 +30,7 @@ export async function importPreconfiguredCompetitionEvent (competitionEvent: str
   try {
     return (await import(`./preconfigured/competition-events/${match.groups.org}/${match.groups.version}/${competitionEvent}.js`)).default.default
   } catch {
-    throw new RSUnsupported('preconfigured', competitionEvent)
+    throw new RSUnsupported('competition-event-preconfigured', competitionEvent)
   }
 }
 export async function importPreconfiguredOverall (competitionEvent: string): Promise<Overall> {
@@ -39,16 +39,16 @@ export async function importPreconfiguredOverall (competitionEvent: string): Pro
   try {
     return (await import(`./preconfigured/overalls/${match.groups.org}/${match.groups.version}/${competitionEvent}.js`)).default.default
   } catch {
-    throw new RSUnsupported('preconfigured', competitionEvent)
+    throw new RSUnsupported('overall-preconfigured', competitionEvent)
   }
 }
 
 export async function importRuleset (rulesetId: string): Promise<Ruleset> {
   if (!rulesetRegex.test(rulesetId)) throw new TypeError('Invalid competitionEvent provided must be in the form of <ruleset id>@<version>')
-  if (rulesetId === 'types') throw new RSUnsupported('preconfigured', rulesetId)
+  if (rulesetId === 'types') throw new RSUnsupported('ruleset', rulesetId)
   try {
     return (await import(`./rulesets/${rulesetId}.js`)).default.default
   } catch {
-    throw new RSUnsupported('preconfigured', rulesetId)
+    throw new RSUnsupported('ruleset', rulesetId)
   }
 }
