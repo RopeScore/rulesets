@@ -3,9 +3,9 @@ import type { CompetitionEventModel, OverallModel } from './models/types.js'
 import type { CompetitionEvent, Overall } from './preconfigured/types.js'
 import type { Ruleset } from './rulesets/types.js'
 
-const modelRegex = /^[a-z0-9-.]+@(?<version>[a-z0-9-]+)$/
-const evtDefRegex = /^e\.(?<org>[a-z]+)(?:\.(?:[a-z0-9-]+)){5}@(?<version>[a-z0-9-]+)$/
-const rulesetRegex = /^[a-z0-9-]+@(?<version>[a-z0-9-]+)$/
+const modelRegex = /^[a-z0-9-.]+@(?<version>[a-z0-9-.]+)$/
+const evtDefRegex = /^e\.(?<org>[a-z]+)(?:\.(?:[a-z0-9-]+)){5}@(?<version>[a-z0-9-.]+)$/
+const rulesetRegex = /^[a-z0-9-]+@(?<version>[a-z0-9-.]+)$/
 
 export async function importCompetitionEventModel (modelId: string): Promise<CompetitionEventModel> {
   if (!modelRegex.test(modelId)) throw new TypeError('Invalid competitionEvent provided must be in the form of <model id>@<version>')
