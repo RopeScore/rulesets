@@ -76,7 +76,7 @@ void test('helpers', async t => {
       judgeTypeId: 'S',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
     }
     await t.test('Should return tally for a TallyScoresheet', () => {
       const tally = { entPlus: 2, entMinus: 1 }
