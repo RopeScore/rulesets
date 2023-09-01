@@ -104,8 +104,8 @@ export const speedResultTableHeaders: TableDefinition = {
 }
 
 export default {
-  id: 'ijru.speed@3.0.0',
-  name: 'IJRU Speed v3.0.0',
+  id: 'ijru.speed@1.0.0',
+  name: 'IJRU Speed v1.0.0',
   options: [
     { id: 'falseSwitches', name: 'False Switches', type: 'number' }
   ],

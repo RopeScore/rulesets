@@ -11,7 +11,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
   const cEvtDefs = Object.keys(cEvtOptions) as CompetitionEventDefinition[]
 
   const srEvts = cEvtDefs.filter(cEvt => cEvt.split('.')[3] === 'sr')
-  const ddEvts = cEvtDefs.filter(cEvt => cEvt.split('.')[3] === 'dd')
+  const whEvts = cEvtDefs.filter(cEvt => cEvt.split('.')[3] === 'wh')
 
   const disciplineGroup: TableHeaderGroup[] = []
 
@@ -23,11 +23,11 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     })
   }
 
-  if (ddEvts.length) {
+  if (whEvts.length) {
     disciplineGroup.push({
-      text: 'Double Dutch',
-      key: 'dd',
-      colspan: ddEvts.length * 2
+      text: 'Wheel',
+      key: 'wh',
+      colspan: whEvts.length * 2
     })
   }
 
@@ -42,9 +42,9 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
 
   const evtGroup: TableHeaderGroup[] = []
 
-  for (const cEvt of [...srEvts, ...ddEvts]) {
+  for (const cEvt of [...srEvts, ...whEvts]) {
     evtGroup.push({
-      text: typeof cEvtOptions[cEvt].name === 'string' ? (cEvtOptions[cEvt].name as string).replace(/^(Double Dutch|Single Rope) /, '') : '',
+      text: typeof cEvtOptions[cEvt].name === 'string' ? (cEvtOptions[cEvt].name as string).replace(/^(Wheel|Single Rope) /, '') : cEvt.split('.')[4] ?? '',
       key: cEvt,
       colspan: 2
     })
@@ -54,7 +54,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
 
   const headers: TableHeader[] = []
 
-  for (const cEvt of [...srEvts, ...ddEvts]) {
+  for (const cEvt of [...srEvts, ...whEvts]) {
     headers.push({
       text: 'Score',
       key: 'R',
@@ -89,8 +89,8 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
 }
 
 export default {
-  id: 'ijru.overall@3.0.0',
-  name: 'IJRU Overall v3.0.0',
+  id: 'svgf-par.overall@2.0.0',
+  name: 'SvGF Pair Overall (IJRU-based) v2.0.0',
   options: [],
   competitionEventOptions: [
     { id: 'name', name: 'Name', type: 'string' },

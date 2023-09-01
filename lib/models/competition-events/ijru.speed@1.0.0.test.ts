@@ -1,6 +1,6 @@
 import assert from 'node:assert'
 import test from 'node:test'
-import * as mod from './ijru.speed@3.0.0.js'
+import * as mod from './ijru.speed@1.0.0.js'
 import type { EntryMeta, EntryResult, JudgeMeta } from '../types.js'
 import { RSRWrongJudgeTypeError } from '../../errors.js'
 

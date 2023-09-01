@@ -1,7 +1,7 @@
-import ijruOverall200 from '../../../../models/overalls/ijru.overall@2.0.0.js'
+import ijruOverall100 from '../../../../models/overalls/ijru.overall@1.0.0.js'
 import { partiallyConfigureOverallModel } from '../../../types.js'
 
-export default partiallyConfigureOverallModel(ijruOverall200, {
+export default partiallyConfigureOverallModel(ijruOverall100, {
   options: {},
   competitionEventOptions: {
     'e.ijru.sp.sr.srss.1.30': { name: 'Single Rope Speed Sprint' },
