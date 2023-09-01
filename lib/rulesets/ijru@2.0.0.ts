@@ -5,13 +5,13 @@ import eIjruFsSrSrif175200 from '../preconfigured/competition-events/ijru/2.0.0/
 import eIjruFsSrSrpf275200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.fs.sr.srpf.2.75@2.0.0.js'
 import eIjruFsSrSrtf475200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.fs.sr.srtf.4.75@2.0.0.js'
 import eIjruFsWhWhpf275200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.fs.wh.whpf.2.75@2.0.0.js'
-import eIjruSpDdDdsr44x30200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.sp.dd.ddsr.4.4x30@2.0.0.js'
-import eIjruSpDdDdss360200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.sp.dd.ddss.3.60@2.0.0.js'
-import eIjruSpSrSrdr22x30200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.sp.sr.srdr.2.2x30@2.0.0.js'
-import eIjruSpSrSrse1180200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.sp.sr.srse.1.180@2.0.0.js'
-import eIjruSpSrSrsr44x30200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.sp.sr.srsr.4.4x30@2.0.0.js'
-import eIjruSpSrSrss130200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.sp.sr.srss.1.30@2.0.0.js'
-import eIjruSpSrSrtu10200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.sp.sr.srtu.1.0@2.0.0.js'
+import eIjruSpDdDdsr44x30200 from '../preconfigured/competition-events/ijru/1.0.0/e.ijru.sp.dd.ddsr.4.4x30@1.0.0.js'
+import eIjruSpDdDdss360100 from '../preconfigured/competition-events/ijru/1.0.0/e.ijru.sp.dd.ddss.3.60@1.0.0.js'
+import eIjruSpSrSrdr22x30100 from '../preconfigured/competition-events/ijru/1.0.0/e.ijru.sp.sr.srdr.2.2x30@1.0.0.js'
+import eIjruSpSrSrse1180100 from '../preconfigured/competition-events/ijru/1.0.0/e.ijru.sp.sr.srse.1.180@1.0.0.js'
+import eIjruSpSrSrsr44x30100 from '../preconfigured/competition-events/ijru/1.0.0/e.ijru.sp.sr.srsr.4.4x30@1.0.0.js'
+import eIjruSpSrSrss130100 from '../preconfigured/competition-events/ijru/1.0.0/e.ijru.sp.sr.srss.1.30@1.0.0.js'
+import eIjruSpSrSrtu10100 from '../preconfigured/competition-events/ijru/1.0.0/e.ijru.sp.sr.srtu.1.0@1.0.0.js'
 import eIjruOaDdTddo40200 from '../preconfigured/overalls/ijru/2.0.0/e.ijru.oa.dd.tddo.4.0@2.0.0.js'
 import eIjruOaSrIsro10200 from '../preconfigured/overalls/ijru/2.0.0/e.ijru.oa.sr.isro.1.0@2.0.0.js'
 import eIjruOaSrTsro40200 from '../preconfigured/overalls/ijru/2.0.0/e.ijru.oa.sr.tsro.4.0@2.0.0.js'
@@ -22,15 +22,15 @@ export default {
   id: 'ijru@2.0.0',
   name: 'IJRU v2.0.0',
   competitionEvents: [
-    eIjruSpSrSrss130200,
-    eIjruSpSrSrse1180200,
-    eIjruSpSrSrtu10200,
+    eIjruSpSrSrss130100,
+    eIjruSpSrSrse1180100,
+    eIjruSpSrSrtu10100,
     eIjruFsSrSrif175200,
 
-    eIjruSpSrSrsr44x30200,
-    eIjruSpSrSrdr22x30200,
+    eIjruSpSrSrsr44x30100,
+    eIjruSpSrSrdr22x30100,
     eIjruSpDdDdsr44x30200,
-    eIjruSpDdDdss360200,
+    eIjruSpDdDdss360100,
 
     eIjruFsSrSrpf275200,
     eIjruFsSrSrtf475200,

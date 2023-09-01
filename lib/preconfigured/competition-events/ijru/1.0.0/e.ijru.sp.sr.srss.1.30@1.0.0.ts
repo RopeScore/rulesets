@@ -5,6 +5,6 @@ export default partiallyConfigureCompetitionEventModel(ijruSpeed100, {
   options: {
     falseSwitches: 0
   },
-  id: 'e.ijru.sp.dd.ddss.3.60@2.0.0',
-  name: 'Double Dutch Speed Sprint'
+  id: 'e.ijru.sp.sr.srss.1.30@1.0.0',
+  name: 'Single Rope Speed Sprint'
 })

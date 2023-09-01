@@ -60,7 +60,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: 'Pr',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
     }
     const judge = mod.routinePresentationJudge
 
@@ -123,7 +123,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: 'Pa',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
     }
     const judge = mod.athletePresentationJudge
 
@@ -166,7 +166,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: 'R',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
     }
     const judge = mod.requiredElementsJudge
 
@@ -291,7 +291,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: 'D',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
     }
     const judge = mod.difficultyJudge
 
@@ -338,12 +338,12 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: jTId,
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
     })
     const eMeta: EntryMeta = {
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
     }
     {
       const options = {}

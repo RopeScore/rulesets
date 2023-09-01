@@ -11,7 +11,7 @@ void test('ijru.speed@3.0.0', async t => {
       judgeTypeId: 'S',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
     }
     assert.strictEqual(mod.speedJudge({}).id, 'S')
 
@@ -58,7 +58,7 @@ void test('ijru.speed@3.0.0', async t => {
       judgeTypeId: 'Shj',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
     }
     assert.strictEqual(mod.speedHeadJudge({}).id, 'Shj')
 
@@ -169,12 +169,12 @@ void test('ijru.speed@3.0.0', async t => {
         judgeTypeId: jTId,
         entryId: '1',
         participantId: '1',
-        competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+        competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
       })
       const eMeta: EntryMeta = {
         entryId: '1',
         participantId: '1',
-        competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+        competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
       }
       const options = { falseSwitches: 3 }
       const scores = [
@@ -195,12 +195,12 @@ void test('ijru.speed@3.0.0', async t => {
       judgeTypeId: jTId,
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
     })
     const eMeta: EntryMeta = {
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
     }
     await t.test('With false starts and switches', () => {
       const options = { falseSwitches: 3 }
@@ -237,7 +237,7 @@ void test('ijru.speed@3.0.0', async t => {
     const meta = (id: string): EntryMeta => ({
       entryId: id,
       participantId: id,
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
     })
 
     // eslint-disable-next-line @typescript-eslint/semi

@@ -3,8 +3,8 @@ import { partiallyConfigureCompetitionEventModel } from '../../../types.js'
 
 export default partiallyConfigureCompetitionEventModel(ijruSpeed100, {
   options: {
-    falseSwitches: 0
+    falseSwitches: 1
   },
-  id: 'e.ijru.sp.sr.srss.1.30@2.0.0',
-  name: 'Single Rope Speed Sprint'
+  id: 'e.ijru.sp.sr.srdr.2.2x30@1.0.0',
+  name: 'Single Rope Double Unders Relay'
 })

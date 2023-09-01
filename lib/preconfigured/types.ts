@@ -1,9 +1,9 @@
 import { type JudgeTypeGetter, type CompetitionEventModel, type OverallModel, type CompetitionEventsOptions, type Options } from '../models/types.js'
 
-export type CompetitionEventDefinition = `e.${string}.${'fs' | 'sp' | 'oa'}.${'sr' | 'dd' | 'wh' | 'ts' | 'xd'}.${string}.${number}.${`${number}x${number}` | number}`
+export type CompetitionEventDefinition = `e.${string}.${'fs' | 'sp' | 'oa'}.${'sr' | 'dd' | 'wh' | 'ts' | 'xd'}.${string}.${number}.${`${number}x${number}` | number}@${string}`
 
 export interface CompetitionEvent extends Omit<CompetitionEventModel, 'id'> {
-  id: `${CompetitionEventDefinition}@${string}`
+  id: CompetitionEventDefinition
   modelId: CompetitionEventModel['id']
 }
 
@@ -35,7 +35,7 @@ export function partiallyConfigureCompetitionEventModel <Schema extends string, 
 }
 
 export interface Overall extends Omit<OverallModel, 'id' | 'competitionEventOptions'> {
-  id: `${CompetitionEventDefinition}@${string}`
+  id: CompetitionEventDefinition
   modelId: OverallModel['id']
   competitionEvents: CompetitionEventDefinition[]
   rankOverall: (results: Parameters<OverallModel['rankOverall']>[0], options: Parameters<OverallModel['rankOverall']>[1]) => ReturnType<OverallModel['rankOverall']>

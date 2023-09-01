@@ -4,7 +4,7 @@ import { type CompetitionEventDefinition } from '../preconfigured/types.js'
 export interface JudgeType<Schema extends string> {
   /**
    * This should be unique for the model, but may be the same as a judge used
-   * in another model. FOr example it could be D for a Difficulty judge.
+   * in another model. For example it could be D for a Difficulty judge.
    */
   id: string
   /**
