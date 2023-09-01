@@ -18,7 +18,7 @@
     "dist/"
   ],
   "scripts": {
-    "test": "c8 -r lcov -r text node --loader=tsx -r @esbuild-kit/cjs-loader --test $(find lib -name '*.test.ts' -type f -printf '%p ')",
+    "test": "c8 -r lcov -r text --src=lib --all -x lib/preconfigured -x lib/rulesets -x '**/*.test.ts' node --loader=tsx -r @esbuild-kit/cjs-loader --test $(find lib -name '*.test.ts' -type f -printf '%p ')",
     "postversion": "git push && git push --tags",
     "lint": "eslint . --ignore-path .gitignore --ext .ts,.js",
     "lint:fix": "npm run lint -- --fix",

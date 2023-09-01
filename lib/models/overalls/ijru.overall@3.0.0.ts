@@ -90,7 +90,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
 
 export default {
   id: 'ijru.overall@3.0.0',
-  name: 'IJRU Overall',
+  name: 'IJRU Overall v3.0.0',
   options: [],
   competitionEventOptions: [
     { id: 'name', name: 'Name', type: 'string' },

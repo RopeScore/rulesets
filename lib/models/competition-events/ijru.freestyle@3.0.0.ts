@@ -348,6 +348,7 @@ export default {
   judges: [routinePresentationJudge, athletePresentationJudge, requiredElementsJudge, difficultyJudge],
 
   calculateEntry (meta, res, options) {
+    const noMusic = options.noMusicality === true
     const results = res.filter(r => matchMeta(r.meta, meta))
     if (!results.length) return
 
@@ -360,6 +361,7 @@ export default {
       else raw[scoreType] = roundTo(ijruAverage(scores), 2) // D, Q
 
       if (typeof raw[scoreType] !== 'number' || isNaN(Number(raw[scoreType]))) raw[scoreType] = (['D', 'aF', 'aE', 'aM'].includes(scoreType) ? 0 : 1)
+      if (scoreType === 'aM' && noMusic) raw[scoreType] = 0
     }
 
     raw.M = roundTo(-(1 - raw.m - raw.v), 2) // the minus is because they're already prepped to 1- and that needs to be reversed
