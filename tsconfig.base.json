@@ -1,0 +1,20 @@
+{
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "compilerOptions": {
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "sourceMap": true,
+    "declaration": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": false
+  },
+  "include": [
+    "lib/**/*.ts",
+    "lib/*.ts",
+    "**/.*.js",
+    "bin/*.ts",
+    "data/*.json"
+  ]
+}

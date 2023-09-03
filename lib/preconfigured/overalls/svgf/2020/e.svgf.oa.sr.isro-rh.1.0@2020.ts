@@ -8,6 +8,6 @@ export default partiallyConfigureOverallModel(svgfParOverall200, {
     'e.ijru.sp.sr.srse.1.180@1.0.0': { name: 'Single Rope Speed Endurance' },
     'e.svgf.fs.sr.srif-rh.1.75@2020': { name: 'Single Rope Individual Freestyle' }
   },
-  id: 'e.ijru.oa.sr.isro-rh.1.0@2020',
+  id: 'e.svgf.oa.sr.isro-rh.1.0@2020',
   name: 'Individuell Overall'
 })

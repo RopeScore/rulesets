@@ -1,7 +1,9 @@
-export { filterParticipatingInAll, parseCompetitionEventDefinition } from './helpers.js'
+export { filterParticipatingInAll, parseCompetitionEventDefinition, calculateTally } from './helpers.js'
 export * as errors from './errors.js'
 export * from './import-tools.js'
+export * from './listing-tools.js'
 
+export type * from './listing-tools.js'
 export type * from './models/types.js'
 export type * from './preconfigured/types.js'
 export type * from './rulesets/types.js'

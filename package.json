@@ -6,12 +6,19 @@
   "license": "MIT",
   "homepage": "https://ropescore.com",
   "repository": "https://github.com/RopeScore/rulesets",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/cjs/lib/index.js",
+  "module": "dist/esm/lib/index.js",
+  "types": "dist/cjs/lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "require": {
+        "types": "./dist/cjs/lib/index.d.ts",
+        "default": "./dist/cjs/lib/index.js"
+      },
+      "import": {
+        "types": "./dist/esm/lib/index.d.ts",
+        "default": "./dist/esm/lib/index.js"
+      }
     }
   },
   "files": [
@@ -19,12 +26,16 @@
   ],
   "scripts": {
     "test": "c8 -r lcov -r text --src=lib --all -x lib/preconfigured -x lib/rulesets -x '**/*.test.ts' node --loader=tsx -r @esbuild-kit/cjs-loader --test $(find lib -name '*.test.ts' -type f -printf '%p ')",
+    "pretest": "npm run build:data",
     "postversion": "git push && git push --tags",
-    "lint": "eslint . --ignore-path .gitignore --ext .ts,.js",
-    "lint:fix": "npm run lint -- --fix",
+    "lint": "npm run lint:code && npm run validate",
+    "validate": "tsx bin/validate.ts",
+    "lint:code": "eslint . --ignore-path .gitignore --ext .ts,.js",
+    "lint:fix": "npm run lint:code -- --fix",
     "typecheck": "tsc --noEmit",
-    "build": "tsc -p tsconfig.production.json",
-    "watch": "tsc --watch -p tsconfig.production.json",
+    "build": "npm run build:data && npm run build:code",
+    "build:code": "tsc -b",
+    "build:data": "tsx bin/generate-lists.ts",
     "prepack": "npm run build"
   },
   "devDependencies": {
@@ -33,6 +44,7 @@
     "c8": "^8.0.1",
     "eslint": "^8.48.0",
     "eslint-config-standard-with-typescript": "^39.0.0",
+    "glob": "^10.3.4",
     "tsx": "^3.12.7",
     "typescript": "5.1"
   }

@@ -1,17 +1,7 @@
 {
-  "extends": "@tsconfig/node20/tsconfig.json",
-  "compilerOptions": {
-    "sourceMap": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "outDir": "dist",
-    "declaration": true
-  },
-  "include": [
-    "lib/**/*.ts",
-    "lib/*.ts",
-    "**/.*.js"
-  ]
+  "references": [
+    { "path": "./tsconfig.cjs.json" },
+    { "path": "./tsconfig.esm.json" }
+  ],
+  "include": []
 }

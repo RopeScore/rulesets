@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "@tsconfig/node20/tsconfig.json",
+    "./tsconfig.base.json"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist/cjs",
+  },
+  "exclude": [
+    "**/*.test.ts",
+    "**/.*.js",
+    "bin/*.ts",
+    "bin/**/*.ts",
+  ]
+}

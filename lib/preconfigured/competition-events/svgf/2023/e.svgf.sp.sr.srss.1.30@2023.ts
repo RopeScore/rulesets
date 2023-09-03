@@ -3,6 +3,6 @@ import { partiallyConfigureCompetitionEventModel } from '../../../types.js'
 
 export default partiallyConfigureCompetitionEventModel(svgfVhSpeed2023, {
   options: {},
-  id: 'e.svgf.sp.sr.srss-vh.1.30@2023',
+  id: 'e.svgf.sp.sr.srss.1.30@2023',
   name: 'Single Rope Speed Sprint'
 })

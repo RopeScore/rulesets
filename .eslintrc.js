@@ -1,7 +1,7 @@
 module.exports = {
   extends: 'standard-with-typescript',
   parserOptions: {
-    project: 'tsconfig.json'
+    project: 'tsconfig.base.json'
   },
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',

@@ -1,4 +1,4 @@
-import { type JudgeFieldDefinition, type ScoreTally, type Scoresheet, isClearMark, isMarkScoresheet, isTallyScoresheet, isUndoMark, type Meta, type EntryResult } from './models/types.js'
+import { type JudgeFieldDefinition, type ScoreTally, isClearMark, isMarkScoresheet, isTallyScoresheet, isUndoMark, type Meta, type EntryResult, type TallyScoresheet, type MarkScoresheet } from './models/types.js'
 import { type CompetitionEventDefinition } from './preconfigured/types.js'
 
 export function isObject (x: unknown): x is Record<string, unknown> {
@@ -77,8 +77,8 @@ export function formatFactor (value: number): string {
  * Each value of the tally will also be clamped to the specified max, min and
  * step size for that field schema.
  */
-export function calculateTally <Schema extends string> (scoresheet: Scoresheet<Schema>, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>): ScoreTally<Schema> {
-  let tally: ScoreTally<Schema> = isTallyScoresheet(scoresheet) ? { ...(scoresheet.tally ?? {}) } : {}
+export function calculateTally <Schema extends string> (scoresheet: Pick<TallyScoresheet<Schema>, 'tally'> | Pick<MarkScoresheet<Schema>, 'marks'>, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>): ScoreTally<Schema> {
+  let tally: ScoreTally<Schema> = isTallyScoresheet<Schema>(scoresheet) ? { ...(scoresheet.tally ?? {}) } : {}
   const allowedSchemas = fieldDefinitions?.map(f => f.schema)
 
   if (isMarkScoresheet(scoresheet)) {
