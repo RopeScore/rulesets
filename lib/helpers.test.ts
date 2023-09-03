@@ -1,4 +1,4 @@
-import { calculateTally, clampNumber, formatFactor, isObject, roundTo, roundToCurry, roundToMultiple } from './helpers.js'
+import { calculateTally, clampNumber, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple } from './helpers.js'
 import assert from 'node:assert'
 import test from 'node:test'
 import type { JudgeMeta, Mark } from './models/types.js'
@@ -108,6 +108,63 @@ void test('helpers', async t => {
         formCheck: 1
       }
       assert.deepStrictEqual(calculateTally({ meta, marks }), tally)
+    })
+  })
+
+  await t.test('parseCompetitionEventDefinition', async t => {
+    await t.test('Should throw on invalid input', () => {
+      const invalid = [
+        1,
+        null,
+        false,
+        undefined,
+        '',
+        'e',
+        'e.ijru',
+        'e.ijru.sp',
+        'e.ijru.sp.sr',
+        'e.ijru.sp.sr.srss',
+        'e.ijru.sp.sr.srss.4',
+        'e.ijru.sp.sr.srss.4.',
+        'e.ijru.sp.sr.srss.4.a',
+        'e.ijru.sp.sr.srss.a.3',
+        'e.ijru.sp.aa.srss.4.3',
+        'e.ijru.aa.sr.srss.4.3',
+        'o.ijru.sp.sr.srss.4.3',
+        'o.ijru.sp.sr.sr.ss.4.3',
+        'o.ijru.sp.sr.srss.4.3@@',
+        'o.ijru.sp.sr.srss.4.3@å'
+      ]
+      for (const cEvt of invalid) {
+        assert.throws(
+          () => parseCompetitionEventDefinition(cEvt as string),
+          new TypeError(`Not a valid competition event, got ${cEvt}`)
+        )
+      }
+    })
+
+    await t.test('Should parse without version', () => {
+      assert.deepStrictEqual(parseCompetitionEventDefinition('e.ijru.sp.sr.srss.1.30'), {
+        org: 'ijru',
+        type: 'sp',
+        discipline: 'sr',
+        eventAbbr: 'srss',
+        numParticipants: 1,
+        timing: '30',
+        version: null
+      })
+    })
+
+    await t.test('Should parse with version', () => {
+      assert.deepStrictEqual(parseCompetitionEventDefinition('e.svgf.oa.xd.tcaa.4.0@3.0.0'), {
+        org: 'svgf',
+        type: 'oa',
+        discipline: 'xd',
+        eventAbbr: 'tcaa',
+        numParticipants: 4,
+        timing: '0',
+        version: '3.0.0'
+      })
     })
   })
 })

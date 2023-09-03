@@ -1,4 +1,4 @@
-export { filterParticipatingInAll } from './helpers.js'
+export { filterParticipatingInAll, parseCompetitionEventDefinition } from './helpers.js'
 export * as errors from './errors.js'
 export * from './import-tools.js'
 

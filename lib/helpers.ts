@@ -145,3 +145,18 @@ export function validateOptions () {}
 
 // TODO
 export function validateCompetitionEventOptions () {}
+
+const cEvtRegex = /^e\.(?<org>[a-z0-9-]+)\.(?<type>fs|sp|oa)\.(?<discipline>sr|dd|wh|ts|xd)\.(?<eventAbbr>[a-z0-9-]+)\.(?<numParticipants>\d+)\.(?<timing>(?:\d+(?:x\d+)?))(?:@(?<version>[a-z0-9-.]+))?$/
+export function parseCompetitionEventDefinition (competitionEvent: string) {
+  const match = cEvtRegex.exec(competitionEvent)
+  if (match?.groups == null) throw new TypeError(`Not a valid competition event, got ${competitionEvent}`)
+  return {
+    org: match.groups.org,
+    type: match.groups.type as 'fs' | 'sp' | 'oa',
+    discipline: match.groups.discipline as 'sr' | 'dd' | 'wh' | 'ts' | 'xd',
+    eventAbbr: match.groups.eventAbbr,
+    numParticipants: parseInt(match.groups.numParticipants, 10),
+    timing: match.groups.timing,
+    version: match.groups.version ?? null as string | null
+  }
+}
