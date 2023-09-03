@@ -1,8 +1,16 @@
-import { type JudgeFieldDefinition, type ScoreTally, isClearMark, isMarkScoresheet, isTallyScoresheet, isUndoMark, type Meta, type EntryResult, type TallyScoresheet, type MarkScoresheet } from './models/types.js'
+import { type JudgeFieldDefinition, type ScoreTally, isClearMark, isUndoMark, type Meta, type EntryResult, type TallyScoresheet, type MarkScoresheet } from './models/types.js'
 import { type CompetitionEventDefinition } from './preconfigured/types.js'
 
 export function isObject (x: unknown): x is Record<string, unknown> {
   return typeof x === 'object' && x != null && !Array.isArray(x)
+}
+
+export function isMarkScoresheet <Schema extends string = string> (scoresheet: unknown): scoresheet is MarkScoresheet<Schema> {
+  return isObject(scoresheet) && 'marks' in scoresheet
+}
+
+export function isTallyScoresheet <Schema extends string = string> (scoresheet: unknown): scoresheet is TallyScoresheet<Schema> {
+  return isObject(scoresheet) && 'tally' in scoresheet
 }
 
 /**

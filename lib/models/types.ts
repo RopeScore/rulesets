@@ -103,16 +103,10 @@ export interface MarkScoresheet<Schema extends string> {
   meta: JudgeMeta
   marks: Readonly<Array<Mark<Schema>>>
 }
-export function isMarkScoresheet <Schema extends string = string> (scoresheet: unknown): scoresheet is MarkScoresheet<Schema> {
-  return isObject(scoresheet) && 'marks' in scoresheet
-}
 
 export interface TallyScoresheet<Schema extends string> {
   meta: JudgeMeta
   tally: Readonly<ScoreTally<Schema>>
-}
-export function isTallyScoresheet <Schema extends string = string> (scoresheet: unknown): scoresheet is TallyScoresheet<Schema> {
-  return isObject(scoresheet) && 'tally' in scoresheet
 }
 
 export type Scoresheet<Schema extends string> = MarkScoresheet<Schema> | TallyScoresheet<Schema>
