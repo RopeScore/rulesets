@@ -139,10 +139,10 @@ export const freestylePreviewTableHeaders: TableDefinition = {
 export const freestyleResultTableHeaders: TableDefinition = {
   headers: [
     { text: 'Pres', key: 'P', formatter: roundToCurry(2) },
-    { text: 'Crea Rank', key: 'CRank', color: 'red' },
+    { text: 'Crea Rank', key: 'CRank', color: 'red', primary: 'rank' },
 
     { text: 'Diff', key: 'D', formatter: roundToCurry(2) },
-    { text: 'Diff Rank', key: 'DRank', color: 'red' },
+    { text: 'Diff Rank', key: 'DRank', color: 'red', primary: 'rank' },
 
     { text: 'Rank Sum', key: 'T', color: 'green' }
   ]

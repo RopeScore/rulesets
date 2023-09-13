@@ -218,6 +218,14 @@ export interface TableDefinition {
 export interface TableHeader {
   text: string
   key: string
+  /**
+   * Columns marked as primary may be displayed with extra prominence in
+   * renders. A column can be further categories as primary score or primary
+   * rank by providing a string rather than a boolean, to provide extra hints
+   * to the renderer. It's allowed to have multiple primary scores or multiple
+   * primary ranks, or multiple primary columns in general.
+   */
+  primary?: 'score' | 'rank' | boolean
   formatter?: (n: number) => string
   color?: 'red' | 'green' | 'gray'
   component?: CompetitionEventDefinition

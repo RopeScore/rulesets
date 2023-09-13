@@ -46,8 +46,8 @@ export const timingPreviewTableHeaders: TableDefinition = {
 
 export const timingResultTableHeaders: TableDefinition = {
   headers: [
-    { text: 'Seconds', key: 'R' },
-    { text: 'Rank', key: 'S', color: 'red' }
+    { text: 'Seconds', key: 'R', primary: 'score' },
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
   ]
 }
 

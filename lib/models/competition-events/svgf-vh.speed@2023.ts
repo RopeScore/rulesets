@@ -50,8 +50,8 @@ export const speedPreviewTableHeaders: TableDefinition = {
 
 export const speedResultTableHeaders: TableDefinition = {
   headers: [
-    { text: 'Steps', key: 'R' },
-    { text: 'Rank', key: 'S', color: 'red' }
+    { text: 'Steps', key: 'R', primary: 'score' },
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
   ]
 }
 

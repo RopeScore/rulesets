@@ -332,8 +332,8 @@ export const freestyleResultTableHeaders: TableDefinition = {
     { text: 'Req. El', key: 'Q', color: 'gray', formatter: formatFactor },
     { text: 'Deduc', key: 'M', color: 'gray', formatter: formatFactor },
 
-    { text: 'Score', key: 'R', formatter: roundToCurry(2) },
-    { text: 'Rank', key: 'S', color: 'red' }
+    { text: 'Score', key: 'R', formatter: roundToCurry(2), primary: 'score' },
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
   ]
 }
 

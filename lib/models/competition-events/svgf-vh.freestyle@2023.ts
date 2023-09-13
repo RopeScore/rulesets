@@ -233,7 +233,7 @@ export const freestyleResultTableHeaders: TableDefinition = {
     { text: 'Diff Rank', key: 'DRank', color: 'red' },
 
     { text: 'Rank Sum', key: 'T', color: 'green' },
-    { text: 'Rank', key: 'S', color: 'red' }
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
   ]
 }
 
