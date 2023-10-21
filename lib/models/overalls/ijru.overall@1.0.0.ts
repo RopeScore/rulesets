@@ -75,11 +75,13 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
   }, {
     text: 'Rank Sum',
     key: 'T',
-    color: 'green'
+    color: 'green',
+    primary: 'score'
   }, {
     text: 'Rank',
     key: 'S',
-    color: 'red'
+    color: 'red',
+    primary: 'rank'
   })
 
   return {
