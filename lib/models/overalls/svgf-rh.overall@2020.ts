@@ -1,4 +1,4 @@
-import { roundTo } from '../../helpers.js'
+import { parseCompetitionEventDefinition, roundTo } from '../../helpers.js'
 import { type CompetitionEventDefinition } from '../../preconfigured/types.js'
 import { type TableHeaderGroup, type OverallModel, type TableDefinitionGetter, type TableHeader, type EntryResult } from '../types.js'
 
@@ -11,14 +11,14 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
   const cEvtDefs = Object.keys(cEvtOptions) as CompetitionEventDefinition[]
 
   const srEvts = cEvtDefs
-    .filter(cEvt => cEvt.split('.')[3] === 'sr')
+    .filter(cEvt => parseCompetitionEventDefinition(cEvt).discipline === 'sr')
   const srEvtCols = srEvts
-    .map(cEvt => cEvt.split('.')[2] === 'sp' ? 2 : 4)
+    .map(cEvt => parseCompetitionEventDefinition(cEvt).type === 'sp' ? 2 : 4)
     .reduce((acc, curr) => acc + curr, 0)
   const ddEvts = cEvtDefs
-    .filter(cEvt => cEvt.split('.')[3] === 'dd')
+    .filter(cEvt => parseCompetitionEventDefinition(cEvt).discipline === 'dd')
   const ddEvtCols = ddEvts
-    .map(cEvt => cEvt.split('.')[2] === 'sp' ? 2 : 4)
+    .map(cEvt => parseCompetitionEventDefinition(cEvt).type === 'sp' ? 2 : 4)
     .reduce((acc, curr) => acc + curr, 0)
 
   const disciplineGroup: TableHeaderGroup[] = []
@@ -64,7 +64,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
   const headers: TableHeader[] = []
 
   for (const cEvt of [...srEvts, ...ddEvts]) {
-    const isSp = cEvt.split('.')[2] === 'sp'
+    const isSp = parseCompetitionEventDefinition(cEvt).type === 'sp'
     if (isSp) {
       headers.push({
         text: 'Score',

@@ -1,7 +1,7 @@
-import svgfParOverall200 from '../../../../models/overalls/svgf-par.overall@2.0.0.js'
+import svgfRhOverall2020 from '../../../../models/overalls/svgf-rh.overall@2020.js'
 import { partiallyConfigureOverallModel } from '../../../types.js'
 
-export default partiallyConfigureOverallModel(svgfParOverall200, {
+export default partiallyConfigureOverallModel(svgfRhOverall2020, {
   options: {},
   competitionEventOptions: {
     'e.ijru.sp.sr.srdr.2.2x30@1.0.0': { name: 'Single Rope Double Unders Relay' },
