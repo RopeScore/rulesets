@@ -15,5 +15,5 @@ export default partiallyConfigureOverallModel(svgfParOverall200, {
     'e.svgf.fs.dd.ddpf-rh.4.75@2020': { name: 'Double Dutch Pair Freestyle' }
   },
   id: 'e.svgf.oa.xd.reaa.4.0@2020',
-  name: 'Rikshoppet 6:an Overall'
+  name: 'Rikshoppet 8:an Overall'
 })
