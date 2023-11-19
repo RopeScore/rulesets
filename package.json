@@ -25,7 +25,7 @@
     "dist/"
   ],
   "scripts": {
-    "test": "c8 -r lcov -r text --src=lib --all -x lib/preconfigured -x lib/rulesets -x '**/*.test.ts' node --loader=tsx -r @esbuild-kit/cjs-loader --test $(find lib -name '*.test.ts' -type f -printf '%p ')",
+    "test": "c8 -r lcov -r text --src=lib --all -x lib/preconfigured -x lib/rulesets -x '**/*.test.ts' node --import tsx --test $(find lib -name '*.test.ts' -type f -printf '%p ')",
     "pretest": "npm run build:data",
     "postversion": "git push && git push --tags",
     "lint": "npm run lint:code && npm run validate",
@@ -40,12 +40,12 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
-    "@types/node": "^20.5.6",
+    "@types/node": "^20.9.2",
     "c8": "^8.0.1",
-    "eslint": "^8.48.0",
-    "eslint-config-standard-with-typescript": "^39.0.0",
-    "glob": "^10.3.4",
-    "tsx": "^3.12.7",
+    "eslint": "^8.54.0",
+    "eslint-config-standard-with-typescript": "^40.0.0",
+    "glob": "^10.3.10",
+    "tsx": "^4.1.4",
     "typescript": "5.1"
   }
 }
