@@ -26,7 +26,7 @@ export const timingJudge: JudgeTypeGetter<string, Option> = options => {
       return {
         meta: scsh.meta,
         result: {
-          a: tally.seconds ?? Infinity
+          t: tally.seconds ?? Infinity
         },
         statuses: {}
       }
