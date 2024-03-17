@@ -43,7 +43,7 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
 // ======
 export const speedPreviewTableHeaders: TableDefinition = {
   headers: [
-    { text: 'Steps (a)', key: 'a', formatter: roundToCurry(2) },
+    { text: 'Steps (a)', key: 'a', formatter: roundToCurry(0) },
     { text: 'Result (R)', key: 'R' }
   ]
 }
@@ -73,7 +73,7 @@ export default {
       meta,
       result: {
         a,
-        R: roundTo(a, 2)
+        R: roundTo(a, 0)
       },
       statuses: {}
     }
