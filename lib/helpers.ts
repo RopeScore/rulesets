@@ -106,6 +106,7 @@ export function calculateTally <Schema extends string> (scoresheet: Pick<TallySc
   if (fieldDefinitions != null) {
     for (const field of fieldDefinitions) {
       if (typeof tally[field.schema] !== 'number') continue
+      // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
       tally[field.schema] = clampNumber(tally[field.schema] as number, field)
     }
   }
