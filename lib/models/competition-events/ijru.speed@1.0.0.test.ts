@@ -164,7 +164,7 @@ void test('ijru.speed@3.0.0', async t => {
 
   await t.test('calculateEntry', async t => {
     {
-      const jMeta = (jId: string, jTId: string = 'S'): JudgeMeta => ({
+      const jMeta = (jId: string, jTId = 'S'): JudgeMeta => ({
         judgeId: jId,
         judgeTypeId: jTId,
         entryId: '1',
@@ -190,7 +190,7 @@ void test('ijru.speed@3.0.0', async t => {
       })
     }
 
-    const jMeta = (jId: string, jTId: string = 'S'): JudgeMeta => ({
+    const jMeta = (jId: string, jTId = 'S'): JudgeMeta => ({
       judgeId: jId,
       judgeTypeId: jTId,
       entryId: '1',
@@ -240,7 +240,7 @@ void test('ijru.speed@3.0.0', async t => {
       competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
     })
 
-    // eslint-disable-next-line @typescript-eslint/semi
+    // eslint-disable-next-line @stylistic/semi
     ; {
       const options = { falseSwitches: 3 }
       const scores: EntryResult[] = [

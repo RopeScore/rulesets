@@ -18,7 +18,7 @@ export function partiallyConfigureCompetitionEventModel <Schema extends string, 
     modelId: model.id,
     name: options.name,
     options: model.options.filter(o => !(o.id in options.options)),
-    judges: model.judges.map(j => ((o: Partial<Record<Option, unknown>>) => j({ ...o, ...options.options })) as JudgeTypeGetter<string>),
+    judges: model.judges.map(j => ((o: Partial<Record<Option, unknown>>) => j({ ...o, ...options.options })) as JudgeTypeGetter),
     calculateEntry (meta, results, o) {
       return model.calculateEntry(meta, results, { ...o, ...options.options })
     },
