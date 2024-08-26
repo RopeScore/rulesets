@@ -14,13 +14,13 @@ export async function globImport <T> (patterns: string | string[], fullPath = fa
   const files = await glob(patterns, {
     cwd: path.resolve(__dirname, '../lib'),
     ignore: {
-      ignored: p => p.name.includes('.test.') || p.name.startsWith('types.')
-    }
+      ignored: p => p.name.includes('.test.') || p.name.startsWith('types.'),
+    },
   })
 
   const imported: Array<[string, T]> = await Promise.all(files.map(async p => [
     fullPath ? p : cEvtFromPath(p),
-    (await import(path.resolve(__dirname, '../lib', p))).default
+    (await import(path.resolve(__dirname, '../lib', p))).default,
   ]))
 
   return Object.fromEntries<T>(imported)
@@ -46,7 +46,7 @@ async function run () {
       judges: model.judges.map(j => {
         const judge = j({})
         return { id: judge.id, name: judge.name }
-      })
+      }),
     }
   }
 
@@ -61,7 +61,7 @@ async function run () {
       id: model.id,
       name: model.name,
       options: model.options,
-      competitionEventOptions: model.competitionEventOptions
+      competitionEventOptions: model.competitionEventOptions,
     }
   }
 
@@ -80,7 +80,7 @@ async function run () {
       judges: model.judges.map(j => {
         const judge = j({})
         return { id: judge.id, name: judge.name }
-      })
+      }),
     }
   }
 
@@ -96,7 +96,7 @@ async function run () {
       modelId: model.modelId,
       name: model.name,
       options: model.options,
-      competitionEvents: model.competitionEvents
+      competitionEvents: model.competitionEvents,
     }
   }
 
@@ -111,7 +111,7 @@ async function run () {
       id: model.id,
       name: model.name,
       competitionEvents: model.competitionEvents.map(cEvt => competitionEventsInfo[cEvt.id]),
-      overalls: model.overalls.map(cEvt => overallsInfo[cEvt.id])
+      overalls: model.overalls.map(cEvt => overallsInfo[cEvt.id]),
     }
   }
 

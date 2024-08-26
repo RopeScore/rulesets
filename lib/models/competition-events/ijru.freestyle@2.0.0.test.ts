@@ -14,7 +14,7 @@ void test('ijru.freestyle@2.0.0', async t => {
       [5, 1.89],
       [6, 3.40],
       [7, 6.12],
-      [8, 11.02]
+      [8, 11.02],
     ]) {
       await t.test(`should calculate correct score for L(${level})`, () => {
         assert.strictEqual(mod.L(level), points)

@@ -27,7 +27,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     disciplineGroup.push({
       text: 'Single Rope',
       key: 'sr',
-      colspan: srEvtCols
+      colspan: srEvtCols,
     })
   }
 
@@ -35,7 +35,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     disciplineGroup.push({
       text: 'Double Dutch',
       key: 'dd',
-      colspan: ddEvtCols
+      colspan: ddEvtCols,
     })
   }
 
@@ -43,7 +43,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     text: 'Overall',
     key: 'oa',
     colspan: 2,
-    rowspan: 2
+    rowspan: 2,
   })
 
   groups.push(disciplineGroup)
@@ -55,7 +55,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     evtGroup.push({
       text: typeof cEvtOptions[cEvt].name === 'string' ? (cEvtOptions[cEvt].name).replace(/^(Wheel|Single Rope) /, '') : cEvt.split('.')[4] ?? '',
       key: cEvt,
-      colspan: isSp ? 2 : 4
+      colspan: isSp ? 2 : 4,
     })
   }
 
@@ -69,32 +69,32 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
       headers.push({
         text: 'Score',
         key: 'R',
-        component: cEvt
+        component: cEvt,
       }, {
         text: 'Rank',
         key: 'S',
         component: cEvt,
-        color: 'red'
+        color: 'red',
       })
     } else {
       headers.push({
         text: 'Pres',
         key: 'P',
-        component: cEvt
+        component: cEvt,
       }, {
         text: 'Rank',
         key: 'CRank',
         component: cEvt,
-        color: 'red'
+        color: 'red',
       }, {
         text: 'Diff',
         key: 'D',
-        component: cEvt
+        component: cEvt,
       }, {
         text: 'Rank',
         key: 'DRank',
         component: cEvt,
-        color: 'red'
+        color: 'red',
       })
     }
   }
@@ -103,17 +103,17 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     text: 'Rank Sum',
     key: 'T',
     color: 'green',
-    primary: 'score'
+    primary: 'score',
   }, {
     text: 'Rank',
     key: 'S',
     color: 'red',
-    primary: 'rank'
+    primary: 'rank',
   })
 
   return {
     groups,
-    headers
+    headers,
   }
 }
 
@@ -123,7 +123,7 @@ export default {
   options: [],
   competitionEventOptions: [
     { id: 'name', name: 'Name', type: 'string' },
-    { id: 'rankMultiplier', name: 'Rank Multiplier', type: 'number' }
+    { id: 'rankMultiplier', name: 'Rank Multiplier', type: 'number' },
   ],
   resultTable: overallTableFactory,
   rankOverall (results, options, competitionEventOptions) {
@@ -154,7 +154,7 @@ export default {
         meta: { participantId },
         result: { R, T, S: 0 },
         componentResults: Object.fromEntries(cRes.map(r => [r.meta.competitionEvent, r])),
-        statuses: {}
+        statuses: {},
       }
     })
 
@@ -167,5 +167,5 @@ export default {
     }
 
     return ranked
-  }
+  },
 } satisfies OverallModel<Option, CompetitionEventOptions>

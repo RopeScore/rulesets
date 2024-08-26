@@ -31,7 +31,7 @@ async function run () {
   for (const categoryModels of [
     [...Object.entries(cEvtModels), ...Object.entries(overallModels)],
     [...Object.entries(competitionEvents), ...Object.entries(overalls)],
-    Object.entries(rulesets)
+    Object.entries(rulesets),
   ]) {
     for (const [p, model] of categoryModels) {
       const dupes = categoryModels.filter(([_, m]) => m.id === model.id).map(([p]) => `lib/${p}`)

@@ -7,8 +7,8 @@ export default partiallyConfigureOverallModel(ijruOverall100, {
     'e.ijru.sp.dd.ddss.3.60@1.0.0': { name: 'Double Dutch Speed Sprint' },
     'e.ijru.sp.dd.ddsr.4.4x30@1.0.0': { name: 'Double Dutch Speed Relay' },
     'e.ijru.fs.dd.ddsf.3.75@3.0.0': { name: 'Double Dutch Single Freestyle' },
-    'e.ijru.fs.dd.ddpf.4.75@3.0.0': { name: 'Double Dutch Pair Freestyle' }
+    'e.ijru.fs.dd.ddpf.4.75@3.0.0': { name: 'Double Dutch Pair Freestyle' },
   },
   id: 'e.ijru.oa.dd.tddo.4.0@3.0.0',
-  name: 'Team Double Dutch Overall'
+  name: 'Team Double Dutch Overall',
 })

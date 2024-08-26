@@ -5,7 +5,7 @@ import tseslint from 'typescript-eslint'
 export default [
   ...neostandard({
     ignores: [
-      ...resolveIgnoresFromGitignore()
+      ...resolveIgnoresFromGitignore(),
     ],
     ts: true,
   }),
@@ -66,6 +66,13 @@ export default [
       '@typescript-eslint/no-this-alias': 'off',
       '@typescript-eslint/only-throw-error': ['error', {
         allowThrowingUnknown: true,
+      }],
+      '@stylistic/comma-dangle': ['warn', {
+        arrays: 'always-multiline',
+        objects: 'always-multiline',
+        imports: 'always-multiline',
+        exports: 'always-multiline',
+        functions: 'never',
       }],
       'no-void': 'off',
     },

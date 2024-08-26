@@ -4,5 +4,5 @@ import { partiallyConfigureCompetitionEventModel } from '../../../types.js'
 export default partiallyConfigureCompetitionEventModel(svgfVhTiming2023, {
   options: {},
   id: 'e.svgf.sp.dd.ddut.4.0@2023',
-  name: 'Double Dutch Utmaningen'
+  name: 'Double Dutch Utmaningen',
 })

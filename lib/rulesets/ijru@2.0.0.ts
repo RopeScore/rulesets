@@ -37,12 +37,12 @@ export default {
     eIjruFsDdDdsf375200,
     eIjruFsDdDdpf475200,
     eIjruFsDdDdtf590200,
-    eIjruFsWhWhpf275200
+    eIjruFsWhWhpf275200,
   ],
   overalls: [
     eIjruOaSrIsro10200,
     eIjruOaSrTsro40200,
     eIjruOaDdTddo40200,
-    eIjruOaXdTcaa40200
-  ]
+    eIjruOaXdTcaa40200,
+  ],
 } satisfies Ruleset

@@ -16,7 +16,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       [5, 0.76],
       [6, 1.14],
       [7, 1.71],
-      [8, 2.56]
+      [8, 2.56],
     ]) {
       await t.test(`should calculate correct score for L(${level})`, () => {
         assert.strictEqual(mod.L(level), points)
@@ -60,7 +60,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: 'Pr',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0',
     }
     const judge = mod.routinePresentationJudge
 
@@ -84,8 +84,8 @@ void test('ijru.freestyle@3.0.0', async t => {
 
             musicalityPlus: 5,
             musicalityCheck: 20,
-            musicalityMinus: 10
-          }
+            musicalityMinus: 10,
+          },
         }),
         { meta, result: { aE: 0.1125, aM: -0.064286 }, statuses: {} }
       )
@@ -102,8 +102,8 @@ void test('ijru.freestyle@3.0.0', async t => {
 
             musicalityPlus: 5,
             musicalityCheck: 20,
-            musicalityMinus: 10
-          }
+            musicalityMinus: 10,
+          },
         }),
         { meta, result: { aE: 0.225, aM: 0 }, statuses: {} }
       )
@@ -123,7 +123,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: 'Pa',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0',
     }
     const judge = mod.athletePresentationJudge
 
@@ -145,8 +145,8 @@ void test('ijru.freestyle@3.0.0', async t => {
             formExecutionCheck: 15,
             formExecutionMinus: 3,
 
-            miss: 2
-          }
+            miss: 2,
+          },
         }),
         { meta, result: { aF: 0.225, m: 0.95 }, statuses: {} }
       )
@@ -166,7 +166,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: 'R',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0',
     }
     const judge = mod.requiredElementsJudge
 
@@ -192,8 +192,8 @@ void test('ijru.freestyle@3.0.0', async t => {
 
             miss: 2,
             timeViolation: 1,
-            spaceViolation: 2
-          }
+            spaceViolation: 2,
+          },
         }),
         { meta, result: { Q: 0.925, m: 0.95, v: 0.925 }, statuses: {} }
       )
@@ -213,8 +213,8 @@ void test('ijru.freestyle@3.0.0', async t => {
 
             miss: 10,
             timeViolation: 0,
-            spaceViolation: 0
-          }
+            spaceViolation: 0,
+          },
         }),
         { meta, result: { Q: 0.875, m: 0.75, v: 1 }, statuses: {} }
       )
@@ -234,8 +234,8 @@ void test('ijru.freestyle@3.0.0', async t => {
 
             miss: 200,
             timeViolation: 0,
-            spaceViolation: 1
-          }
+            spaceViolation: 1,
+          },
         }),
         { meta, result: { Q: 1, m: -4, v: 0.975 }, statuses: {} }
       )
@@ -255,8 +255,8 @@ void test('ijru.freestyle@3.0.0', async t => {
 
             miss: 10,
             timeViolation: 0,
-            spaceViolation: 0
-          }
+            spaceViolation: 0,
+          },
         }),
         { meta, result: { Q: 0.9, m: 0.75, v: 1 }, statuses: {} }
       )
@@ -291,7 +291,7 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: 'D',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0',
     }
     const judge = mod.difficultyJudge
 
@@ -317,8 +317,8 @@ void test('ijru.freestyle@3.0.0', async t => {
             diffL5: 6,
             diffL6: 7,
             diffL7: 8,
-            diffL8: 9
-          }
+            diffL8: 9,
+          },
         }),
         { meta, result: { D: 54.28 }, statuses: {} }
       )
@@ -338,12 +338,12 @@ void test('ijru.freestyle@3.0.0', async t => {
       judgeTypeId: jTId,
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0',
     })
     const eMeta: EntryMeta = {
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0'
+      competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0',
     }
     {
       const options = {}
@@ -356,7 +356,7 @@ void test('ijru.freestyle@3.0.0', async t => {
         { meta: jMeta('22', 'R'), result: { Q: 0.9, m: 0.975, v: 0.975 }, statuses: {} },
         { meta: jMeta('31', 'D'), result: { D: 10.5 }, statuses: {} },
         { meta: jMeta('32', 'D'), result: { D: 31.22 }, statuses: {} },
-        { meta: jMeta('33', 'D'), result: { D: 35 }, statuses: {} }
+        { meta: jMeta('33', 'D'), result: { D: 35 }, statuses: {} },
       ]
       const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
@@ -371,9 +371,9 @@ void test('ijru.freestyle@3.0.0', async t => {
           v: 0.95,
           aE: -0.37875,
           aF: 1.135,
-          aM: -0.092143
+          aM: -0.092143,
         },
-        statuses: {}
+        statuses: {},
       })
     }
 
@@ -388,7 +388,7 @@ void test('ijru.freestyle@3.0.0', async t => {
         { meta: jMeta('22', 'R'), result: { Q: 0.9, m: 0.975, v: 0.975 }, statuses: {} },
         { meta: jMeta('31', 'D'), result: { D: 10.5 }, statuses: {} },
         { meta: jMeta('32', 'D'), result: { D: 31.22 }, statuses: {} },
-        { meta: jMeta('33', 'D'), result: { D: 35 }, statuses: {} }
+        { meta: jMeta('33', 'D'), result: { D: 35 }, statuses: {} },
       ]
       const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
@@ -403,9 +403,9 @@ void test('ijru.freestyle@3.0.0', async t => {
           v: 0.95,
           aE: -0.37875,
           aF: 1.135,
-          aM: 0
+          aM: 0,
         },
-        statuses: { }
+        statuses: { },
       })
     })
 
@@ -420,7 +420,7 @@ void test('ijru.freestyle@3.0.0', async t => {
         { meta: jMeta('22', 'R'), result: { Q: 0.9, m: -0.025, v: 0.975 }, statuses: {} },
         { meta: jMeta('31', 'D'), result: { D: 10.5 }, statuses: {} },
         { meta: jMeta('32', 'D'), result: { D: 31.22 }, statuses: {} },
-        { meta: jMeta('33', 'D'), result: { D: 35 }, statuses: {} }
+        { meta: jMeta('33', 'D'), result: { D: 35 }, statuses: {} },
       ]
       const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
@@ -435,9 +435,9 @@ void test('ijru.freestyle@3.0.0', async t => {
           v: 0.95,
           aE: -0.37875,
           aF: 1.135,
-          aM: -0.092143
+          aM: -0.092143,
         },
-        statuses: {}
+        statuses: {},
       })
     })
   })

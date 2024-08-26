@@ -19,7 +19,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     disciplineGroup.push({
       text: 'Single Rope',
       key: 'sr',
-      colspan: srEvts.length * 2
+      colspan: srEvts.length * 2,
     })
   }
 
@@ -27,7 +27,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     disciplineGroup.push({
       text: 'Wheel',
       key: 'wh',
-      colspan: whEvts.length * 2
+      colspan: whEvts.length * 2,
     })
   }
 
@@ -35,7 +35,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     text: 'Overall',
     key: 'oa',
     colspan: 3,
-    rowspan: 2
+    rowspan: 2,
   })
 
   groups.push(disciplineGroup)
@@ -46,7 +46,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     evtGroup.push({
       text: typeof cEvtOptions[cEvt].name === 'string' ? (cEvtOptions[cEvt].name).replace(/^(Wheel|Single Rope) /, '') : cEvt.split('.')[4] ?? '',
       key: cEvt,
-      colspan: 2
+      colspan: 2,
     })
   }
 
@@ -58,12 +58,12 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     headers.push({
       text: 'Score',
       key: 'R',
-      component: cEvt
+      component: cEvt,
     }, {
       text: 'Rank',
       key: 'S',
       component: cEvt,
-      color: 'red'
+      color: 'red',
     })
   }
 
@@ -71,22 +71,22 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
     text: 'Normalised',
     key: 'B',
     color: 'gray',
-    formatter: roundToCurry(2)
+    formatter: roundToCurry(2),
   }, {
     text: 'Rank Sum',
     key: 'T',
     color: 'green',
-    primary: 'score'
+    primary: 'score',
   }, {
     text: 'Rank',
     key: 'S',
     color: 'red',
-    primary: 'rank'
+    primary: 'rank',
   })
 
   return {
     groups,
-    headers
+    headers,
   }
 }
 
@@ -98,7 +98,7 @@ export default {
     { id: 'name', name: 'Name', type: 'string' },
     { id: 'rankMultiplier', name: 'Rank Multiplier', type: 'number' },
     { id: 'resultMultiplier', name: 'Result Multiplier', type: 'number' },
-    { id: 'normalisationMultiplier', name: 'Normalisation Multiplier', type: 'number' }
+    { id: 'normalisationMultiplier', name: 'Normalisation Multiplier', type: 'number' },
   ],
   resultTable: overallTableFactory,
   rankOverall (results, options, competitionEventOptions) {
@@ -140,7 +140,7 @@ export default {
         meta: { participantId },
         result: { R, T, B, S: 0 },
         componentResults: Object.fromEntries(cRes.map(r => [r.meta.competitionEvent, r])),
-        statuses: {}
+        statuses: {},
       }
     })
 
@@ -154,5 +154,5 @@ export default {
     }
 
     return ranked
-  }
+  },
 } satisfies OverallModel<Option, CompetitionEventOptions>

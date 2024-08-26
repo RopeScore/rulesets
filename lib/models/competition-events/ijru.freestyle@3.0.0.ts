@@ -55,19 +55,19 @@ export const routinePresentationJudge: JudgeTypeGetter<string, Option> = options
       schema: 'entertainmentPlus',
       name: 'Entertainment +',
       min: 0,
-      step: 1
+      step: 1,
     },
     {
       schema: 'entertainmentCheck',
       name: 'Entertainment ✓',
       min: 0,
-      step: 1
+      step: 1,
     },
     {
       schema: 'entertainmentMinus',
       name: 'Entertainment -',
       min: 0,
-      step: 1
+      step: 1,
     },
 
     ...(noMusicality
@@ -77,21 +77,21 @@ export const routinePresentationJudge: JudgeTypeGetter<string, Option> = options
             schema: 'musicalityPlus',
             name: 'Musicality +',
             min: 0,
-            step: 1
+            step: 1,
           },
           {
             schema: 'musicalityCheck',
             name: 'Musicality ✓',
             min: 0,
-            step: 1
+            step: 1,
           },
           {
             schema: 'musicalityMinus',
             name: 'Musicality -',
             min: 0,
-            step: 1
-          }
-        ])
+            step: 1,
+          },
+        ]),
   ]
   const id = 'Pr'
   return {
@@ -114,15 +114,15 @@ export const routinePresentationJudge: JudgeTypeGetter<string, Option> = options
         result: noMusicality
           ? {
               aE: roundTo((enAvg * (FpE + FpM)), 6),
-              aM: 0
+              aM: 0,
             }
           : {
               aE: roundTo((enAvg * FpE), 6),
-              aM: roundTo((muAvg * FpM), 6)
+              aM: roundTo((muAvg * FpM), 6),
             },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -132,26 +132,26 @@ export const athletePresentationJudge: JudgeTypeGetter<string, Option> = options
       name: 'Form and Execution +',
       schema: 'formExecutionPlus',
       min: 0,
-      step: 1
+      step: 1,
     },
     {
       name: 'Form and Execution ✓',
       schema: 'formExecutionCheck',
       min: 0,
-      step: 1
+      step: 1,
     },
     {
       name: 'Form and Execution -',
       schema: 'formExecutionMinus',
       min: 0,
-      step: 1
+      step: 1,
     },
 
     {
       name: 'Misses',
       schema: 'miss',
-      min: 0
-    }
+      min: 0,
+    },
   ] as const
   const id = 'Pa'
   return {
@@ -169,11 +169,11 @@ export const athletePresentationJudge: JudgeTypeGetter<string, Option> = options
         meta: scsh.meta,
         result: {
           m: roundTo(1 - ((tally.miss ?? 0) * Fd), 3),
-          aF: roundTo(avg * FpF, 6)
+          aF: roundTo(avg * FpF, 6),
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -186,19 +186,19 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
       name: 'Time Violations',
       min: 0,
       max: 2,
-      step: 1
+      step: 1,
     },
     {
       schema: 'spaceViolation',
       name: 'Space Violations',
       min: 0,
-      step: 1
+      step: 1,
     },
     {
       schema: 'miss',
       name: 'Misses',
       min: 0,
-      step: 1
+      step: 1,
     },
 
     {
@@ -206,7 +206,7 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
       name: 'Amount of different Gymnastics and Power Skills',
       min: 0,
       max: 4,
-      step: 1
+      step: 1,
     },
     ...(isDD
       ? [{
@@ -214,20 +214,20 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
           name: 'Amount of different Turner Involvement Skills',
           min: 0,
           max: 4,
-          step: 1
+          step: 1,
         }]
       : [{
           schema: 'rqMultiples',
           name: 'Amount of different Multiples',
           min: 0,
           max: 4,
-          step: 1
+          step: 1,
         }, {
           schema: 'rqWrapsReleases',
           name: 'Amount of different Wraps and Releases',
           min: 0,
           max: 4,
-          step: 1
+          step: 1,
         }]),
     ...(hasInteractions
       ? [{
@@ -235,9 +235,9 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
           name: 'Amount of different Interactions',
           min: 0,
           max: 4,
-          step: 1
+          step: 1,
         }]
-      : [])
+      : []),
   ] as const
   const rqFields = fieldDefinitions.filter(f => f.schema.startsWith('rq'))
   const max: number = rqFields.reduce((acc, f: JudgeFieldDefinition<string>) => (acc + (f.max ?? 0)), 0)
@@ -259,11 +259,11 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
         result: {
           Q: roundTo(1 - (missing * Fq), 3),
           m: roundTo(1 - ((tally.miss ?? 0) * Fd), 3),
-          v: roundTo(1 - (((tally.spaceViolation ?? 0) + (tally.timeViolation ?? 0)) * Fd), 3)
+          v: roundTo(1 - (((tally.spaceViolation ?? 0) + (tally.timeViolation ?? 0)) * Fd), 3),
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -273,13 +273,13 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
       name: 'Level 0.5',
       schema: 'diffL0.5',
       min: 0,
-      step: 1
+      step: 1,
     },
     ...Array(8).fill(undefined).map((el, idx) => ({
       name: `Level ${idx + 1}`,
       schema: `diffL${idx + 1}` as const,
       min: 0,
-      step: 1
+      step: 1,
     })),
 
     // Not used in any math, just for tracking
@@ -287,8 +287,8 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
       name: 'Repeated Skills',
       schema: 'rep',
       min: 0,
-      step: 1
-    }
+      step: 1,
+    },
   ] as const
   const levels: Record<string, number> = Object.fromEntries(Array(8).fill(undefined).map((el, idx) => [`diffL${idx + 1}`, idx + 1] as const))
   levels['diffL0.5'] = 0.5
@@ -304,11 +304,11 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
       return {
         meta: scsh.meta,
         result: {
-          D: roundTo(D, 2)
+          D: roundTo(D, 2),
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -321,8 +321,8 @@ export const freestylePreviewTableHeaders: TableDefinition = {
     { text: 'Pres (P)', key: 'P', formatter: formatFactor },
     { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
     { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
-    { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) }
-  ]
+    { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) },
+  ],
 }
 
 export const freestyleResultTableHeaders: TableDefinition = {
@@ -333,8 +333,8 @@ export const freestyleResultTableHeaders: TableDefinition = {
     { text: 'Deduc', key: 'M', color: 'gray', formatter: formatFactor },
 
     { text: 'Score', key: 'R', formatter: roundToCurry(2), primary: 'score' },
-    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
-  ]
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' },
+  ],
 }
 
 export default {
@@ -343,7 +343,7 @@ export default {
   options: [
     { id: 'noMusicality', name: 'No Musicality', type: 'boolean' },
     { id: 'discipline', name: 'Discipline', type: 'enum', enum: ['sr', 'dd', 'wh', 'ts', 'xd'] },
-    { id: 'interactions', name: 'Has Interactions', type: 'boolean' }
+    { id: 'interactions', name: 'Has Interactions', type: 'boolean' },
   ],
   judges: [routinePresentationJudge, athletePresentationJudge, requiredElementsJudge, difficultyJudge],
 
@@ -374,7 +374,7 @@ export default {
     return {
       meta,
       result: raw,
-      statuses: {}
+      statuses: {},
     }
   },
   rankEntries (res, options) {
@@ -403,13 +403,13 @@ export default {
         score.result.P === el.result.P &&
         score.result.D === el.result.D
         ) + 1,
-        N: roundTo((((100 - 1) * ((el.result.R ?? 0) - low)) / ((high - low) !== 0 ? high - low : 1)) + 1, 2)
-      }
+        N: roundTo((((100 - 1) * ((el.result.R ?? 0) - low)) / ((high - low) !== 0 ? high - low : 1)) + 1, 2),
+      },
     }))
 
     return results
   },
 
   previewTable: options => freestylePreviewTableHeaders,
-  resultTable: options => freestyleResultTableHeaders
+  resultTable: options => freestyleResultTableHeaders,
 } satisfies CompetitionEventModel<string, Option>

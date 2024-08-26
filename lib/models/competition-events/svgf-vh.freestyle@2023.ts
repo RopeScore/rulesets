@@ -19,14 +19,14 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
       name: 'Level 0.5',
       schema: 'diffL0.5',
       min: 0,
-      step: 1
+      step: 1,
     },
     ...Array(5).fill(undefined).map((el, idx) => ({
       name: `Level ${idx + 1}`,
       schema: `diffL${idx + 1}` as const,
       min: 0,
-      step: 1
-    }))
+      step: 1,
+    })),
   ] as const
   const levels: Record<string, number> = Object.fromEntries(Array(8).fill(undefined).map((el, idx) => [`diffL${idx + 1}`, idx + 1] as const))
   levels['diffL0.5'] = 0.5
@@ -42,11 +42,11 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
       return {
         meta: scsh.meta,
         result: {
-          D: roundTo(D, 2)
+          D: roundTo(D, 2),
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -57,29 +57,29 @@ export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
       name: 'Takt',
       min: 1,
       max: 3,
-      step: 1
+      step: 1,
     },
     {
       schema: 'formExecution',
       name: 'Teknik',
       min: 1,
       max: 3,
-      step: 1
+      step: 1,
     },
     {
       schema: 'impression',
       name: 'Presentation',
       min: 1,
       max: 3,
-      step: 1
+      step: 1,
     },
     {
       schema: 'miss',
       name: 'Missar',
       min: 1,
       max: 3,
-      step: 1
-    }
+      step: 1,
+    },
   ] as const
 
   const id = 'P'
@@ -96,11 +96,11 @@ export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
       return {
         meta: scsh.meta,
         result: {
-          P: roundTo(score, 2)
+          P: roundTo(score, 2),
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -115,36 +115,36 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
         name: '4 höga knä',
         min: 0,
         max: 1,
-        step: 1
+        step: 1,
       },
       {
         schema: 'rqSki',
         name: '4 skidhopp',
         min: 0,
         max: 1,
-        step: 1
+        step: 1,
       },
       {
         schema: 'rqTurn',
         name: 'Snurra runt',
         min: 0,
         max: 1,
-        step: 1
+        step: 1,
       },
       {
         schema: 'rqPair',
         name: 'Parövning',
         min: 0,
         max: 1,
-        step: 1
+        step: 1,
       },
       {
         schema: 'rqTool',
         name: 'Handredskap',
         min: 0,
         max: 1,
-        step: 1
-      }
+        step: 1,
+      },
     ]
   } else {
     fieldDefinitions = [
@@ -153,36 +153,36 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
         name: '4 höga knä',
         min: 0,
         max: 1,
-        step: 1
+        step: 1,
       },
       {
         schema: 'rqBack',
         name: '4 baklänges hopp',
         min: 0,
         max: 1,
-        step: 1
+        step: 1,
       },
       {
         schema: 'rqCross',
         name: '4 korshopp',
         min: 0,
         max: 1,
-        step: 1
+        step: 1,
       },
       {
         schema: 'rqSideJump',
         name: '4 sidsväng-hopp',
         min: 0,
         max: 1,
-        step: 1
+        step: 1,
       },
       {
         schema: 'rqOutTogether',
         name: '4 ut-ihop med benen',
         min: 0,
         max: 1,
-        step: 1
-      }
+        step: 1,
+      },
     ]
   }
 
@@ -204,11 +204,11 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
       return {
         meta: scsh.meta,
         result: {
-          O: roundTo(score, 1)
+          O: roundTo(score, 1),
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -220,8 +220,8 @@ export const freestylePreviewTableHeaders: TableDefinition = {
     { text: 'Diff (D)', key: 'D', formatter: roundToCurry(2) },
     { text: 'Obliga (O)', key: 'O', formatter: formatFactor },
     { text: 'Diff - Obliga (Rdo)', key: 'Rdo', formatter: roundToCurry(2) },
-    { text: 'Pres (P)', key: 'P', formatter: roundToCurry(2) }
-  ]
+    { text: 'Pres (P)', key: 'P', formatter: roundToCurry(2) },
+  ],
 }
 
 export const freestyleResultTableHeaders: TableDefinition = {
@@ -233,15 +233,15 @@ export const freestyleResultTableHeaders: TableDefinition = {
     { text: 'Diff Rank', key: 'DRank', color: 'red' },
 
     { text: 'Rank Sum', key: 'T', color: 'green' },
-    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
-  ]
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' },
+  ],
 }
 
 export default {
   id: 'svgf-vh.freestyle@2023',
   name: 'SvGF Vikingahoppet Freestyle 2023',
   options: [
-    { id: 'discipline', name: 'Discipline', type: 'enum', enum: ['sr', 'dd', 'wh', 'ts', 'xd'] }
+    { id: 'discipline', name: 'Discipline', type: 'enum', enum: ['sr', 'dd', 'wh', 'ts', 'xd'] },
   ],
   judges: [difficultyJudge, presentationJudge, requiredElementsJudge],
 
@@ -267,9 +267,9 @@ export default {
         D: roundTo(D, 2),
         O: roundTo(O, 2),
         Rdo: roundTo(Rdo, 2),
-        Rp: roundTo(P, 2)
+        Rp: roundTo(P, 2),
       },
-      statuses: {}
+      statuses: {},
     }
   },
   rankEntries (res, options) {
@@ -295,8 +295,8 @@ export default {
           ...el.result,
           CRank,
           DRank,
-          T: CRank + DRank
-        }
+          T: CRank + DRank,
+        },
       }
     })
 
@@ -313,13 +313,13 @@ export default {
       ...el,
       result: {
         ...el.result,
-        S: arr.findIndex(score => score.result.T === el.result.T) + 1
-      }
+        S: arr.findIndex(score => score.result.T === el.result.T) + 1,
+      },
     }))
 
     return results
   },
 
   previewTable: options => freestylePreviewTableHeaders,
-  resultTable: options => freestyleResultTableHeaders
+  resultTable: options => freestyleResultTableHeaders,
 } satisfies CompetitionEventModel<string, Option>

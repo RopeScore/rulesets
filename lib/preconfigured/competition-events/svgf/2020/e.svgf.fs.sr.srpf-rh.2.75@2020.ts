@@ -3,8 +3,8 @@ import { partiallyConfigureCompetitionEventModel } from '../../../types.js'
 
 export default partiallyConfigureCompetitionEventModel(svgfRhFreestyle2020, {
   options: {
-    discipline: 'sr'
+    discipline: 'sr',
   },
   id: 'e.svgf.fs.sr.srpf-rh.2.75@2020',
-  name: 'Single Rope Pair Freestyle'
+  name: 'Single Rope Pair Freestyle',
 })

@@ -76,7 +76,7 @@ void test('helpers', async t => {
       judgeTypeId: 'S',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
     }
     await t.test('Should return tally for a TallyScoresheet', () => {
       const tally = { entPlus: 2, entMinus: 1 }
@@ -87,11 +87,11 @@ void test('helpers', async t => {
       const marks: Array<Mark<string>> = [
         { sequence: 0, schema: 'formPlus', timestamp: 1 },
         { sequence: 1, schema: 'formCheck', timestamp: 15 },
-        { sequence: 2, schema: 'formPlus', timestamp: 30 }
+        { sequence: 2, schema: 'formPlus', timestamp: 30 },
       ]
       const tally = {
         formPlus: 2,
-        formCheck: 1
+        formCheck: 1,
       }
       assert.deepStrictEqual(calculateTally({ meta, marks }), tally)
     })
@@ -101,11 +101,11 @@ void test('helpers', async t => {
         { sequence: 0, schema: 'formPlus', timestamp: 1 },
         { sequence: 1, schema: 'formCheck', timestamp: 15 },
         { sequence: 2, schema: 'formPlus', timestamp: 30 },
-        { sequence: 3, schema: 'undo', timestamp: 45, target: 2 }
+        { sequence: 3, schema: 'undo', timestamp: 45, target: 2 },
       ]
       const tally = {
         formPlus: 1,
-        formCheck: 1
+        formCheck: 1,
       }
       assert.deepStrictEqual(calculateTally({ meta, marks }), tally)
     })
@@ -133,7 +133,7 @@ void test('helpers', async t => {
         'o.ijru.sp.sr.srss.4.3',
         'o.ijru.sp.sr.sr.ss.4.3',
         'o.ijru.sp.sr.srss.4.3@@',
-        'o.ijru.sp.sr.srss.4.3@å'
+        'o.ijru.sp.sr.srss.4.3@å',
       ]
       for (const cEvt of invalid) {
         assert.throws(
@@ -151,7 +151,7 @@ void test('helpers', async t => {
         eventAbbr: 'srss',
         numParticipants: 1,
         timing: '30',
-        version: null
+        version: null,
       })
     })
 
@@ -163,7 +163,7 @@ void test('helpers', async t => {
         eventAbbr: 'tcaa',
         numParticipants: 4,
         timing: '0',
-        version: '3.0.0'
+        version: '3.0.0',
       })
     })
   })

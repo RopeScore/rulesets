@@ -11,7 +11,7 @@ void test('ijru.speed@3.0.0', async t => {
       judgeTypeId: 'S',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
     }
     assert.strictEqual(mod.speedJudge({}).id, 'S')
 
@@ -44,8 +44,8 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 1, schema: 'step' },
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
             { timestamp: Date.now(), sequence: 3, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 4, schema: 'step' }
-          ]
+            { timestamp: Date.now(), sequence: 4, schema: 'step' },
+          ],
         }),
         { meta, result: { a: 2 }, statuses: {} }
       )
@@ -58,7 +58,7 @@ void test('ijru.speed@3.0.0', async t => {
       judgeTypeId: 'Shj',
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
     }
     assert.strictEqual(mod.speedHeadJudge({}).id, 'Shj')
 
@@ -105,8 +105,8 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 1, schema: 'step' },
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
             { timestamp: Date.now(), sequence: 3, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 4, schema: 'step' }
-          ]
+            { timestamp: Date.now(), sequence: 4, schema: 'step' },
+          ],
         }),
         { meta, result: { a: 2, m: 0 }, statuses: {} }
       )
@@ -121,8 +121,8 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
             { timestamp: Date.now(), sequence: 3, schema: 'step' },
             { timestamp: Date.now(), sequence: 4, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 5, schema: 'step' }
-          ]
+            { timestamp: Date.now(), sequence: 5, schema: 'step' },
+          ],
         }),
         { meta, result: { a: 2, m: 10 }, statuses: {} }
       )
@@ -137,8 +137,8 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 2, schema: 'step' },
             { timestamp: Date.now(), sequence: 3, schema: 'falseSwitch' },
             { timestamp: Date.now(), sequence: 4, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 5, schema: 'step' }
-          ]
+            { timestamp: Date.now(), sequence: 5, schema: 'step' },
+          ],
         }),
         { meta, result: { a: 2, m: 10 }, statuses: {} }
       )
@@ -154,8 +154,8 @@ void test('ijru.speed@3.0.0', async t => {
             { timestamp: Date.now(), sequence: 3, schema: 'falseSwitch' },
             { timestamp: Date.now(), sequence: 4, schema: 'undo', target: 2 },
             { timestamp: Date.now(), sequence: 5, schema: 'step' },
-            { timestamp: Date.now(), sequence: 6, schema: 'falseSwitch' }
-          ]
+            { timestamp: Date.now(), sequence: 6, schema: 'falseSwitch' },
+          ],
         }),
         { meta, result: { a: 2, m: 10 }, statuses: {} }
       )
@@ -169,24 +169,24 @@ void test('ijru.speed@3.0.0', async t => {
         judgeTypeId: jTId,
         entryId: '1',
         participantId: '1',
-        competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
+        competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
       })
       const eMeta: EntryMeta = {
         entryId: '1',
         participantId: '1',
-        competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
+        competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
       }
       const options = { falseSwitches: 3 }
       const scores = [
         mod.speedHeadJudge(options).calculateScoresheet({ meta: jMeta('1', 'Shj'), tally: { step: 11, falseStart: 0, falseSwitch: 0 } }),
         mod.speedJudge(options).calculateScoresheet({ meta: jMeta('2'), tally: { step: 10 } }),
-        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 10 } })
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 10 } }),
       ]
       const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
         meta: eMeta,
         result: { a: 10, m: 0, R: 10 },
-        statuses: { withinThree: true }
+        statuses: { withinThree: true },
       })
     }
 
@@ -195,25 +195,25 @@ void test('ijru.speed@3.0.0', async t => {
       judgeTypeId: jTId,
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
     })
     const eMeta: EntryMeta = {
       entryId: '1',
       participantId: '1',
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
     }
     await t.test('With false starts and switches', () => {
       const options = { falseSwitches: 3 }
       const scores = [
         mod.speedHeadJudge(options).calculateScoresheet({ meta: jMeta('1', 'Shj'), tally: { step: 24, falseStart: 1, falseSwitch: 1 } }),
         mod.speedJudge(options).calculateScoresheet({ meta: jMeta('2'), tally: { step: 25 } }),
-        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 26 } })
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 26 } }),
       ]
       const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
         meta: eMeta,
         result: { a: 25.5, m: 20, R: 5.5 },
-        statuses: { withinThree: true }
+        statuses: { withinThree: true },
       })
     })
 
@@ -222,13 +222,13 @@ void test('ijru.speed@3.0.0', async t => {
       const scores = [
         mod.speedHeadJudge(options).calculateScoresheet({ meta: jMeta('1', 'Shj'), tally: { step: 10, falseStart: 0, falseSwitch: 0 } }),
         mod.speedJudge(options).calculateScoresheet({ meta: jMeta('2'), tally: { step: 15 } }),
-        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 20 } })
+        mod.speedJudge(options).calculateScoresheet({ meta: jMeta('3'), tally: { step: 20 } }),
       ]
       const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
         meta: eMeta,
         result: { a: 17.5, m: 0, R: 17.5 },
-        statuses: { withinThree: false }
+        statuses: { withinThree: false },
       })
     })
   })
@@ -237,7 +237,7 @@ void test('ijru.speed@3.0.0', async t => {
     const meta = (id: string): EntryMeta => ({
       entryId: id,
       participantId: id,
-      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0'
+      competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
     })
 
     // eslint-disable-next-line @stylistic/semi
@@ -247,26 +247,26 @@ void test('ijru.speed@3.0.0', async t => {
         {
           meta: meta('1'),
           result: { a: 10, m: 0, R: 10 },
-          statuses: { withinThree: true }
+          statuses: { withinThree: true },
         },
         {
           meta: meta('2'),
           result: { a: 20, m: 0, R: 20 },
-          statuses: { withinThree: true }
-        }
+          statuses: { withinThree: true },
+        },
       ]
       const result = mod.default.rankEntries(scores, options)
       assert.deepStrictEqual(result, [
         {
           meta: meta('2'),
           result: { a: 20, m: 0, R: 20, S: 1, N: 100 },
-          statuses: { withinThree: true }
+          statuses: { withinThree: true },
         },
         {
           meta: meta('1'),
           result: { a: 10, m: 0, R: 10, S: 2, N: 1 },
-          statuses: { withinThree: true }
-        }
+          statuses: { withinThree: true },
+        },
       ])
     }
 
@@ -276,36 +276,36 @@ void test('ijru.speed@3.0.0', async t => {
         {
           meta: meta('1'),
           result: { a: 10, m: 0, R: 10 },
-          statuses: { withinThree: true }
+          statuses: { withinThree: true },
         },
         {
           meta: meta('2'),
           result: { a: 10, m: 0, R: 10 },
-          statuses: { withinThree: true }
+          statuses: { withinThree: true },
         },
         {
           meta: meta('3'),
           result: { a: 5, m: 0, R: 5 },
-          statuses: { withinThree: true }
-        }
+          statuses: { withinThree: true },
+        },
       ]
       const result = mod.default.rankEntries(scores, options)
       assert.deepStrictEqual(result, [
         {
           meta: meta('1'),
           result: { a: 10, m: 0, R: 10, S: 1, N: 100 },
-          statuses: { withinThree: true }
+          statuses: { withinThree: true },
         },
         {
           meta: meta('2'),
           result: { a: 10, m: 0, R: 10, S: 1, N: 100 },
-          statuses: { withinThree: true }
+          statuses: { withinThree: true },
         },
         {
           meta: meta('3'),
           result: { a: 5, m: 0, R: 5, S: 3, N: 1 },
-          statuses: { withinThree: true }
-        }
+          statuses: { withinThree: true },
+        },
       ])
     })
   })

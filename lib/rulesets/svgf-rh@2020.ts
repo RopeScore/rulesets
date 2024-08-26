@@ -38,12 +38,12 @@ export default {
     eSvgfFsSrSrpfRh2752020,
     eSvgfFsSrSrtfRh4752020,
     eSvgfFsDdDdsfRh3752020,
-    eSvgfFsDdDdpfRh4752020
+    eSvgfFsDdDdpfRh4752020,
   ],
   overalls: [
     eSvgfOaSrIsroRh102020,
     eSvgfOaXdRsaa402020,
     eSvgfOaXdReaa402020,
-    eSvgfOaSrRpaa202020
-  ]
+    eSvgfOaSrRpaa202020,
+  ],
 } satisfies Ruleset

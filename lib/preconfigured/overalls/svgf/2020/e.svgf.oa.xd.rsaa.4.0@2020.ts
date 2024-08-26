@@ -10,8 +10,8 @@ export default partiallyConfigureOverallModel(svgfRhOverall2020, {
 
     'e.ijru.sp.dd.ddss.3.60@1.0.0': { name: 'Double Dutch Speed Sprint' },
     'e.ijru.sp.dd.ddsr.4.4x30@1.0.0': { name: 'Double Dutch Speed Relay' },
-    'e.svgf.fs.dd.ddpf-rh.4.75@2020': { name: 'Double Dutch Pair Freestyle' }
+    'e.svgf.fs.dd.ddpf-rh.4.75@2020': { name: 'Double Dutch Pair Freestyle' },
   },
   id: 'e.svgf.oa.xd.rsaa.4.0@2020',
-  name: 'Rikshoppet 6:an Overall'
+  name: 'Rikshoppet 6:an Overall',
 })

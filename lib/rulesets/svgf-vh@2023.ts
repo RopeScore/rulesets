@@ -28,11 +28,11 @@ export default {
 
     eSvgfSpDdDdsr42x452023,
     eSvgfSpDdDdut402023,
-    eSvgfFsDdDdpfVh41202023
+    eSvgfFsDdDdpfVh41202023,
   ],
   overalls: [
     eSvgfOaSrVhio102023,
     eSvgfOaSrVhto402023,
-    eSvgfOaDdVhto402023
-  ]
+    eSvgfOaDdVhto402023,
+  ],
 } satisfies Ruleset

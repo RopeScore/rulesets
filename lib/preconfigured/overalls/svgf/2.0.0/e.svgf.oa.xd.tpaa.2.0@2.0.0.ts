@@ -8,8 +8,8 @@ export default partiallyConfigureOverallModel(svgfParOverall200, {
     'e.svgf.sp.sr.srpe.2.2x90@2.0.0': { name: 'Single Rope Pair Speed Endurance' },
     'e.ijru.sp.sr.srdr.2.2x30@1.0.0': { name: 'Single Rope Double Unders Relay' },
     'e.ijru.fs.sr.srpf.2.75@2.0.0': { name: 'Single Rope Pair Freestyle', rankMultiplier: 2, normalisationMultiplier: 2 },
-    'e.ijru.fs.wh.whpf.2.75@2.0.0': { name: 'Wheel Pair Freestyle' }
+    'e.ijru.fs.wh.whpf.2.75@2.0.0': { name: 'Wheel Pair Freestyle' },
   },
   id: 'e.svgf.oa.xd.tpaa.2.0@2.0.0',
-  name: 'Team Pair Overall'
+  name: 'Team Pair Overall',
 })

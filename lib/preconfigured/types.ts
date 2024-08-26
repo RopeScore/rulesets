@@ -30,7 +30,7 @@ export function partiallyConfigureCompetitionEventModel <Schema extends string, 
     },
     resultTable (o) {
       return model.resultTable({ ...o, ...options.options })
-    }
+    },
   }
 }
 
@@ -59,6 +59,6 @@ export function partiallyConfigureOverallModel <Option extends string, Competiti
     },
     resultTable (o) {
       return model.resultTable({ ...o, ...options.options }, options.competitionEventOptions)
-    }
+    },
   }
 }

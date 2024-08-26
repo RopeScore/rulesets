@@ -168,6 +168,6 @@ export function parseCompetitionEventDefinition (competitionEvent: string) {
     eventAbbr: match.groups.eventAbbr,
     numParticipants: parseInt(match.groups.numParticipants, 10),
     timing: match.groups.timing,
-    version: match.groups.version ?? null as string | null
+    version: match.groups.version ?? null as string | null,
   }
 }

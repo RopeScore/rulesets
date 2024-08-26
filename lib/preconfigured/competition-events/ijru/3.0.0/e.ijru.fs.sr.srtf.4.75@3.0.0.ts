@@ -4,8 +4,8 @@ import { partiallyConfigureCompetitionEventModel } from '../../../types.js'
 export default partiallyConfigureCompetitionEventModel(ijruFreestyle300, {
   options: {
     discipline: 'sr',
-    interactions: true
+    interactions: true,
   },
   id: 'e.ijru.fs.sr.srtf.4.75@3.0.0',
-  name: 'Single Rope Team Freestyle'
+  name: 'Single Rope Team Freestyle',
 })

@@ -13,7 +13,7 @@ export const timingJudge: JudgeTypeGetter<string, Option> = options => {
     schema: 'seconds',
     name: 'Seconds',
     min: 0,
-    step: 1
+    step: 1,
   }] as const
   const id = 'T'
   return {
@@ -26,11 +26,11 @@ export const timingJudge: JudgeTypeGetter<string, Option> = options => {
       return {
         meta: scsh.meta,
         result: {
-          t: tally.seconds ?? Infinity
+          t: tally.seconds ?? Infinity,
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -40,15 +40,15 @@ export const timingJudge: JudgeTypeGetter<string, Option> = options => {
 export const timingPreviewTableHeaders: TableDefinition = {
   headers: [
     { text: 'Seconds (t)', key: 't', formatter: roundToCurry(2) },
-    { text: 'Result (R)', key: 'R' }
-  ]
+    { text: 'Result (R)', key: 'R' },
+  ],
 }
 
 export const timingResultTableHeaders: TableDefinition = {
   headers: [
     { text: 'Seconds', key: 'R', primary: 'score' },
-    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
-  ]
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' },
+  ],
 }
 
 export default {
@@ -69,9 +69,9 @@ export default {
       meta,
       result: {
         t,
-        R: roundTo(t, 2)
+        R: roundTo(t, 2),
       },
-      statuses: {}
+      statuses: {},
     }
   },
   rankEntries (res, options) {
@@ -84,13 +84,13 @@ export default {
       ...el,
       result: {
         ...el.result,
-        S: arr.findIndex(obj => obj.result.R === el.result.R) + 1
-      }
+        S: arr.findIndex(obj => obj.result.R === el.result.R) + 1,
+      },
     }))
 
     return results
   },
 
   previewTable: options => timingPreviewTableHeaders,
-  resultTable: options => timingResultTableHeaders
+  resultTable: options => timingResultTableHeaders,
 } satisfies CompetitionEventModel<string, Option>

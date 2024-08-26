@@ -4,8 +4,8 @@ import { partiallyConfigureCompetitionEventModel } from '../../../types.js'
 export default partiallyConfigureCompetitionEventModel(ijruFreestyle200, {
   options: {
     discipline: 'dd',
-    interactions: true
+    interactions: true,
   },
   id: 'e.ijru.fs.dd.ddpf.4.75@2.0.0',
-  name: 'Double Dutch Pair Freestyle'
+  name: 'Double Dutch Pair Freestyle',
 })

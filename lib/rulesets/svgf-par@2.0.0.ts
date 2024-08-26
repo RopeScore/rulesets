@@ -14,9 +14,9 @@ export default {
     eSvgfSpSrSrpe22x90200,
     eIjruSpSrSrdr22x30100,
     eIjruFsSrSrpf275200,
-    eIjruFsWhWhpf275200
+    eIjruFsWhWhpf275200,
   ],
   overalls: [
-    eSvgfOaXdTpaa20200
-  ]
+    eSvgfOaXdTpaa20200,
+  ],
 } satisfies Ruleset

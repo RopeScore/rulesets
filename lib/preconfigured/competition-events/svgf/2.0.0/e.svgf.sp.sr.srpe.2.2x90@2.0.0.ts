@@ -3,8 +3,8 @@ import { partiallyConfigureCompetitionEventModel } from '../../../types.js'
 
 export default partiallyConfigureCompetitionEventModel(ijruSpeed100, {
   options: {
-    falseSwitches: 1
+    falseSwitches: 1,
   },
   id: 'e.svgf.sp.sr.srpe.2.2x90@2.0.0',
-  name: 'Single Rope Pair Speed Endurance'
+  name: 'Single Rope Pair Speed Endurance',
 })

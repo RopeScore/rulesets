@@ -16,7 +16,7 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
     schema: 'step',
     name: 'Score',
     min: 0,
-    step: 1
+    step: 1,
   }] as const
   const id = 'S'
   return {
@@ -29,11 +29,11 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
       return {
         meta: scsh.meta,
         result: {
-          a: tally.step ?? 0
+          a: tally.step ?? 0,
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -44,14 +44,14 @@ export const speedHeadJudge: JudgeTypeGetter<string, Option> = options => {
       schema: 'step',
       name: 'Score',
       min: 0,
-      step: 1
+      step: 1,
     },
     {
       schema: 'falseStart',
       name: 'False Start',
       min: 0,
       max: 1,
-      step: 1
+      step: 1,
     },
     ...(falseSwitches != null
       ? [{
@@ -59,9 +59,9 @@ export const speedHeadJudge: JudgeTypeGetter<string, Option> = options => {
           name: 'False Switches',
           min: 0,
           max: falseSwitches,
-          step: 1
+          step: 1,
         }]
-      : [])
+      : []),
   ] as const
   const id = 'Shj'
   return {
@@ -75,11 +75,11 @@ export const speedHeadJudge: JudgeTypeGetter<string, Option> = options => {
         meta: scsh.meta,
         result: {
           a: tally.step ?? 0,
-          m: ((tally.falseStart ?? 0) + (tally.falseSwitch ?? 0)) * SpeedDed
+          m: ((tally.falseStart ?? 0) + (tally.falseSwitch ?? 0)) * SpeedDed,
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -92,22 +92,22 @@ export const speedPreviewTableHeaders: TableDefinition = {
     { text: 'Deduc (m)', key: 'm' },
     { text: 'Result (R)', key: 'R' },
 
-    { text: 'Reskip Allowed', key: 'withinThree', formatter: (n) => n === 1 ? 'No' : 'Yes' }
-  ]
+    { text: 'Reskip Allowed', key: 'withinThree', formatter: (n) => n === 1 ? 'No' : 'Yes' },
+  ],
 }
 
 export const speedResultTableHeaders: TableDefinition = {
   headers: [
     { text: 'Score', key: 'R', primary: 'score' },
-    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
-  ]
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' },
+  ],
 }
 
 export default {
   id: 'ijru.speed@1.0.0',
   name: 'IJRU Speed v1.0.0',
   options: [
-    { id: 'falseSwitches', name: 'False Switches', type: 'number' }
+    { id: 'falseSwitches', name: 'False Switches', type: 'number' },
   ],
   judges: [speedJudge, speedHeadJudge],
 
@@ -136,11 +136,11 @@ export default {
       result: {
         a,
         m,
-        R: roundTo(a - m, 2)
+        R: roundTo(a - m, 2),
       },
       statuses: {
-        withinThree
-      }
+        withinThree,
+      },
     }
   },
   rankEntries (res, options) {
@@ -157,13 +157,13 @@ export default {
       result: {
         ...el.result,
         S: arr.findIndex(obj => obj.result.R === el.result.R) + 1,
-        N: roundTo((((100 - 1) * ((el.result.R ?? 0) - low)) / ((high - low !== 0) ? high - low : 1)) + 1, 2)
-      }
+        N: roundTo((((100 - 1) * ((el.result.R ?? 0) - low)) / ((high - low !== 0) ? high - low : 1)) + 1, 2),
+      },
     }))
 
     return results
   },
 
   previewTable: options => speedPreviewTableHeaders,
-  resultTable: options => speedResultTableHeaders
+  resultTable: options => speedResultTableHeaders,
 } satisfies CompetitionEventModel<string, Option>

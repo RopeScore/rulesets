@@ -6,8 +6,8 @@ export default partiallyConfigureOverallModel(svgfVhOverall2023, {
   competitionEventOptions: {
     'e.svgf.sp.dd.ddsr.4.2x45@2023': { name: 'Double Dutch Speed Relay' },
     'e.svgf.sp.dd.ddut.4.0@2023': { name: 'Double Dutch Utmaningen' },
-    'e.svgf.fs.dd.ddpf-vh.4.120@2023': { name: 'Double Dutch Pair Freestyle' }
+    'e.svgf.fs.dd.ddpf-vh.4.120@2023': { name: 'Double Dutch Pair Freestyle' },
   },
   id: 'e.svgf.oa.dd.vhto.4.0@2023',
-  name: 'Individuell Overall'
+  name: 'Individuell Overall',
 })

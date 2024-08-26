@@ -3,7 +3,7 @@ export {
   parseCompetitionEventDefinition,
   calculateTally,
   isMarkScoresheet,
-  isTallyScoresheet
+  isTallyScoresheet,
 } from './helpers.js'
 export * from './errors.js'
 export * from './import-tools.js'

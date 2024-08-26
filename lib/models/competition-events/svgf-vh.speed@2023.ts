@@ -17,7 +17,7 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
     schema: 'step',
     name: 'Score',
     min: 0,
-    step: 1
+    step: 1,
   }] as const
   const id = 'S'
   return {
@@ -30,11 +30,11 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
       return {
         meta: scsh.meta,
         result: {
-          a: tally.step ?? 0
+          a: tally.step ?? 0,
         },
-        statuses: {}
+        statuses: {},
       }
-    }
+    },
   }
 }
 
@@ -44,15 +44,15 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
 export const speedPreviewTableHeaders: TableDefinition = {
   headers: [
     { text: 'Steps (a)', key: 'a', formatter: roundToCurry(0) },
-    { text: 'Result (R)', key: 'R' }
-  ]
+    { text: 'Result (R)', key: 'R' },
+  ],
 }
 
 export const speedResultTableHeaders: TableDefinition = {
   headers: [
     { text: 'Steps', key: 'R', primary: 'score' },
-    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' }
-  ]
+    { text: 'Rank', key: 'S', color: 'red', primary: 'rank' },
+  ],
 }
 
 export default {
@@ -73,9 +73,9 @@ export default {
       meta,
       result: {
         a,
-        R: roundTo(a, 0)
+        R: roundTo(a, 0),
       },
-      statuses: {}
+      statuses: {},
     }
   },
   rankEntries (res, options) {
@@ -88,13 +88,13 @@ export default {
       ...el,
       result: {
         ...el.result,
-        S: arr.findIndex(obj => obj.result.R === el.result.R) + 1
-      }
+        S: arr.findIndex(obj => obj.result.R === el.result.R) + 1,
+      },
     }))
 
     return results
   },
 
   previewTable: options => speedPreviewTableHeaders,
-  resultTable: options => speedResultTableHeaders
+  resultTable: options => speedResultTableHeaders,
 } satisfies CompetitionEventModel<string, Option>
