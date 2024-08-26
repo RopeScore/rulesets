@@ -3,18 +3,18 @@
   "compilerOptions": {
     "composite": true,
     "checkJs": true,
-    "noEmit": true
+    "noEmit": true,
   },
   "include": [
     "**/*.ts",
     "**/*.js",
     "./*.mjs",
-    "./.*.js"
+    "./.*.js",
   ],
   "exclude": [
     "dist",
     "docs",
     "node_modules",
-    "coverage"
-  ]
+    "coverage",
+  ],
 }

@@ -8,13 +8,13 @@
     "sourceMap": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "skipLibCheck": false
+    "skipLibCheck": false,
   },
   "include": [
     "lib/**/*.ts",
     "lib/*.ts",
     "**/.*.js",
     "bin/*.ts",
-    "data/*.json"
-  ]
+    "data/*.json",
+  ],
 }

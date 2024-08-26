@@ -1,8 +1,8 @@
 {
   "references": [
     { "path": "./tsconfig.cjs.json" },
-    { "path": "./tsconfig.esm.json" }
-    { "path": "./tsconfig.eslint.json" }
+    { "path": "./tsconfig.esm.json" },
+    { "path": "./tsconfig.eslint.json" },
   ],
-  "include": []
+  "include": [],
 }
