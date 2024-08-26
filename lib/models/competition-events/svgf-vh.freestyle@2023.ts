@@ -193,7 +193,7 @@ export const requiredElementsJudge: JudgeTypeGetter<string, Option> = options =>
     fieldDefinitions,
     calculateScoresheet: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
+      const tally: ScoreTally = calculateTally(scsh, fieldDefinitions)
 
       const completed = fieldDefinitions
         .map<number>(f => (tally[f.schema] ?? 0) >= 1 ? 1 : 0)

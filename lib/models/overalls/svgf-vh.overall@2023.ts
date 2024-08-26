@@ -47,7 +47,7 @@ export const overallTableFactory: TableDefinitionGetter<Option, CompetitionEvent
 
   for (const cEvt of [...srEvts, ...ddEvts]) {
     evtGroup.push({
-      text: typeof cEvtOptions[cEvt].name === 'string' ? (cEvtOptions[cEvt].name as string).replace(/^(Wheel|Single Rope) /, '') : cEvt.split('.')[4] ?? '',
+      text: typeof cEvtOptions[cEvt].name === 'string' ? (cEvtOptions[cEvt].name).replace(/^(Wheel|Single Rope) /, '') : cEvt.split('.')[4] ?? '',
       key: cEvt,
       colspan: 2
     })
@@ -111,7 +111,7 @@ export default {
   ],
   resultTable: overallTableFactory,
   rankOverall (results, options, competitionEventOptions) {
-    const components: Partial<Record<CompetitionEventDefinition, Readonly<EntryResult[]>>> = {}
+    const components: Partial<Record<CompetitionEventDefinition, readonly EntryResult[]>> = {}
     const competitionEventIds: CompetitionEventDefinition[] = Object.keys(competitionEventOptions) as CompetitionEventDefinition[]
 
     for (const cEvtDef of competitionEventIds) {
@@ -124,7 +124,7 @@ export default {
     const ranked = participantIds.map(participantId => {
       const cRes = competitionEventIds
         .map((cEvt) => components[cEvt]?.find(r => r.meta.participantId === participantId))
-        .filter(r => !!r) as EntryResult[]
+        .filter(r => !!r)
 
       const T = cRes.reduce((acc, curr) => acc + (curr.result.S ?? 0), 0)
 
@@ -140,8 +140,8 @@ export default {
       return a.result.T - b.result.T
     })
 
-    for (let idx = 0; idx < ranked.length; idx++) {
-      ranked[idx].result.S = ranked.findIndex(obj => obj.result.T === ranked[idx].result.T) + 1
+    for (const result of ranked) {
+      result.result.S = ranked.findIndex(obj => obj.result.T === result.result.T) + 1
     }
 
     return ranked

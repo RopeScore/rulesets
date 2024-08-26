@@ -24,14 +24,14 @@ export interface CompetitionEventInfo extends Omit<CompetitionEventModelInfo, 'i
 export interface OverallInfo extends Omit<OverallModelInfo, 'id' | 'competitionEventOptions'> {
   id: CompetitionEventDefinition
   modelId: OverallModelInfo['id']
-  competitionEvents: Readonly<CompetitionEventDefinition[]>
+  competitionEvents: readonly CompetitionEventDefinition[]
 }
 
 export interface RulesetInfo {
   id: string
   name: string
-  competitionEvents: Readonly<CompetitionEventInfo[]>
-  overalls: Readonly<OverallInfo[]>
+  competitionEvents: readonly CompetitionEventInfo[]
+  overalls: readonly OverallInfo[]
 }
 
 export async function listCompetitionEventModels () {

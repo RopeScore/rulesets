@@ -31,7 +31,7 @@ export function roundToMultiple (num: number, multiple: number): number {
 /**
  * Rounds a number to the specified number of digits
  */
-export function roundTo (n: number, digits: number = 0): number {
+export function roundTo (n: number, digits = 0): number {
   const multiplicator = Math.pow(10, digits)
   n = n * multiplicator
   const test = (Math.round(n) / multiplicator)
@@ -45,7 +45,7 @@ export function roundTo (n: number, digits: number = 0): number {
  *
  * Useful for creating formatters for table headers
  */
-export function roundToCurry (digits: number = 0) {
+export function roundToCurry (digits = 0) {
   return (n: number) => roundTo(n, digits).toFixed(digits)
 }
 
@@ -137,7 +137,7 @@ export function matchMeta (actual: Meta, expected: Partial<Meta>): boolean {
  * Filters an array of all results into only results of component entries where
  * that participant has results for every competition event of competitionEvents
  */
-export function filterParticipatingInAll (results: Readonly<EntryResult[]>, competitionEvents: CompetitionEventDefinition[]) {
+export function filterParticipatingInAll (results: readonly EntryResult[], competitionEvents: CompetitionEventDefinition[]) {
   const participants = [...new Set(results.map(res => res.meta.participantId))]
     .filter(pId => competitionEvents.every(cEvt =>
       results.find(res => res.meta.participantId === pId && res.meta.competitionEvent === cEvt)
@@ -150,9 +150,11 @@ export function filterParticipatingInAll (results: Readonly<EntryResult[]>, comp
 }
 
 // TODO
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export function validateOptions () {}
 
 // TODO
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export function validateCompetitionEventOptions () {}
 
 const cEvtRegex = /^e\.(?<org>[a-z0-9-]+)\.(?<type>fs|sp|oa)\.(?<discipline>sr|dd|wh|ts|xd)\.(?<eventAbbr>[a-z0-9-]+)\.(?<numParticipants>\d+)\.(?<timing>(?:\d+(?:x\d+)?))(?:@(?<version>[a-z0-9-.]+))?$/

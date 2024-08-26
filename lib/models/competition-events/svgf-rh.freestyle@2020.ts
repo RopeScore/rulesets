@@ -110,7 +110,7 @@ export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
     name: 'Presentation',
     fieldDefinitions,
     calculateScoresheet: scsh => {
-      const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
+      const tally: ScoreTally = calculateTally(scsh, fieldDefinitions)
 
       const score = fieldDefinitions.map(f => tally[f.schema] ?? 0).reduce((a, b) => a + b)
 
