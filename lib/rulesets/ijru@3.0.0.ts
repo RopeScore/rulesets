@@ -1,3 +1,9 @@
+import { type Ruleset } from './types.js'
+
+import ijruFreestyle300 from '../models/competition-events/ijru.freestyle@3.0.0.js'
+import ijruSpeed100 from '../models/competition-events/ijru.speed@1.0.0.js'
+import ijruOverall100 from '../models/overalls/ijru.overall@1.0.0.js'
+
 import eIjruFsDdDdpf475300 from '../preconfigured/competition-events/ijru/3.0.0/e.ijru.fs.dd.ddpf.4.75@3.0.0.js'
 import eIjruFsDdDdsf375300 from '../preconfigured/competition-events/ijru/3.0.0/e.ijru.fs.dd.ddsf.3.75@3.0.0.js'
 import eIjruFsDdDdtf590300 from '../preconfigured/competition-events/ijru/3.0.0/e.ijru.fs.dd.ddtf.5.90@3.0.0.js'
@@ -16,10 +22,6 @@ import eIjruOaDdTddo40300 from '../preconfigured/overalls/ijru/3.0.0/e.ijru.oa.d
 import eIjruOaSrIsro10300 from '../preconfigured/overalls/ijru/3.0.0/e.ijru.oa.sr.isro.1.0@3.0.0.js'
 import eIjruOaSrTsro40300 from '../preconfigured/overalls/ijru/3.0.0/e.ijru.oa.sr.tsro.4.0@3.0.0.js'
 import eIjruOaXdTcaa40300 from '../preconfigured/overalls/ijru/3.0.0/e.ijru.oa.xd.tcaa.4.0@3.0.0.js'
-import { type Ruleset } from './types.js'
-import ijruFreestyle300 from '../models/competition-events/ijru.freestyle@3.0.0.js'
-import ijruSpeed100 from '../models/competition-events/ijru.speed@1.0.0.js'
-import ijruOverall100 from '../models/overalls/ijru.overall@1.0.0.js'
 
 export default {
   id: 'ijru@3.0.0',
