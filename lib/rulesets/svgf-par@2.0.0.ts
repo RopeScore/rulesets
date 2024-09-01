@@ -1,4 +1,9 @@
 import { type Ruleset } from '../index.js'
+
+import ijruFreestyle200 from '../models/competition-events/ijru.freestyle@2.0.0.js'
+import ijruSpeed100 from '../models/competition-events/ijru.speed@1.0.0.js'
+import svgfParOverall200 from '../models/overalls/svgf-par.overall@2.0.0.js'
+
 import eIjruFsSrSrpf275200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.fs.sr.srpf.2.75@2.0.0'
 import eIjruFsWhWhpf275200 from '../preconfigured/competition-events/ijru/2.0.0/e.ijru.fs.wh.whpf.2.75@2.0.0'
 import eIjruSpSrSrdr22x30100 from '../preconfigured/competition-events/ijru/1.0.0/e.ijru.sp.sr.srdr.2.2x30@1.0.0'
@@ -18,5 +23,12 @@ export default {
   ],
   overalls: [
     eSvgfOaXdTpaa20200,
+  ],
+  competitionEventModels: [
+    ijruFreestyle200,
+    ijruSpeed100,
+  ],
+  overallModels: [
+    svgfParOverall200,
   ],
 } satisfies Ruleset

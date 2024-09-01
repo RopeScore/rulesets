@@ -54,10 +54,10 @@ async function run () {
 
   // overall models
   const overallModels = await globImport<OverallModel>('models/overalls/*.ts')
-  const overallModelInfo: Record<string, OverallModelInfo> = {}
+  const overallModelsInfo: Record<string, OverallModelInfo> = {}
 
   for (const [cEvt, model] of Object.entries(overallModels)) {
-    overallModelInfo[cEvt] = {
+    overallModelsInfo[cEvt] = {
       id: model.id,
       name: model.name,
       options: model.options,
@@ -65,7 +65,7 @@ async function run () {
     }
   }
 
-  await writeFile(path.resolve(dataDir, 'overall-models.json'), JSON.stringify(overallModelInfo, null, 2), 'utf-8')
+  await writeFile(path.resolve(dataDir, 'overall-models.json'), JSON.stringify(overallModelsInfo, null, 2), 'utf-8')
 
   // preconfigured competition events
   const competitionEvents = await globImport<CompetitionEvent>('preconfigured/competition-events/**/*.ts')
@@ -112,6 +112,8 @@ async function run () {
       name: model.name,
       competitionEvents: model.competitionEvents.map(cEvt => competitionEventsInfo[cEvt.id]),
       overalls: model.overalls.map(cEvt => overallsInfo[cEvt.id]),
+      competitionEventModels: model.competitionEventModels.map(cEvt => cEvtModelInfo[cEvt.id]),
+      overallModels: model.overallModels.map(cEvt => overallModelsInfo[cEvt.id]),
     }
   }
 

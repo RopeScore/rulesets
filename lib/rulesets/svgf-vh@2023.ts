@@ -1,4 +1,10 @@
 import { type Ruleset } from '../index.js'
+
+import svgfVhFreestyle2023 from '../models/competition-events/svgf-vh.freestyle@2023.js'
+import svgfVhSpeed2023 from '../models/competition-events/svgf-vh.speed@2023.js'
+import svgfVhTiming2023 from '../models/competition-events/svgf-vh.timing@2023.js'
+import svgfVhOverall2023 from '../models/overalls/svgf-vh.overall@2023.js'
+
 import eSvgfFsDdDdpfVh41202023 from '../preconfigured/competition-events/svgf/2023/e.svgf.fs.dd.ddpf-vh.4.120@2023.js'
 import eSvgfFsSrSrifVh1752023 from '../preconfigured/competition-events/svgf/2023/e.svgf.fs.sr.srif-vh.1.75@2023.js'
 import eSvgfFsSrSrtfVh4752023 from '../preconfigured/competition-events/svgf/2023/e.svgf.fs.sr.srtf-vh.4.75@2023.js'
@@ -35,4 +41,12 @@ export default {
     eSvgfOaSrVhto402023,
     eSvgfOaDdVhto402023,
   ],
-} satisfies Ruleset
+  competitionEventModels: [
+    svgfVhFreestyle2023,
+    svgfVhSpeed2023,
+    svgfVhTiming2023,
+  ],
+  overallModels: [
+    svgfVhOverall2023,
+  ],
+} as Ruleset

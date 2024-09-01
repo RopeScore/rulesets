@@ -17,6 +17,9 @@ import eIjruOaSrIsro10300 from '../preconfigured/overalls/ijru/3.0.0/e.ijru.oa.s
 import eIjruOaSrTsro40300 from '../preconfigured/overalls/ijru/3.0.0/e.ijru.oa.sr.tsro.4.0@3.0.0.js'
 import eIjruOaXdTcaa40300 from '../preconfigured/overalls/ijru/3.0.0/e.ijru.oa.xd.tcaa.4.0@3.0.0.js'
 import { type Ruleset } from './types.js'
+import ijruFreestyle300 from '../models/competition-events/ijru.freestyle@3.0.0.js'
+import ijruSpeed100 from '../models/competition-events/ijru.speed@1.0.0.js'
+import ijruOverall100 from '../models/overalls/ijru.overall@1.0.0.js'
 
 export default {
   id: 'ijru@3.0.0',
@@ -44,5 +47,12 @@ export default {
     eIjruOaSrTsro40300,
     eIjruOaDdTddo40300,
     eIjruOaXdTcaa40300,
+  ],
+  competitionEventModels: [
+    ijruFreestyle300,
+    ijruSpeed100,
+  ],
+  overallModels: [
+    ijruOverall100,
   ],
 } satisfies Ruleset

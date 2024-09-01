@@ -47,6 +47,19 @@ async function run () {
       if (model == null) printError(p, `Configured component competition event ${cEvt} does not exist`)
     }
   }
+
+  // validate that ruleset contains all models referenced by preconfigured
+  for (const [p, ruleset] of Object.entries(rulesets)) {
+    for (const preConf of ruleset.competitionEvents) {
+      const modelIdx = ruleset.competitionEventModels.findIndex(m => m.id === preConf.modelId)
+      if (modelIdx === -1) printError(p, `Model ${preConf.modelId} is not present in ruleset's competitionEventModels but is used by competitionEvent ${preConf.id}`)
+    }
+
+    for (const preConf of ruleset.overalls) {
+      const modelIdx = ruleset.overallModels.findIndex(m => m.id === preConf.modelId)
+      if (modelIdx === -1) printError(p, `Model ${preConf.modelId} is not present in ruleset's overallModels but is used by overall ${preConf.id}`)
+    }
+  }
 }
 
 run()

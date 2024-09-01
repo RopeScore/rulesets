@@ -32,6 +32,8 @@ export interface RulesetInfo {
   name: string
   competitionEvents: readonly CompetitionEventInfo[]
   overalls: readonly OverallInfo[]
+  competitionEventModels: readonly CompetitionEventModelInfo[]
+  overallModels: readonly OverallModelInfo[]
 }
 
 export async function listCompetitionEventModels () {
