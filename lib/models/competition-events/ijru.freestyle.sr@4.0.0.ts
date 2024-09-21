@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors'
-import { calculateTally, clampNumber, formatFactor, isMarkScoresheet, matchMeta, roundTo, roundToCurry } from '../../helpers'
+import { clampNumber, filterMarkStream, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers'
 import type { CompetitionEventModel, JudgeTypeGetter, Options, ScoreTally, TableDefinition } from '../types'
 
 type Option = 'discipline' | 'interactions' |
@@ -13,7 +13,7 @@ const presWeights = {
   form: 0.25,
   music: 0.2,
   crea: 0.15,
-  variety: 0.15,
+  vari: 0.15,
 }
 
 // deduc
@@ -44,179 +44,208 @@ export function L (l: number): number {
 // JUDGES
 // ======
 export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
-  const components = ['ent', 'form', 'music', 'crea', 'variety'] as const
-  type Component = typeof components[number]
-
-  type Schema = 'miss' | `${Component}${'Plus' | 'Minus'}${'' | 'Adj'}`
-
-  const fieldDefinitions = [
+  const components = ['ent', 'form', 'music', 'crea', 'vari'] as const
+  const markDefinitions = [
     {
       schema: 'entPlus',
       name: 'Entertainment +',
-      min: 0,
-      step: 1,
     },
     {
       schema: 'entMinus',
       name: 'Entertainment -',
-      min: 0,
-      step: 1,
     },
 
     {
       schema: 'formPlus',
       name: 'Form/Execution +',
-      min: 0,
-      step: 1,
     },
     {
       schema: 'formMinus',
       name: 'Form/Execution -',
-      min: 0,
-      step: 1,
     },
 
     {
       schema: 'musicPlus',
       name: 'Musicality +',
-      min: 0,
-      step: 1,
     },
     {
       schema: 'musicMinus',
       name: 'Musicality -',
-      min: 0,
-      step: 1,
     },
 
     {
       schema: 'creaPlus',
       name: 'Creativity +',
-      min: 0,
-      step: 1,
     },
     {
       schema: 'creaMinus',
       name: 'Creativity -',
-      min: 0,
-      step: 1,
     },
 
     {
-      schema: 'creaPlus',
+      schema: 'variPlus',
       name: 'Variety +',
+    },
+    {
+      schema: 'variMinus',
+      name: 'Repetitive -',
+    },
+
+    {
+      schema: 'miss',
+      name: 'Miss',
+    },
+
+    {
+      schema: 'entPlusAdj',
+      name: 'Adjustment Entertainment +',
+    },
+    {
+      schema: 'entMinusAdj',
+      name: 'Adjustment Entertainment -',
+    },
+
+    {
+      schema: 'formPlusAdj',
+      name: 'Adjustment Form/Execution +',
+    },
+    {
+      schema: 'formMinusAdj',
+      name: 'Adjustment Form/Execution -',
+    },
+
+    {
+      schema: 'musicPlusAdj',
+      name: 'Adjustment Musicality +',
+    },
+    {
+      schema: 'musicMinusAdj',
+      name: 'Adjustment Musicality -',
+    },
+
+    {
+      schema: 'creaPlusAdj',
+      name: 'Adjustment Creativity +',
+    },
+    {
+      schema: 'creaMinusAdj',
+      name: 'Adjustment Creativity -',
+    },
+
+    {
+      schema: 'variPlusAdj',
+      name: 'Adjustment Variety +',
+    },
+    {
+      schema: 'variMinusAdj',
+      name: 'Adjustment Repetitive -',
+    },
+  ] as const
+  const tallyDefinitions = [
+    {
+      schema: 'ent',
+      name: 'Entertainment',
       min: 0,
+      max: 24,
       step: 1,
     },
     {
-      schema: 'creaMinus',
-      name: 'Repetitive -',
+      schema: 'form',
+      name: 'Form/Execution',
       min: 0,
+      max: 24,
       step: 1,
     },
-
+    {
+      schema: 'music',
+      name: 'Musicality',
+      min: 0,
+      max: 24,
+      step: 1,
+    },
+    {
+      schema: 'crea',
+      name: 'Creativity',
+      min: 0,
+      max: 24,
+      step: 1,
+    },
+    {
+      schema: 'vari',
+      name: 'Variety',
+      min: 0,
+      max: 24,
+      step: 1,
+    },
     {
       schema: 'miss',
       name: 'Miss',
       min: 0,
       step: 1,
     },
-
-    {
-      schema: 'entPlusAdj',
-      name: 'Adjustment Entertainment +',
-      min: 0,
-      step: 1,
-    },
-    {
-      schema: 'entMinusAdj',
-      name: 'Adjustment Entertainment -',
-      min: 0,
-      step: 1,
-    },
-
-    {
-      schema: 'formPlusAdj',
-      name: 'Adjustment Form/Execution +',
-      min: 0,
-      step: 1,
-    },
-    {
-      schema: 'formMinusAdj',
-      name: 'Adjustment Form/Execution -',
-      min: 0,
-      step: 1,
-    },
-
-    {
-      schema: 'musicPlusAdj',
-      name: 'Adjustment Musicality +',
-      min: 0,
-      step: 1,
-    },
-    {
-      schema: 'musicMinusAdj',
-      name: 'Adjustment Musicality -',
-      min: 0,
-      step: 1,
-    },
-
-    {
-      schema: 'creaPlusAdj',
-      name: 'Adjustment Creativity +',
-      min: 0,
-      step: 1,
-    },
-    {
-      schema: 'creaMinusAdj',
-      name: 'Adjustment Creativity -',
-      min: 0,
-      step: 1,
-    },
-
-    {
-      schema: 'creaPlusAdj',
-      name: 'Adjustment Variety +',
-      min: 0,
-      step: 1,
-    },
-    {
-      schema: 'creaMinusAdj',
-      name: 'Adjustment Repetitive -',
-      min: 0,
-      step: 1,
-    },
-  ]
+  ] as const
+  const tallyDefMap = new Map(tallyDefinitions.map(d => [d.schema, d]))
+  type TallySchema = typeof tallyDefinitions[number]['schema']
   const id = 'P'
   return {
     id,
     name: 'Presentation',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
+    markDefinitions,
+    tallyDefinitions,
+    calculateTally: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<Schema> = calculateTally(scsh, fieldDefinitions)
+      const marks = filterMarkStream(scsh.marks)
+      const tally: Required<ScoreTally<TallySchema>> = {
+        ent: 12,
+        form: 12,
+        music: 12,
+        crea: 12,
+        vari: 12,
+        miss: 0,
+      }
+
+      const stageOneMarks = ['miss', ...components.flatMap(c => [`${c}Plus`, `${c}Minus`])]
+
+      for (const mark of marks) {
+        if (stageOneMarks.includes(mark.schema)) {
+          const sign = mark.schema.endsWith('Minus') ? -1 : 1
+          const schema = mark.schema.replace(/(Plus|Minus)$/, '') as TallySchema
+
+          tally[schema] = tally[schema] + ((mark.value ?? 1) * sign)
+        }
+      }
+
+      for (const field of tallyDefinitions) {
+        const v = tally[field.schema]
+        if (typeof v !== 'number') continue
+        tally[field.schema] = clampNumber(v, field)
+      }
+
+      const stageTwoMarks = components.flatMap(c => [`${c}PlusAdj`, `${c}MinusAdj`])
+
+      for (const mark of marks) {
+        if (stageTwoMarks.includes(mark.schema)) {
+          const sign = mark.schema.endsWith('MinusAdj') ? -1 : 1
+          const schema = mark.schema.replace(/(Plus|Minus)Adj$/, '') as TallySchema
+          const field = tallyDefMap.get(schema)
+          if (field == null) throw new TypeError(`Could not find tally field with schema ${schema} - This error should not occur.`)
+
+          if (sign > 0 && 'max' in field && tally[schema] >= field.max) continue
+          if (sign < 0 && 'min' in field && tally[schema] <= field.min) continue
+
+          tally[schema] = tally[schema] + ((mark.value ?? 1) * sign)
+        }
+      }
+
+      return { meta: scsh.meta, tally }
+    },
+    calculateJudgeResult: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       let p = 0
 
       for (const component of components) {
-        let cScore = 12
-
-        cScore += tally[`${component}Plus`] ?? 0
-        cScore -= tally[`${component}Minus`] ?? 0
-        cScore -= tally.miss ?? 0
-
+        let cScore = (scsh.tally[component] ?? 12) - (scsh.tally.miss ?? 0)
         cScore = clampNumber(cScore, { min: 0, max: 24, step: 1 })
-
-        // TODO: this doesn't work for tally scoresheets, like, at all. How to
-        // handle adjustments and direct conversion from mark to tally
-        // scoresheets?
-        if (isMarkScoresheet(scsh)) {
-          for (const mark of scsh.marks) {
-            if (mark.schema === `${component}PlusAdj` && cScore < 24) cScore++
-            else if (mark.schema === `${component}MinusAdj` && cScore > 0) cScore--
-          }
-        }
-
-        cScore = Math.round(clampNumber(cScore, { min: 0, max: 24, step: 1 }))
 
         p += cScore * presWeights[component]
       }
@@ -226,7 +255,7 @@ export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
         meta: scsh.meta,
         result: {
           p,
-          nm: tally.miss ?? 0,
+          nm: scsh.tally.miss ?? 0,
         },
         statuses: {},
       }
@@ -311,30 +340,31 @@ export const technicalJudge: JudgeTypeGetter<string, Option> = options => {
   return {
     id,
     name: 'Technical Judge',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
+    markDefinitions: fieldDefinitions,
+    tallyDefinitions: fieldDefinitions,
+    calculateTally: simpleCalculateTallyFactory(id, fieldDefinitions),
+    calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally = calculateTally(scsh, fieldDefinitions)
       return {
         meta: scsh.meta,
         result: {
-          nm: tally.miss ?? 0,
-          nb: tally.break ?? 0,
-          nv: (tally.timeViolation ?? 0) + (tally.spaceViolation ?? 0),
+          nm: scsh.tally.miss ?? 0,
+          nb: scsh.tally.break ?? 0,
+          nv: (scsh.tally.timeViolation ?? 0) + (scsh.tally.spaceViolation ?? 0),
 
           ...(isWH
             ? {
-                aqP: clampNumber(maxRq.rqGymnasticsPower - (tally.rqGymnasticsPower ?? 0), { min: 0 }),
-                aqM: clampNumber(maxRq.rqMultiples - (tally.rqMultiples ?? 0), { min: 0 }),
-                aqR: clampNumber(maxRq.rqRopeManipulation - (tally.rqRopeManipulation ?? 0), { min: 0 }),
-                aqI: clampNumber(maxRq.rqInteractions - (tally.rqInteractions ?? 0), { min: 0 }),
+                aqP: clampNumber(maxRq.rqGymnasticsPower - (scsh.tally.rqGymnasticsPower ?? 0), { min: 0 }),
+                aqM: clampNumber(maxRq.rqMultiples - (scsh.tally.rqMultiples ?? 0), { min: 0 }),
+                aqR: clampNumber(maxRq.rqRopeManipulation - (scsh.tally.rqRopeManipulation ?? 0), { min: 0 }),
+                aqI: clampNumber(maxRq.rqInteractions - (scsh.tally.rqInteractions ?? 0), { min: 0 }),
               }
             : {}
           ),
 
           ...(!isWH && hasInteractions
             ? {
-                aqI: clampNumber(maxRq.rqInteractions - (tally.rqInteractions ?? 0), { min: 0 }),
+                aqI: clampNumber(maxRq.rqInteractions - (scsh.tally.rqInteractions ?? 0), { min: 0 }),
               }
             : {}
           ),
@@ -347,6 +377,7 @@ export const technicalJudge: JudgeTypeGetter<string, Option> = options => {
 
 export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
   const maxRq = getRqMax(options)
+  const isWH = options.discipline === 'wh'
 
   const fieldDefinitions = [
     {
@@ -378,19 +409,25 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
     id,
     // TODO: handle for the different judges
     name: 'Difficulty',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
+    markDefinitions: fieldDefinitions,
+    tallyDefinitions: fieldDefinitions,
+    calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
+    calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
-      const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
+      const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (scsh.tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
       return {
         meta: scsh.meta,
         result: {
           d,
 
-          aqP: clampNumber(maxRq.rqGymnasticsPower - (tally.rqGymnasticsPower ?? 0), { min: 0 }),
-          aqM: clampNumber(maxRq.rqMultiples - (tally.rqMultiples ?? 0), { min: 0 }),
-          aqR: clampNumber(maxRq.rqRopeManipulation - (tally.rqRopeManipulation ?? 0), { min: 0 }),
+          ...(isWH
+            ? {}
+            : {
+                aqP: clampNumber(maxRq.rqGymnasticsPower - (scsh.tally.rqGymnasticsPower ?? 0), { min: 0 }),
+                aqM: clampNumber(maxRq.rqMultiples - (scsh.tally.rqMultiples ?? 0), { min: 0 }),
+                aqR: clampNumber(maxRq.rqRopeManipulation - (scsh.tally.rqRopeManipulation ?? 0), { min: 0 }),
+              }
+          ),
         },
         statuses: {},
       }

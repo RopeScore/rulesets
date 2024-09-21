@@ -1,3 +1,5 @@
+import { RSRWrongJudgeTypeError } from './errors.js'
+import type { GenericMark, Mark } from './models/types.js'
 import { type JudgeFieldDefinition, type ScoreTally, isClearMark, isUndoMark, type Meta, type EntryResult, type TallyScoresheet, type MarkScoresheet } from './models/types.js'
 import { type CompetitionEventDefinition } from './preconfigured/types.js'
 
@@ -76,6 +78,33 @@ export function formatFactor (value: number): string {
   else return `-${roundTo((1 - value) * 100, 0)} %`
 }
 
+export function filterMarkStream <Schema extends string> (rawMarks: Readonly<Array<Readonly<Mark<Schema>>>>): Array<GenericMark<Schema>> {
+  const clearMarkIdx = rawMarks.findLastIndex(mark => mark.schema === 'clear')
+  const marks = rawMarks.slice(clearMarkIdx + 1)
+  for (let idx = 0; idx < marks.length; idx++) {
+    const mark = marks[idx]
+    if (isUndoMark(mark)) {
+      let targetIdx = -1
+      // We're doing an optimised check here since the undone mark need to be
+      // before the undo mark, and will most likely be just before teh undo mark
+      // therefore findIndex or findLastIndex would be wasteful
+      for (let tIdx = idx - 1; tIdx >= 0; tIdx--) {
+        if (marks[tIdx].sequence === mark.target) {
+          targetIdx = tIdx
+          break
+        }
+      }
+      if (targetIdx >= 0 && !isUndoMark(marks[targetIdx]) && !isClearMark(marks[targetIdx])) {
+        marks.splice(targetIdx, 1)
+        idx--
+      }
+      marks.splice(idx, 1)
+      idx--
+    }
+  }
+  return marks
+}
+
 /**
  * Takes a scoresheet and returns a tally
  *
@@ -85,41 +114,38 @@ export function formatFactor (value: number): string {
  * Each value of the tally will also be clamped to the specified max, min and
  * step size for that field schema.
  */
-export function calculateTally <Schema extends string> (scoresheet: Pick<TallyScoresheet<Schema>, 'tally'> | Pick<MarkScoresheet<Schema>, 'marks'>, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>): ScoreTally<Schema> {
-  let tally: ScoreTally<Schema> = isTallyScoresheet<Schema>(scoresheet) ? { ...(scoresheet.tally ?? {}) } : {}
-  const allowedSchemas = fieldDefinitions?.map(f => f.schema)
+export function simpleCalculateTallyFactory <Schema extends string> (judgeTypeId: string, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>) {
+  return function simpleCalculateTally (scoresheet: MarkScoresheet<Schema>) {
+    if (!matchMeta(scoresheet.meta, { judgeTypeId })) throw new RSRWrongJudgeTypeError(scoresheet.meta.judgeTypeId, judgeTypeId)
+    const tally: ScoreTally<Schema> = isTallyScoresheet<Schema>(scoresheet) ? { ...(scoresheet.tally ?? {}) } : {}
+    const allowedSchemas = fieldDefinitions?.map(f => f.schema)
 
-  if (isMarkScoresheet(scoresheet)) {
-    for (const mark of scoresheet.marks) {
-      if (isUndoMark(mark)) {
-        const target = scoresheet.marks.find(m => m.sequence === mark.target)
-        if (target == null || isUndoMark(target) || isClearMark(target)) continue
-        tally[target.schema as Schema] = (tally[target.schema as Schema] ?? 0) - (target.value ?? 1)
-      } else if (isClearMark(mark)) {
-        tally = {}
-      } else {
-        tally[mark.schema as Schema] = (tally[mark.schema as Schema] ?? 0) + (mark.value ?? 1)
+    for (const mark of filterMarkStream(scoresheet.marks)) {
+      tally[mark.schema as Schema] = (tally[mark.schema as Schema] ?? 0) + (mark.value ?? 1)
+    }
+
+    if (fieldDefinitions != null) {
+      for (const field of fieldDefinitions) {
+        const v = tally[field.schema]
+        if (typeof v !== 'number') continue
+
+        tally[field.schema] = clampNumber(v, field)
       }
     }
-  }
 
-  if (fieldDefinitions != null) {
-    for (const field of fieldDefinitions) {
-      if (typeof tally[field.schema] !== 'number') continue
-      // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
-      tally[field.schema] = clampNumber(tally[field.schema] as number, field)
+    if (allowedSchemas != null) {
+      const extra = Object.keys(tally).filter(schema => !allowedSchemas.includes(schema as Schema))
+
+      // @ts-expect-error Yes I know schema doesn't exist in the target object, I'm deleting the schemas that shouldn't be there
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      for (const schema of extra) delete tally[schema]
+    }
+
+    return {
+      meta: scoresheet.meta,
+      tally,
     }
   }
-
-  if (allowedSchemas != null) {
-    const extra = Object.keys(tally).filter(schema => !allowedSchemas.includes(schema as Schema))
-
-    // @ts-expect-error Yes I know schema doesn't exist in the target object, I'm deleting the schemas that shouldn't be there
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    for (const schema of extra) delete tally[schema]
-  }
-
-  return tally
 }
 
 /**

@@ -1,7 +1,7 @@
-import { calculateTally, clampNumber, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple } from './helpers.js'
+import { calculateTally, clampNumber, filterMarkStream, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple } from './helpers.js'
 import assert from 'node:assert'
 import test from 'node:test'
-import type { JudgeMeta, Mark } from './models/types.js'
+import type { GenericMark, JudgeMeta, Mark } from './models/types.js'
 
 void test('helpers', async t => {
   await t.test('isObject', async t => {
@@ -68,6 +68,51 @@ void test('helpers', async t => {
     assert.strictEqual(formatFactor(1), '±0 %')
     assert.strictEqual(formatFactor(0.9), '-10 %')
     assert.strictEqual(formatFactor(1.1), '+10 %')
+  })
+
+  await t.test('filterMarkStream', async t => {
+    const tests: Array<[name: string, input: Array<Mark<string>>, output: Array<GenericMark<string>>]> = [
+      [
+        'No special marks',
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 2, timestamp: 2, schema: 'a' }],
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 2, timestamp: 2, schema: 'a' }],
+      ],
+      [
+        'Start at clear mark',
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 2, timestamp: 2, schema: 'a' }, { sequence: 3, timestamp: 3, schema: 'clear' }, { sequence: 4, timestamp: 4, schema: 'b' }, { sequence: 5, timestamp: 5, schema: 'b' }],
+        [{ sequence: 4, timestamp: 4, schema: 'b' }, { sequence: 5, timestamp: 5, schema: 'b' }],
+      ],
+      [
+        'Handle single undo',
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 2, timestamp: 2, schema: 'a' }, { sequence: 3, timestamp: 3, schema: 'undo', target: 2 }, { sequence: 4, timestamp: 4, schema: 'b' }, { sequence: 5, timestamp: 5, schema: 'b' }],
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 4, timestamp: 4, schema: 'b' }, { sequence: 5, timestamp: 5, schema: 'b' }],
+      ],
+      [
+        'Handle two undos right after each other',
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 2, timestamp: 2, schema: 'a' }, { sequence: 3, timestamp: 3, schema: 'b' }, { sequence: 4, timestamp: 4, schema: 'undo', target: 2 }, { sequence: 5, timestamp: 5, schema: 'undo', target: 3 }, { sequence: 6, timestamp: 6, schema: 'b' }],
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 6, timestamp: 6, schema: 'b' }],
+      ],
+      [
+        'Cannot undo an undo - silent ignore',
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 2, timestamp: 2, schema: 'a' }, { sequence: 3, timestamp: 3, schema: 'b' }, { sequence: 4, timestamp: 4, schema: 'undo', target: 2 }, { sequence: 5, timestamp: 5, schema: 'undo', target: 4 }, { sequence: 6, timestamp: 6, schema: 'b' }],
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 3, timestamp: 3, schema: 'b' }, { sequence: 6, timestamp: 6, schema: 'b' }],
+      ],
+      [
+        'Cannot undo a clear mark - silent ignore',
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 2, timestamp: 2, schema: 'a' }, { sequence: 3, timestamp: 3, schema: 'b' }, { sequence: 4, timestamp: 4, schema: 'clear' }, { sequence: 5, timestamp: 5, schema: 'undo', target: 4 }, { sequence: 6, timestamp: 6, schema: 'b' }],
+        [{ sequence: 6, timestamp: 6, schema: 'b' }],
+      ],
+      [
+        'Cannot undo before a clear mark - silent ignore',
+        [{ sequence: 1, timestamp: 1, schema: 'a' }, { sequence: 2, timestamp: 2, schema: 'a' }, { sequence: 3, timestamp: 3, schema: 'b' }, { sequence: 4, timestamp: 4, schema: 'clear' }, { sequence: 5, timestamp: 5, schema: 'undo', target: 2 }, { sequence: 6, timestamp: 6, schema: 'b' }],
+        [{ sequence: 6, timestamp: 6, schema: 'b' }],
+      ],
+    ]
+    for (const [title, input, output] of tests) {
+      await t.test(title, () => {
+        assert.deepStrictEqual(filterMarkStream(input), output)
+      })
+    }
   })
 
   await t.test('calculateTally', async t => {

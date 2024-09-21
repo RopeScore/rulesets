@@ -1,7 +1,7 @@
 import { isObject } from '../helpers.js'
 import { type CompetitionEventDefinition } from '../preconfigured/types.js'
 
-export interface JudgeType<Schema extends string> {
+export interface JudgeType<MarkSchema extends string, TallySchema extends string = MarkSchema> {
   /**
    * This should be unique for the model, but may be the same as a judge used
    * in another model. For example it could be D for a Difficulty judge.
@@ -13,18 +13,31 @@ export interface JudgeType<Schema extends string> {
    */
   name: string
   /**
-   * Field
+   * These are the mark types available for the judge type providing the valid
+   * mark schemas for this judge type
    */
-  fieldDefinitions: Readonly<Array<JudgeFieldDefinition<Schema>>>
+  markDefinitions: Readonly<Array<JudgeMarkDefinition<MarkSchema>>>
   /**
-   * This takes a judge scoresheet, and summarises it into a judge score.
+   * These are the tally fields the marks will get converted into when calling
+   * calculateTally, and some validation parameters for them. These can be used
+   * to generate tabulator interfaces.
    */
-  calculateScoresheet: (scoresheet: Scoresheet<Schema>) => JudgeResult
+  tallyDefinitions: Readonly<Array<JudgeFieldDefinition<TallySchema>>>
+  /**
+   *
+   */
+  calculateTally: (scoresheet: MarkScoresheet<MarkSchema>) => TallyScoresheet<TallySchema>
+  /**
+   * This takes a tally scoresheet, and summarises it into a judge score. If the
+   * judge has submitted a mark scoresheet it should first be processed with
+   * calculateTally
+   */
+  calculateJudgeResult: (scoresheet: TallyScoresheet<TallySchema>) => JudgeResult
 }
 
 export type JudgeTypeGetter<Schema extends string = string, Option extends string = string> = (options: Options<Option>) => Readonly<JudgeType<Schema>>
 
-export interface JudgeFieldDefinition<Schema extends string> {
+export interface JudgeMarkDefinition<Schema extends string> {
   /**
    * an unique identifier for this field to identify it's marks or tally.
    * Multiple judge types can however be using this field with the same schema,
@@ -35,6 +48,9 @@ export interface JudgeFieldDefinition<Schema extends string> {
    * The human readable name of the field, such as "Level 8"
    */
   name: string
+}
+
+export interface JudgeFieldDefinition<Schema extends string> extends JudgeMarkDefinition<Schema> {
   /** the minimum value for this field, if not set the value is not capped */
   min?: number
   /** the maximum value for this field, if not set the value is not capped */
