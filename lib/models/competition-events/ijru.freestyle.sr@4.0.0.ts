@@ -43,7 +43,7 @@ export function L (l: number): number {
 // ======
 // JUDGES
 // ======
-export const presentationJudge: JudgeTypeGetter<string, string, Option> = options => {
+export const presentationJudge: JudgeTypeGetter<Option> = options => {
   const components = ['ent', 'form', 'music', 'crea', 'vari'] as const
   const markDefinitions = [
     {
@@ -264,7 +264,7 @@ export const presentationJudge: JudgeTypeGetter<string, string, Option> = option
   }
 }
 
-export const technicalJudge: JudgeTypeGetter<string, string, Option> = options => {
+export const technicalJudge: JudgeTypeGetter<Option> = options => {
   const isWH = options.discipline === 'wh'
   const hasInteractions = options.interactions === true
 
@@ -377,7 +377,7 @@ export const technicalJudge: JudgeTypeGetter<string, string, Option> = options =
   }
 }
 
-export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGetter<string, string, Option> = (id, name) => options => {
+export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGetter<Option> = (id, name) => options => {
   const maxRq = getRqMax(options)
   const isWH = options.discipline === 'wh'
 
@@ -537,4 +537,4 @@ export default {
 
   previewTable: options => freestylePreviewTableHeaders,
   resultTable: options => freestyleResultTableHeaders,
-} satisfies CompetitionEventModel<string, Option>
+} satisfies CompetitionEventModel<Option>
