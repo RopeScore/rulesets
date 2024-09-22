@@ -12,13 +12,13 @@ export interface PartiallyConfigureCompetitionEventModelOptions<Option extends s
   name: string
   options: Options<Option>
 }
-export function partiallyConfigureCompetitionEventModel <Schema extends string, Option extends string> (model: CompetitionEventModel<Schema, Option>, options: PartiallyConfigureCompetitionEventModelOptions<Option>): CompetitionEvent {
+export function partiallyConfigureCompetitionEventModel <Option extends string> (model: CompetitionEventModel<Option>, options: PartiallyConfigureCompetitionEventModelOptions<Option>): CompetitionEvent {
   return {
     id: options.id,
     modelId: model.id,
     name: options.name,
     options: model.options.filter(o => !(o.id in options.options)),
-    judges: model.judges.map(j => ((o: Partial<Record<Option, unknown>>) => j({ ...o, ...options.options })) as JudgeTypeGetter),
+    judges: model.judges.map(j => ((o: Partial<Record<Option, unknown>>) => j({ ...o, ...options.options })) as JudgeTypeGetter<Option>),
     calculateEntry (meta, results, o) {
       return model.calculateEntry(meta, results, { ...o, ...options.options })
     },
