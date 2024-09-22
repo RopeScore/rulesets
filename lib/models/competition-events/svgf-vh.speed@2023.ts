@@ -1,6 +1,6 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { calculateTally, matchMeta, roundTo, roundToCurry } from '../../helpers.js'
-import type { CompetitionEventModel, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
+import { filterTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers.js'
+import type { CompetitionEventModel, JudgeTypeGetter, TableDefinition } from '../types.js'
 
 type Option = never
 
@@ -12,7 +12,7 @@ export function average (scores: number[]): number {
 // ======
 // JUDGES
 // ======
-export const speedJudge: JudgeTypeGetter<string, Option> = options => {
+export const speedJudge: JudgeTypeGetter<Option> = options => {
   const fieldDefinitions = [{
     schema: 'step',
     name: 'Score',
@@ -23,10 +23,12 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
   return {
     id,
     name: 'Speed',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
+    markDefinitions: fieldDefinitions,
+    tallyDefinitions: fieldDefinitions,
+    calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
+    calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
+      const tally = filterTally(scsh.tally, fieldDefinitions)
       return {
         meta: scsh.meta,
         result: {
@@ -97,4 +99,4 @@ export default {
 
   previewTable: options => speedPreviewTableHeaders,
   resultTable: options => speedResultTableHeaders,
-} satisfies CompetitionEventModel<string, Option>
+} satisfies CompetitionEventModel<Option>
