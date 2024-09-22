@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors'
-import { clampNumber, filterMarkStream, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers'
+import { clampNumber, filterMarkStream, filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers'
 import type { CompetitionEventModel, JudgeTypeGetter, Options, ScoreTally, TableDefinition } from '../types'
 
 type Option = 'discipline' | 'interactions' |
@@ -43,7 +43,7 @@ export function L (l: number): number {
 // ======
 // JUDGES
 // ======
-export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
+export const presentationJudge: JudgeTypeGetter<string, string, Option> = options => {
   const components = ['ent', 'form', 'music', 'crea', 'vari'] as const
   const markDefinitions = [
     {
@@ -241,10 +241,11 @@ export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
     },
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
+      const tally = filterTally(scsh.tally, tallyDefinitions)
       let p = 0
 
       for (const component of components) {
-        let cScore = (scsh.tally[component] ?? 12) - (scsh.tally.miss ?? 0)
+        let cScore = (tally[component] ?? 12) - (tally.miss ?? 0)
         cScore = clampNumber(cScore, { min: 0, max: 24, step: 1 })
 
         p += cScore * presWeights[component]
@@ -255,7 +256,7 @@ export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
         meta: scsh.meta,
         result: {
           p,
-          nm: scsh.tally.miss ?? 0,
+          nm: tally.miss ?? 0,
         },
         statuses: {},
       }
@@ -263,7 +264,7 @@ export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
   }
 }
 
-export const technicalJudge: JudgeTypeGetter<string, Option> = options => {
+export const technicalJudge: JudgeTypeGetter<string, string, Option> = options => {
   const isWH = options.discipline === 'wh'
   const hasInteractions = options.interactions === true
 
@@ -345,19 +346,20 @@ export const technicalJudge: JudgeTypeGetter<string, Option> = options => {
     calculateTally: simpleCalculateTallyFactory(id, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
+      const tally = filterTally(scsh.tally, fieldDefinitions)
       return {
         meta: scsh.meta,
         result: {
-          nm: scsh.tally.miss ?? 0,
-          nb: scsh.tally.break ?? 0,
-          nv: (scsh.tally.timeViolation ?? 0) + (scsh.tally.spaceViolation ?? 0),
+          nm: tally.miss ?? 0,
+          nb: tally.break ?? 0,
+          nv: (tally.timeViolation ?? 0) + (tally.spaceViolation ?? 0),
 
           ...(isWH
             ? {
-                aqP: clampNumber(maxRq.rqGymnasticsPower - (scsh.tally.rqGymnasticsPower ?? 0), { min: 0 }),
-                aqM: clampNumber(maxRq.rqMultiples - (scsh.tally.rqMultiples ?? 0), { min: 0 }),
-                aqR: clampNumber(maxRq.rqRopeManipulation - (scsh.tally.rqRopeManipulation ?? 0), { min: 0 }),
-                aqI: clampNumber(maxRq.rqInteractions - (scsh.tally.rqInteractions ?? 0), { min: 0 }),
+                aqP: clampNumber(maxRq.rqGymnasticsPower - (tally.rqGymnasticsPower ?? 0), { min: 0 }),
+                aqM: clampNumber(maxRq.rqMultiples - (tally.rqMultiples ?? 0), { min: 0 }),
+                aqR: clampNumber(maxRq.rqRopeManipulation - (tally.rqRopeManipulation ?? 0), { min: 0 }),
+                aqI: clampNumber(maxRq.rqInteractions - (tally.rqInteractions ?? 0), { min: 0 }),
               }
             : {}
           ),
@@ -375,7 +377,7 @@ export const technicalJudge: JudgeTypeGetter<string, Option> = options => {
   }
 }
 
-export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
+export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGetter<string, string, Option> = (id, name) => options => {
   const maxRq = getRqMax(options)
   const isWH = options.discipline === 'wh'
 
@@ -403,18 +405,16 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
   ] as const
   const levels: Record<string, number> = Object.fromEntries(Array(8).fill(undefined).map((el, idx) => [`diffL${idx + 1}`, idx + 1] as const))
   levels['diffL0.5'] = 0.5
-  // TODO: handle this being either Dp, Dm, Dr for SR or Da, Db for WH
-  const id = 'D'
   return {
     id,
-    // TODO: handle for the different judges
-    name: 'Difficulty',
+    name,
     markDefinitions: fieldDefinitions,
     tallyDefinitions: fieldDefinitions,
     calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (scsh.tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
+      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
       return {
         meta: scsh.meta,
         result: {
@@ -423,9 +423,9 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
           ...(isWH
             ? {}
             : {
-                aqP: clampNumber(maxRq.rqGymnasticsPower - (scsh.tally.rqGymnasticsPower ?? 0), { min: 0 }),
-                aqM: clampNumber(maxRq.rqMultiples - (scsh.tally.rqMultiples ?? 0), { min: 0 }),
-                aqR: clampNumber(maxRq.rqRopeManipulation - (scsh.tally.rqRopeManipulation ?? 0), { min: 0 }),
+                aqP: clampNumber(maxRq.rqGymnasticsPower - (tally.rqGymnasticsPower ?? 0), { min: 0 }),
+                aqM: clampNumber(maxRq.rqMultiples - (tally.rqMultiples ?? 0), { min: 0 }),
+                aqR: clampNumber(maxRq.rqRopeManipulation - (tally.rqRopeManipulation ?? 0), { min: 0 }),
               }
           ),
         },
@@ -471,7 +471,7 @@ export default {
     { id: 'maxRqRopeManipulation', name: 'Rope Manipulation Required Elements', type: 'number', min: 0, step: 1 },
     { id: 'maxRqInteractions', name: 'Interactions Required Elements', type: 'number', min: 0, step: 1 },
   ],
-  judges: [presentationJudge, technicalJudge, difficultyJudge],
+  judges: [presentationJudge, technicalJudge, difficultyJudgeFactory('Dp', 'Difficulty - Power and Gymnastics'), difficultyJudgeFactory('Dm', 'Difficulty - Multiples'), difficultyJudgeFactory('Dr', 'Difficulty - Rope Manipulation')],
 
   calculateEntry (meta, res, options) {
     const results = res.filter(r => matchMeta(r.meta, meta))

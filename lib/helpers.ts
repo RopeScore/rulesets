@@ -105,6 +105,20 @@ export function filterMarkStream <Schema extends string> (rawMarks: Readonly<Arr
   return marks
 }
 
+export function filterTally <Schema extends string> (_tally: ScoreTally, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>): ScoreTally<Schema> {
+  if (fieldDefinitions == null) return _tally as ScoreTally<Schema>
+  const tally: ScoreTally<Schema> = {}
+
+  for (const field of fieldDefinitions) {
+    const v = _tally[field.schema]
+    if (typeof v !== 'number') continue
+
+    tally[field.schema] = clampNumber(v, field)
+  }
+
+  return tally
+}
+
 /**
  * Takes a scoresheet and returns a tally
  *
@@ -117,29 +131,13 @@ export function filterMarkStream <Schema extends string> (rawMarks: Readonly<Arr
 export function simpleCalculateTallyFactory <Schema extends string> (judgeTypeId: string, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>) {
   return function simpleCalculateTally (scoresheet: MarkScoresheet<Schema>) {
     if (!matchMeta(scoresheet.meta, { judgeTypeId })) throw new RSRWrongJudgeTypeError(scoresheet.meta.judgeTypeId, judgeTypeId)
-    const tally: ScoreTally<Schema> = isTallyScoresheet<Schema>(scoresheet) ? { ...(scoresheet.tally ?? {}) } : {}
-    const allowedSchemas = fieldDefinitions?.map(f => f.schema)
+    let tally: ScoreTally<Schema> = isTallyScoresheet<Schema>(scoresheet) ? { ...(scoresheet.tally ?? {}) } : {}
 
     for (const mark of filterMarkStream(scoresheet.marks)) {
       tally[mark.schema as Schema] = (tally[mark.schema as Schema] ?? 0) + (mark.value ?? 1)
     }
 
-    if (fieldDefinitions != null) {
-      for (const field of fieldDefinitions) {
-        const v = tally[field.schema]
-        if (typeof v !== 'number') continue
-
-        tally[field.schema] = clampNumber(v, field)
-      }
-    }
-
-    if (allowedSchemas != null) {
-      const extra = Object.keys(tally).filter(schema => !allowedSchemas.includes(schema as Schema))
-
-      // @ts-expect-error Yes I know schema doesn't exist in the target object, I'm deleting the schemas that shouldn't be there
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      for (const schema of extra) delete tally[schema]
-    }
+    tally = filterTally(tally, fieldDefinitions)
 
     return {
       meta: scoresheet.meta,

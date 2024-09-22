@@ -35,7 +35,7 @@ export interface JudgeType<MarkSchema extends string, TallySchema extends string
   calculateJudgeResult: (scoresheet: TallyScoresheet<TallySchema>) => JudgeResult
 }
 
-export type JudgeTypeGetter<Schema extends string = string, Option extends string = string> = (options: Options<Option>) => Readonly<JudgeType<Schema>>
+export type JudgeTypeGetter<Option extends string = string, MarkSchema extends string = string, TallySchema extends string = string> = (options: Options<Option>) => Readonly<JudgeType<MarkSchema, TallySchema>>
 
 export interface JudgeMarkDefinition<Schema extends string> {
   /**
@@ -200,8 +200,8 @@ export interface BaseModel<Option extends string> {
 }
 
 // TODO: optional panel configuration to be used for checks that all judges have scored
-export interface CompetitionEventModel<Schema extends string = string, Option extends string = string> extends BaseModel<Option> {
-  judges: Array<JudgeTypeGetter<Schema, Option>>
+export interface CompetitionEventModel<Option extends string = string, MarkSchema extends string = string, TallySchema extends string = string> extends BaseModel<Option> {
+  judges: Array<JudgeTypeGetter<Option, MarkSchema, TallySchema>>
 
   previewTable: TableDefinitionGetter<Option>
   resultTable: TableDefinitionGetter<Option>

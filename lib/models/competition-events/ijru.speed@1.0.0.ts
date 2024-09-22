@@ -1,6 +1,6 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { calculateTally, matchMeta, roundTo } from '../../helpers.js'
-import type { CompetitionEventModel, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
+import { filterTally, matchMeta, roundTo, simpleCalculateTallyFactory } from '../../helpers.js'
+import type { CompetitionEventModel, JudgeTypeGetter, TableDefinition } from '../types.js'
 import { ijruAverage } from './ijru.freestyle@3.0.0.js'
 
 type Option = 'falseSwitches'
@@ -11,7 +11,7 @@ const SpeedDed = 10
 // ======
 // JUDGES
 // ======
-export const speedJudge: JudgeTypeGetter<string, Option> = options => {
+export const speedJudge: JudgeTypeGetter< Option> = options => {
   const fieldDefinitions = [{
     schema: 'step',
     name: 'Score',
@@ -22,10 +22,12 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
   return {
     id,
     name: 'Speed',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
+    markDefinitions: fieldDefinitions,
+    tallyDefinitions: fieldDefinitions,
+    calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
+    calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
+      const tally = filterTally(scsh.tally, fieldDefinitions)
       return {
         meta: scsh.meta,
         result: {
@@ -37,7 +39,7 @@ export const speedJudge: JudgeTypeGetter<string, Option> = options => {
   }
 }
 
-export const speedHeadJudge: JudgeTypeGetter<string, Option> = options => {
+export const speedHeadJudge: JudgeTypeGetter<Option> = options => {
   const falseSwitches = Number.isSafeInteger(options.falseSwitches) && options.falseSwitches as number > 0 ? options.falseSwitches as number : undefined
   const fieldDefinitions = [
     {
@@ -67,10 +69,12 @@ export const speedHeadJudge: JudgeTypeGetter<string, Option> = options => {
   return {
     id,
     name: 'Speed Head Judge',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
+    markDefinitions: fieldDefinitions,
+    tallyDefinitions: fieldDefinitions,
+    calculateTally: simpleCalculateTallyFactory(id, fieldDefinitions),
+    calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally = calculateTally(scsh, fieldDefinitions)
+      const tally = filterTally(scsh.tally, fieldDefinitions)
       return {
         meta: scsh.meta,
         result: {
@@ -166,4 +170,4 @@ export default {
 
   previewTable: options => speedPreviewTableHeaders,
   resultTable: options => speedResultTableHeaders,
-} satisfies CompetitionEventModel<string, Option>
+} satisfies CompetitionEventModel<Option>
