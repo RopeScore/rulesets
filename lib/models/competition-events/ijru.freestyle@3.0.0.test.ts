@@ -68,14 +68,18 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('Throws on incorrect meta.judgeTypeId', () => {
       assert.throws(
-        () => judge({}).calculateScoresheet({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
+        () => judge({}).calculateTally({ meta: { ...meta, judgeTypeId: 'S' }, marks: [] }),
+        new RSRWrongJudgeTypeError('S', 'Pr')
+      )
+      assert.throws(
+        () => judge({}).calculateJudgeResult({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
         new RSRWrongJudgeTypeError('S', 'Pr')
       )
     })
 
     await t.test('calculates a tally scoresheet', () => {
       assert.deepStrictEqual(
-        judge({}).calculateScoresheet({
+        judge({}).calculateJudgeResult({
           meta,
           tally: {
             entertainmentPlus: 10,
@@ -93,7 +97,7 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('calculates a tally scoresheet with musicality turned off', () => {
       assert.deepStrictEqual(
-        judge({ noMusicality: true }).calculateScoresheet({
+        judge({ noMusicality: true }).calculateJudgeResult({
           meta,
           tally: {
             entertainmentPlus: 10,
@@ -111,7 +115,7 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('Correct default values for empty scoresheet', () => {
       assert.deepStrictEqual(
-        judge({}).calculateScoresheet({ meta, tally: {} }),
+        judge({}).calculateJudgeResult({ meta, tally: {} }),
         { meta, result: { aE: 0, aM: 0 }, statuses: {} }
       )
     })
@@ -131,14 +135,18 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('Throws on incorrect meta.judgeTypeId', () => {
       assert.throws(
-        () => judge({}).calculateScoresheet({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
+        () => judge({}).calculateTally({ meta: { ...meta, judgeTypeId: 'S' }, marks: [] }),
+        new RSRWrongJudgeTypeError('S', 'Pa')
+      )
+      assert.throws(
+        () => judge({}).calculateJudgeResult({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
         new RSRWrongJudgeTypeError('S', 'Pa')
       )
     })
 
     await t.test('calculates a tally scoresheet', () => {
       assert.deepStrictEqual(
-        judge({}).calculateScoresheet({
+        judge({}).calculateJudgeResult({
           meta,
           tally: {
             formExecutionPlus: 10,
@@ -154,7 +162,7 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('Correct default values for empty scoresheet', () => {
       assert.deepStrictEqual(
-        judge({}).calculateScoresheet({ meta, tally: {} }),
+        judge({}).calculateJudgeResult({ meta, tally: {} }),
         { meta, result: { m: 1, aF: 0 }, statuses: {} }
       )
     })
@@ -174,14 +182,18 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('Throws on incorrect meta.judgeTypeId', () => {
       assert.throws(
-        () => judge({}).calculateScoresheet({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
+        () => judge({}).calculateTally({ meta: { ...meta, judgeTypeId: 'S' }, marks: [] }),
+        new RSRWrongJudgeTypeError('S', 'R')
+      )
+      assert.throws(
+        () => judge({}).calculateJudgeResult({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
         new RSRWrongJudgeTypeError('S', 'R')
       )
     })
 
     await t.test('calculates a tally scoresheet (SR, no interactions) with capping', () => {
       assert.deepStrictEqual(
-        judge({}).calculateScoresheet({
+        judge({}).calculateJudgeResult({
           meta,
           tally: {
             rqGymnasticsPower: 6,
@@ -201,7 +213,7 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('calculates a tally scoresheet (SR, interactions)', () => {
       assert.deepStrictEqual(
-        judge({ interactions: true }).calculateScoresheet({
+        judge({ interactions: true }).calculateJudgeResult({
           meta,
           tally: {
             rqGymnasticsPower: 3,
@@ -222,7 +234,7 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('calculates a tally scoresheet (DD, no interactions) with capping', () => {
       assert.deepStrictEqual(
-        judge({ discipline: 'dd' }).calculateScoresheet({
+        judge({ discipline: 'dd' }).calculateJudgeResult({
           meta,
           tally: {
             rqGymnasticsPower: 6,
@@ -243,7 +255,7 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('calculates a tally scoresheet (DD, interactions)', () => {
       assert.deepStrictEqual(
-        judge({ interactions: true, discipline: 'dd' }).calculateScoresheet({
+        judge({ interactions: true, discipline: 'dd' }).calculateJudgeResult({
           meta,
           tally: {
             rqGymnasticsPower: 6,
@@ -264,22 +276,22 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('Correct default values for empty scoresheet', () => {
       assert.deepStrictEqual(
-        judge({}).calculateScoresheet({ meta, tally: {} }),
+        judge({}).calculateJudgeResult({ meta, tally: {} }),
         { meta, result: { Q: 0.7, m: 1, v: 1 }, statuses: {} }
       )
 
       assert.deepStrictEqual(
-        judge({ interactions: true }).calculateScoresheet({ meta, tally: {} }),
+        judge({ interactions: true }).calculateJudgeResult({ meta, tally: {} }),
         { meta, result: { Q: 0.6, m: 1, v: 1 }, statuses: {} }
       )
 
       assert.deepStrictEqual(
-        judge({ discipline: 'dd' }).calculateScoresheet({ meta, tally: {} }),
+        judge({ discipline: 'dd' }).calculateJudgeResult({ meta, tally: {} }),
         { meta, result: { Q: 0.8, m: 1, v: 1 }, statuses: {} }
       )
 
       assert.deepStrictEqual(
-        judge({ interactions: true, discipline: 'dd' }).calculateScoresheet({ meta, tally: {} }),
+        judge({ interactions: true, discipline: 'dd' }).calculateJudgeResult({ meta, tally: {} }),
         { meta, result: { Q: 0.7, m: 1, v: 1 }, statuses: {} }
       )
     })
@@ -299,14 +311,18 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('Throws on incorrect meta.judgeTypeId', () => {
       assert.throws(
-        () => judge({}).calculateScoresheet({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
+        () => judge({}).calculateTally({ meta: { ...meta, judgeTypeId: 'S' }, marks: [] }),
+        new RSRWrongJudgeTypeError('S', 'D')
+      )
+      assert.throws(
+        () => judge({}).calculateJudgeResult({ meta: { ...meta, judgeTypeId: 'S' }, tally: { step: 5 } }),
         new RSRWrongJudgeTypeError('S', 'D')
       )
     })
 
     await t.test('calculates a tally scoresheet', () => {
       assert.deepStrictEqual(
-        judge({}).calculateScoresheet({
+        judge({}).calculateJudgeResult({
           meta,
           tally: {
             'diffL0.5': 1,
@@ -326,7 +342,7 @@ void test('ijru.freestyle@3.0.0', async t => {
 
     await t.test('Correct default values for empty scoresheet', () => {
       assert.deepStrictEqual(
-        judge({}).calculateScoresheet({ meta, tally: {} }),
+        judge({}).calculateJudgeResult({ meta, tally: {} }),
         { meta, result: { D: 0 }, statuses: {} }
       )
     })

@@ -4,12 +4,15 @@
     "composite": true,
     "checkJs": true,
     "noEmit": true,
+    "outDir": "dist",
+    "resolveJsonModule": true
   },
   "include": [
     "**/*.ts",
     "**/*.js",
     "./*.mjs",
     "./.*.js",
+    "./data/*.json"
   ],
   "exclude": [
     "dist",

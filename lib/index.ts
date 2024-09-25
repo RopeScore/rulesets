@@ -1,7 +1,7 @@
 export {
   filterParticipatingInAll,
   parseCompetitionEventDefinition,
-  calculateTally,
+  filterMarkStream,
   isMarkScoresheet,
   isTallyScoresheet,
 } from './helpers.js'

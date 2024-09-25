@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors'
-import { calculateTally, clampNumber, matchMeta, roundTo, roundToCurry } from '../../helpers'
+import { clampNumber, filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers'
 import { type ScoreTally, type JudgeTypeGetter, type TableDefinition, type CompetitionEventModel } from '../types'
 import { ijruAverage } from './ijru.freestyle@3.0.0'
 
@@ -13,7 +13,7 @@ export function L (l: number): number {
 // ======
 // JUDGES
 // ======
-export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
+export const difficultyJudge: JudgeTypeGetter<Option> = options => {
   const fieldDefinitions = [
     {
       name: 'Level 0.5',
@@ -34,10 +34,12 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
   return {
     id,
     name: 'Difficulty',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
+    markDefinitions: fieldDefinitions,
+    tallyDefinitions: fieldDefinitions,
+    calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
+    calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
+      const tally = filterTally(scsh.tally, fieldDefinitions)
       const D = fieldDefinitions.map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
       return {
         meta: scsh.meta,
@@ -50,7 +52,7 @@ export const difficultyJudge: JudgeTypeGetter<string, Option> = options => {
   }
 }
 
-export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
+export const presentationJudge: JudgeTypeGetter<Option> = options => {
   const isDD = options.discipline === 'dd'
   const fieldDefinitions = [
     {
@@ -105,12 +107,26 @@ export const presentationJudge: JudgeTypeGetter<string, Option> = options => {
       step: 0.5,
     },
   ]
+  const id = 'P'
   return {
-    id: 'P',
+    id,
     name: 'Presentation',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
-      const tally: ScoreTally = calculateTally(scsh, fieldDefinitions)
+    markDefinitions: fieldDefinitions,
+    tallyDefinitions: fieldDefinitions,
+    calculateTally: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
+      let tally: ScoreTally = {}
+
+      for (const mark of filterMarkStream(scsh.marks)) {
+        tally[mark.schema] = mark.value
+      }
+
+      tally = filterTally(tally, fieldDefinitions)
+
+      return { meta: scsh.meta, tally }
+    },
+    calculateJudgeResult: scsh => {
+      const tally = filterTally(scsh.tally, fieldDefinitions)
 
       const score = fieldDefinitions.map(f => tally[f.schema] ?? 0).reduce((a, b) => a + b)
 
@@ -227,4 +243,4 @@ export default {
 
   previewTable: options => freestylePreviewTableHeaders,
   resultTable: options => freestyleResultTableHeaders,
-} satisfies CompetitionEventModel<string, Option>
+} satisfies CompetitionEventModel<Option>

@@ -1,6 +1,6 @@
 {
   "name": "@ropescore/rulesets",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Collection of rulesets to calculate rope skipping results",
   "author": "Svante Bengtson <svante@swantzter.se> (https://swantzter.se)",
   "license": "MIT",
@@ -36,7 +36,7 @@
     "validate": "tsx bin/validate.ts",
     "lint:code": "eslint .",
     "lint:fix": "npm run lint:code -- --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --project tsconfig.eslint.json --noEmit",
     "build": "npm run build:data && npm run build:code",
     "build:code": "tsc -b",
     "build:data": "tsx bin/generate-lists.ts",

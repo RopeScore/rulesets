@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { calculateTally, matchMeta, roundTo, roundToCurry } from '../../helpers.js'
+import { filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry } from '../../helpers.js'
 import type { CompetitionEventModel, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
 import { average } from './svgf-vh.speed@2023.js'
 
@@ -8,8 +8,15 @@ type Option = never
 // ======
 // JUDGES
 // ======
-export const timingJudge: JudgeTypeGetter<string, Option> = options => {
-  const fieldDefinitions = [{
+export const timingJudge: JudgeTypeGetter<Option> = options => {
+  const markDefinitions = [{
+    schema: 'start',
+    name: 'Start Timer',
+  }, {
+    schema: 'pause',
+    name: 'Pause Timer',
+  }] as const
+  const tallyDefinitions = [{
     schema: 'seconds',
     name: 'Seconds',
     min: 0,
@@ -19,10 +26,29 @@ export const timingJudge: JudgeTypeGetter<string, Option> = options => {
   return {
     id,
     name: 'Timing',
-    fieldDefinitions,
-    calculateScoresheet: scsh => {
+    markDefinitions,
+    tallyDefinitions,
+    calculateTally: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof fieldDefinitions)[number]['schema']> = calculateTally(scsh, fieldDefinitions)
+      const tally: ScoreTally<(typeof tallyDefinitions)[number]['schema']> = {}
+
+      let lastStart: undefined | number
+      for (const mark of filterMarkStream(scsh.marks)) {
+        if (lastStart == null && mark.schema === 'start') {
+          lastStart = mark.timestamp
+        } else if (lastStart != null && mark.schema === 'pause') {
+          tally.seconds = (tally.seconds ?? 0) + Math.round((mark.timestamp - lastStart) / 1000)
+        }
+      }
+
+      return {
+        meta: scsh.meta,
+        tally,
+      }
+    },
+    calculateJudgeResult: scsh => {
+      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
+      const tally: ScoreTally<(typeof tallyDefinitions)[number]['schema']> = filterTally(scsh.tally, tallyDefinitions)
       return {
         meta: scsh.meta,
         result: {
@@ -93,4 +119,4 @@ export default {
 
   previewTable: options => timingPreviewTableHeaders,
   resultTable: options => timingResultTableHeaders,
-} satisfies CompetitionEventModel<string, Option>
+} satisfies CompetitionEventModel<Option>
