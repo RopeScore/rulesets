@@ -19,7 +19,11 @@
         "types": "./dist/esm/lib/index.d.ts",
         "default": "./dist/esm/lib/index.js"
       }
-    }
+    },
+    "./models/competition-events/*": {
+        "types": "./dist/esm/lib/models/competition-events/*.d.ts",
+        "default": "./dist/esm/lib/models/competition-events/*.js"
+      }
   },
   "files": [
     "dist/"
