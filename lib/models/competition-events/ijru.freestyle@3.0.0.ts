@@ -21,7 +21,6 @@ export function L (l: number): number {
   return roundTo(0.1 * Math.pow(1.5, l), 2)
 }
 
-
 // ======
 // JUDGES
 // ======
