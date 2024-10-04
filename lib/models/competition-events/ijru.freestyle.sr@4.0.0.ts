@@ -1,6 +1,7 @@
 import { RSRWrongJudgeTypeError } from '../../errors'
 import { clampNumber, filterMarkStream, filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers'
 import type { CompetitionEventModel, JudgeTypeGetter, Options, ScoreTally, TableDefinition } from '../types'
+import { ijruAverage } from './ijru.freestyle@3.0.0'
 
 type Option = 'discipline' | 'interactions' |
   'maxRqGymnasticsPower' | 'maxRqMultiples' | 'maxRqRopeManipulation' |
@@ -415,6 +416,22 @@ export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGett
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally = filterTally(scsh.tally, fieldDefinitions)
       const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
+      const rq = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * (levels[f.schema] < 3 ? 0.5 : 1)).reduce((a, b) => a + b)
+
+      const rqType = id.charAt(1).toLocaleUpperCase()
+      let maxRqType = 6
+      switch (rqType) {
+        case 'P':
+          maxRqType = maxRq.rqGymnasticsPower
+          break
+        case 'M':
+          maxRqType = maxRq.rqMultiples
+          break
+        case 'R':
+          maxRqType = maxRq.rqRopeManipulation
+          break
+      }
+
       return {
         meta: scsh.meta,
         result: {
@@ -423,9 +440,7 @@ export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGett
           ...(isWH
             ? {}
             : {
-                aqP: clampNumber(maxRq.rqGymnasticsPower - (tally.rqGymnasticsPower ?? 0), { min: 0 }),
-                aqM: clampNumber(maxRq.rqMultiples - (tally.rqMultiples ?? 0), { min: 0 }),
-                aqR: clampNumber(maxRq.rqRopeManipulation - (tally.rqRopeManipulation ?? 0), { min: 0 }),
+                [`aq${rqType}`]: clampNumber(maxRqType - (rq ?? 0), { min: 0 }),
               }
           ),
         },
@@ -438,14 +453,35 @@ export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGett
 // ======
 // TABLES
 // ======
-export const freestylePreviewTableHeaders: TableDefinition = {
-  headers: [
-    { text: 'Diff (D)', key: 'D', formatter: roundToCurry(2) },
-    { text: 'Pres (P)', key: 'P', formatter: formatFactor },
-    { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
-    { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
-    { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) },
-  ],
+export const freestylePreviewTableHeaders = (options: Options<Option>) => {
+  const isWH = options.discipline === 'wh'
+  if (isWH) {
+    return {
+      headers: [
+        { text: 'Diff (dA)', key: 'dA', formatter: roundToCurry(2) },
+        { text: 'Diff (dB)', key: 'dB', formatter: roundToCurry(2) },
+        { text: 'Diff (D)', key: 'D', formatter: roundToCurry(2) },
+        { text: 'Pres (P)', key: 'P', formatter: formatFactor },
+        { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
+        { text: 'Nisses (am)', key: 'am', formatter: roundToCurry(0) },
+        { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
+        { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) },
+      ],
+    }
+  } else {
+    return {
+      headers: [
+        { text: 'Diff (dP)', key: 'dP', formatter: roundToCurry(2) },
+        { text: 'Diff (dM)', key: 'dM', formatter: roundToCurry(2) },
+        { text: 'Diff (dR)', key: 'dR', formatter: roundToCurry(2) },
+        { text: 'Diff (D)', key: 'D', formatter: roundToCurry(2) },
+        { text: 'Pres (P)', key: 'P', formatter: formatFactor },
+        { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
+        { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
+        { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) },
+      ],
+    }
+  }
 }
 
 export const freestyleResultTableHeaders: TableDefinition = {
@@ -477,24 +513,73 @@ export default {
     const results = res.filter(r => matchMeta(r.meta, meta))
     if (!results.length) return
 
+    const isWH = options.discipline === 'wh'
+    const diffTypes = isWH ? ['A', 'B'] : ['P', 'M', 'R']
+    const techReqEls = isWH ? ['P', 'M', 'R', 'I'] : ['I']
+
     const raw: Record<string, number> = {}
 
-    // for (const scoreType of ['D', 'aF', 'aE', 'aM', 'm', 'v', 'Q'] as const) {
-    //   const scores = results.map(el => el.result[scoreType]).filter(el => typeof el === 'number')
-    //   if (['m', 'v'].includes(scoreType)) raw[scoreType] = roundTo(ijruAverage(scores), 4)
-    //   else if (['aF', 'aE', 'aM'].includes(scoreType)) raw[scoreType] = roundTo(ijruAverage(scores), 6)
-    //   else raw[scoreType] = roundTo(ijruAverage(scores), 2) // D, Q
+    for (const diffType of diffTypes) {
+      const judgeTypeResults = results
+        .filter(el => el.meta.judgeTypeId === `D${diffType.toLocaleLowerCase()}`)
 
-    //   if (typeof raw[scoreType] !== 'number' || isNaN(Number(raw[scoreType]))) raw[scoreType] = (['D', 'aF', 'aE', 'aM'].includes(scoreType) ? 0 : 1)
-    //   if (scoreType === 'aM' && noMusic) raw[scoreType] = 0
-    // }
+      const dScores = judgeTypeResults
+        .map(el => el.result.d)
+        .filter(el => typeof el === 'number')
+      raw[`d${diffType}`] = ijruAverage(dScores)
 
-    // raw.M = roundTo(-(1 - raw.m - raw.v), 2) // the minus is because they're already prepped to 1- and that needs to be reversed
+      if (!isWH) {
+        const aqScores = judgeTypeResults
+          .map(el => el.result[`aq${diffType}`])
+          .filter(el => typeof el === 'number')
+        raw[`q${diffType}`] = Math.round(ijruAverage(aqScores))
+      }
+    }
+    raw.D = roundTo(
+      diffTypes.map(diffType => raw[`d${diffType}`]).filter(el => typeof el === 'number').reduce((a, b) => a + b) /
+      diffTypes.length,
+      2
+    )
 
-    // raw.P = roundTo(1 + (raw.aE + raw.aF + raw.aM), 2)
+    const pScores = results
+      .map(el => el.result.p)
+      .filter(el => typeof el === 'number')
+    raw.P = roundTo(ijruAverage(pScores) * ((2 * Fp) / 24), 2)
 
-    // raw.R = roundTo(raw.D * raw.P * raw.M * raw.Q, 2)
-    // raw.R = raw.R < 0 ? 0 : raw.R
+    for (const reqEl of techReqEls) {
+      if (!isWH) {
+        const aqScores = results
+          .map(el => el.result[`aq${reqEl}`])
+          .filter(el => typeof el === 'number')
+        raw[`q${reqEl}`] = Math.round(ijruAverage(aqScores))
+      }
+    }
+    raw.Q = roundTo(
+      1 - (Fq * (['qP', 'qM', 'qR', 'qI'].map(score => raw[score] ?? 0).reduce((a, b) => a + b))),
+      2
+    )
+
+    raw.am = Math.round(ijruAverage(results
+      .map(el => el.result.nm)
+      .filter(el => typeof el !== 'number')))
+    raw.ab = Math.round(ijruAverage(results
+      .map(el => el.result.nv)
+      .filter(el => typeof el !== 'number')))
+    raw.av = Math.round(ijruAverage(results
+      .map(el => el.result.nb)
+      .filter(el => typeof el !== 'number')))
+
+    raw.m = (Fm1 * clampNumber(raw.am, { max: 1 })) +
+      (Fm2 * clampNumber(raw.am - 1, { min: 0, max: 1 })) +
+      (Fm * clampNumber(raw.am - 2, { min: 0 }))
+    raw.b = Fb * raw.ab
+    raw.v = Fv * raw.av
+
+    raw.M = 1 - (raw.m + raw.b + raw.v)
+    raw.M = raw.M < 0 ? 0 : raw.M
+
+    raw.R = roundTo(raw.D * (1 + raw.P) * raw.Q * raw.M, 2)
+    raw.R = raw.R < 0 ? 0 : raw.R
 
     return {
       meta,
@@ -535,6 +620,6 @@ export default {
     return results
   },
 
-  previewTable: options => freestylePreviewTableHeaders,
+  previewTable: options => freestylePreviewTableHeaders(options),
   resultTable: options => freestyleResultTableHeaders,
 } satisfies CompetitionEventModel<Option>
