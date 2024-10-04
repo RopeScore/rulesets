@@ -3,7 +3,7 @@ import { clampNumber, filterMarkStream, filterTally, formatFactor, matchMeta, ro
 import type { CompetitionEventModel, JudgeTypeGetter, Options, ScoreTally, TableDefinition } from '../types'
 import { ijruAverage } from './ijru.freestyle@3.0.0'
 
-type Option = 'discipline' | 'interactions' |
+export type Option = 'discipline' | 'interactions' |
   'maxRqGymnasticsPower' | 'maxRqMultiples' | 'maxRqRopeManipulation' |
   'maxRqInteractions'
 
@@ -500,7 +500,7 @@ export default {
   id: 'ijru.freestyle.sr@4.0.0',
   name: 'IJRU Single Rope Freestyle v4.0.0',
   options: [
-    { id: 'discipline', name: 'Discipline', type: 'enum', enum: ['sr', 'dd', 'wh', 'ts', 'xd'] },
+    { id: 'discipline', name: 'Discipline', type: 'enum', enum: ['sr'] },
     { id: 'interactions', name: 'Has Interactions', type: 'boolean' },
     { id: 'maxRqGymnasticsPower', name: 'Power/Gymnastics Required Elements', type: 'number', min: 0, step: 1 },
     { id: 'maxRqMultiples', name: 'Multiples Required Elements', type: 'number', min: 0, step: 1 },
@@ -509,7 +509,7 @@ export default {
   ],
   judges: [presentationJudge, technicalJudge, difficultyJudgeFactory('Dp', 'Difficulty - Power and Gymnastics'), difficultyJudgeFactory('Dm', 'Difficulty - Multiples'), difficultyJudgeFactory('Dr', 'Difficulty - Rope Manipulation')],
 
-  calculateEntry (meta, res, options) {
+  calculateEntry: (meta, res, options) => {
     const results = res.filter(r => matchMeta(r.meta, meta))
     if (!results.length) return
 
@@ -587,7 +587,7 @@ export default {
       statuses: {},
     }
   },
-  rankEntries (res, options) {
+  rankEntries: (res, options) => {
     let results = [...res]
     // const tiePriority = ['R', 'M', 'Q', 'P', 'D'] as const
     results.sort(function (a, b) {
