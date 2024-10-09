@@ -514,8 +514,11 @@ export default {
     if (!results.length) return
 
     const isWH = options.discipline === 'wh'
+    const hasInteractions = options.interactions === true
     const diffTypes = isWH ? ['A', 'B'] : ['P', 'M', 'R']
-    const techReqEls = isWH ? ['P', 'M', 'R', 'I'] : ['I']
+    const techReqEls = isWH
+      ? (hasInteractions ? ['P', 'M', 'R', 'I'] : ['P', 'M', 'R'])
+      : (hasInteractions ? ['I'] : [])
 
     const raw: Record<string, number> = {}
 
@@ -547,12 +550,10 @@ export default {
     raw.P = roundTo(ijruAverage(pScores) * ((2 * Fp) / 24), 2)
 
     for (const reqEl of techReqEls) {
-      if (!isWH) {
-        const aqScores = results
-          .map(el => el.result[`aq${reqEl}`])
-          .filter(el => typeof el === 'number')
-        raw[`q${reqEl}`] = Math.round(ijruAverage(aqScores))
-      }
+      const aqScores = results
+        .map(el => el.result[`aq${reqEl}`])
+        .filter(el => typeof el === 'number')
+      raw[`q${reqEl}`] = Math.round(ijruAverage(aqScores))
     }
     raw.Q = roundTo(
       1 - (Fq * (['qP', 'qM', 'qR', 'qI'].map(score => raw[score] ?? 0).reduce((a, b) => a + b))),
@@ -561,13 +562,13 @@ export default {
 
     raw.am = Math.round(ijruAverage(results
       .map(el => el.result.nm)
-      .filter(el => typeof el !== 'number')))
+      .filter(el => typeof el === 'number')))
     raw.ab = Math.round(ijruAverage(results
-      .map(el => el.result.nv)
-      .filter(el => typeof el !== 'number')))
-    raw.av = Math.round(ijruAverage(results
       .map(el => el.result.nb)
-      .filter(el => typeof el !== 'number')))
+      .filter(el => typeof el === 'number')))
+    raw.av = Math.round(ijruAverage(results
+      .map(el => el.result.nv)
+      .filter(el => typeof el === 'number')))
 
     raw.m = (Fm1 * clampNumber(raw.am, { max: 1 })) +
       (Fm2 * clampNumber(raw.am - 1, { min: 0, max: 1 })) +
@@ -575,7 +576,7 @@ export default {
     raw.b = Fb * raw.ab
     raw.v = Fv * raw.av
 
-    raw.M = 1 - (raw.m + raw.b + raw.v)
+    raw.M = roundTo(1 - (raw.m + raw.b + raw.v), 2)
     raw.M = raw.M < 0 ? 0 : raw.M
 
     raw.R = roundTo(raw.D * (1 + raw.P) * raw.Q * raw.M, 2)

@@ -56,7 +56,7 @@
     "dist/"
   ],
   "scripts": {
-    "test": "node --import tsx --test --experimental-test-coverage --test-coverage-exclude='**/*.test.ts' --test-coverage-exclude='lib/{preconfigured,rulesets}/**/*' --test-reporter=junit --test-reporter-destination=coverage/junit.xml --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test-reporter=spec --test-reporter-destination=stdout $(find lib -name '*.ts' -type f -printf '%p ')",
+    "test": "tsx --test --experimental-test-coverage --test-coverage-include='lib/**/*.ts' --test-coverage-exclude='**/*.test.ts' --test-coverage-exclude='lib/{preconfigured,rulesets}/**/*' --test-reporter=junit --test-reporter-destination=coverage/junit.xml --test-reporter=lcov --test-reporter-destination=coverage/lcov.info --test-reporter=spec --test-reporter-destination=stdout",
     "pretest": "npm run build:data && mkdir -p coverage",
     "postversion": "git push && git push --tags",
     "lint": "npm run lint:code && npm run validate",
