@@ -463,7 +463,7 @@ export const freestylePreviewTableHeaders = (options: Options<Option>) => {
         { text: 'Diff (D)', key: 'D', formatter: roundToCurry(2) },
         { text: 'Pres (P)', key: 'P', formatter: formatFactor },
         { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
-        { text: 'Nisses (am)', key: 'am', formatter: roundToCurry(0) },
+        { text: 'Misses (am)', key: 'am', formatter: roundToCurry(0) },
         { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
         { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) },
       ],
