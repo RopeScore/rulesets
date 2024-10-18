@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import test from 'node:test'
 import * as mod from './ijru.freestyle@3.0.0.js'
-import { ijruAverage } from './ijru.common.js'
+import { ijruAverage } from '../../helpers/ijru.js'
 import { type JudgeResult, type EntryMeta, type JudgeMeta } from '../types.js'
 import { RSRWrongJudgeTypeError } from '../../errors.js'
 

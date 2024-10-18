@@ -1,7 +1,7 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { filterTally, matchMeta, roundTo, simpleCalculateTallyFactory } from '../../helpers.js'
+import { filterTally, matchMeta, roundTo, simpleCalculateTallyFactory } from '../../helpers/helpers.js'
 import type { CompetitionEventModel, JudgeTypeGetter, TableDefinition } from '../types.js'
-import { ijruAverage } from './ijru.common.js'
+import { ijruAverage } from '../../helpers/ijru.js'
 
 type Option = 'falseSwitches'
 

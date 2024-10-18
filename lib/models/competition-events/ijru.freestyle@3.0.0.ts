@@ -1,7 +1,7 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers.js'
+import { filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers.js'
 import type { CompetitionEventModel, JudgeFieldDefinition, JudgeTypeGetter, TableDefinition } from '../types.js'
-import { ijruAverage } from './ijru.common.js'
+import { ijruAverage } from '../../helpers/ijru.js'
 
 type Option = 'noMusicality' | 'discipline' | 'interactions'
 

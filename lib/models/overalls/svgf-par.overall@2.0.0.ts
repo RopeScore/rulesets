@@ -1,4 +1,4 @@
-import { roundTo, roundToCurry } from '../../helpers.js'
+import { roundTo, roundToCurry } from '../../helpers/helpers.js'
 import { type CompetitionEventDefinition } from '../../preconfigured/types.js'
 import { type TableHeaderGroup, type OverallModel, type TableDefinitionGetter, type TableHeader, type EntryResult } from '../types.js'
 
