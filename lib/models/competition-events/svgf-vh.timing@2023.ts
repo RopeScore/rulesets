@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry } from '../../helpers.js'
+import { filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry } from '../../helpers/helpers.js'
 import type { CompetitionEventModel, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
 import { average } from './svgf-vh.speed@2023.js'
 

@@ -1,4 +1,4 @@
-import { isObject } from '../helpers.js'
+import { isObject } from '../helpers/helpers.js'
 import { type CompetitionEventDefinition } from '../preconfigured/types.js'
 
 export interface JudgeType<MarkSchema extends string, TallySchema extends string = MarkSchema> {

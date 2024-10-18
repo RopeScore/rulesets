@@ -4,7 +4,7 @@ export {
   filterMarkStream,
   isMarkScoresheet,
   isTallyScoresheet,
-} from './helpers.js'
+} from './helpers/helpers.js'
 export * from './errors.js'
 export * from './import-tools.js'
 export * from './listing-tools.js'
