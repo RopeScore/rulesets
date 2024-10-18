@@ -32,22 +32,22 @@
     },
     "./preconfigured/*": {
       "require": {
-        "types": "./dist/cjs/lib/models/*.d.ts",
-        "default": "./dist/cjs/lib/models/*.js"
+        "types": "./dist/cjs/lib/preconfigured/*.d.ts",
+        "default": "./dist/cjs/lib/preconfigured/*.js"
       },
       "import": {
-        "types": "./dist/esm/lib/models/*.d.ts",
-        "default": "./dist/esm/lib/models/*.js"
+        "types": "./dist/esm/lib/preconfigured/*.d.ts",
+        "default": "./dist/esm/lib/preconfigured/*.js"
       }
     },
     "./rulesets/*": {
       "require": {
-        "types": "./dist/cjs/lib/models/*.d.ts",
-        "default": "./dist/cjs/lib/models/*.js"
+        "types": "./dist/cjs/lib/rulesets/*.d.ts",
+        "default": "./dist/cjs/lib/rulesets/*.js"
       },
       "import": {
-        "types": "./dist/esm/lib/models/*.d.ts",
-        "default": "./dist/esm/lib/models/*.js"
+        "types": "./dist/esm/lib/rulesets/*.d.ts",
+        "default": "./dist/esm/lib/rulesets/*.js"
       }
     }
   },
