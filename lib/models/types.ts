@@ -82,7 +82,7 @@ export interface MarkBase<Schema extends string> {
    * additional marks with schemas that are unknown to the scoring model, if so
    * these will be ignored.
    */
-  readonly schema: Schema | 'clear' | 'undo'
+  readonly schema: Schema
 }
 
 export interface GenericMark<Schema extends string> extends MarkBase<Schema> {
