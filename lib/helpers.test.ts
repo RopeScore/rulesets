@@ -3,6 +3,18 @@ import assert from 'node:assert'
 import test from 'node:test'
 import type { GenericMark, JudgeMeta, Mark } from './models/types.js'
 
+export function markGeneratorFactory () {
+  let sequence = 0
+  return function markGenerator (schema: string, extra: Record<string, any> = {}) {
+    return {
+      sequence: sequence++,
+      timestamp: 1000 + sequence,
+      schema,
+      ...extra,
+    }
+  }
+}
+
 void test('helpers', async t => {
   await t.test('isObject', async t => {
     assert.strictEqual(isObject(5), false)
