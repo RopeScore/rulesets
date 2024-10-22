@@ -1,7 +1,7 @@
 import { RSRWrongJudgeTypeError } from '../../errors'
-import { filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers'
+import { filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers'
 import { type JudgeTypeGetter, type JudgeFieldDefinition, type TableDefinition, type CompetitionEventModel } from '../types'
-import { ijruAverage } from './ijru.freestyle@3.0.0'
+import { ijruAverage } from '../../helpers/ijru'
 
 type Option = 'noMusicality' | 'discipline' | 'interactions'
 

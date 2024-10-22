@@ -1,7 +1,7 @@
 import { RSRWrongJudgeTypeError } from '../../errors'
-import { clampNumber, filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers'
+import { clampNumber, filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers'
 import { type ScoreTally, type JudgeTypeGetter, type TableDefinition, type CompetitionEventModel } from '../types'
-import { ijruAverage } from './ijru.freestyle@3.0.0'
+import { ijruAverage } from '../../helpers/ijru'
 
 type Option = 'discipline'
 

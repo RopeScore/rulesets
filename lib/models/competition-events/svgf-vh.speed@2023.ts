@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { filterTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers.js'
+import { filterTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers.js'
 import type { CompetitionEventModel, JudgeTypeGetter, TableDefinition } from '../types.js'
 
 type Option = never
