@@ -1,11 +1,11 @@
-import { RSRWrongJudgeTypeError } from '../../errors'
-import { clampNumber, filterMarkStream, filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers'
-import type { CompetitionEventModel, JudgeTypeGetter, Options, ScoreTally, TableDefinition } from '../types'
-import { ijruAverage } from './ijru.freestyle@3.0.0'
+import { RSRWrongJudgeTypeError } from '../../errors.js'
+import { clampNumber, filterMarkStream, filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers.js'
+import type { CompetitionEventModel, JudgeTypeGetter, Options, ScoreTally, TableDefinition } from '../types.js'
+import { ijruAverage } from '../../helpers/ijru.js'
 
-export type Option = 'discipline' | 'interactions' |
+export type Option = 'interactions' |
   'maxRqGymnasticsPower' | 'maxRqMultiples' | 'maxRqRopeManipulation' |
-  'maxRqInteractions'
+  'maxRqInteractions' | 'rqFullCreditThresholdLevel'
 
 // pres
 const Fp = 0.6
@@ -265,8 +265,9 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
   }
 }
 
-export const technicalJudge: JudgeTypeGetter<Option> = options => {
-  const isWH = options.discipline === 'wh'
+export const technicalJudgeFactory = ({ discipline }: { discipline: 'sr' | 'wh' | 'dd' }): JudgeTypeGetter<Option> => options => {
+  const isWH = discipline === 'wh'
+  const isSR = discipline === 'sr'
   const hasInteractions = options.interactions === true
 
   const maxRq = getRqMax(options)
@@ -327,7 +328,7 @@ export const technicalJudge: JudgeTypeGetter<Option> = options => {
       : []
     ),
 
-    ...(!isWH && hasInteractions
+    ...(isSR && hasInteractions
       ? [{
           schema: 'rqInteractions',
           name: 'Pairs interactions',
@@ -365,7 +366,7 @@ export const technicalJudge: JudgeTypeGetter<Option> = options => {
             : {}
           ),
 
-          ...(!isWH && hasInteractions
+          ...(isSR && hasInteractions
             ? {
                 aqI: clampNumber(maxRq.rqInteractions - (scsh.tally.rqInteractions ?? 0), { min: 0 }),
               }
@@ -378,9 +379,9 @@ export const technicalJudge: JudgeTypeGetter<Option> = options => {
   }
 }
 
-export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGetter<Option> = (id, name) => options => {
+export const difficultyJudgeFactory: (id: string, name: string, opts: { discipline: 'sr' | 'wh' }) => JudgeTypeGetter<Option> = (id, name, { discipline }) => options => {
   const maxRq = getRqMax(options)
-  const isWH = options.discipline === 'wh'
+  const isWH = discipline === 'wh'
 
   const fieldDefinitions = [
     {
@@ -416,7 +417,7 @@ export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGett
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally = filterTally(scsh.tally, fieldDefinitions)
       const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
-      const rq = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * (levels[f.schema] < 3 ? 0.5 : 1)).reduce((a, b) => a + b)
+      const rq = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * (levels[f.schema] < (options.rqFullCreditThresholdLevel as number | undefined ?? 3) ? 0.5 : 1)).reduce((a, b) => a + b)
 
       const rqType = id.charAt(1).toLocaleUpperCase()
       let maxRqType = 6
@@ -453,8 +454,8 @@ export const difficultyJudgeFactory: (id: string, name: string) => JudgeTypeGett
 // ======
 // TABLES
 // ======
-export const freestylePreviewTableHeaders = (options: Options<Option>) => {
-  const isWH = options.discipline === 'wh'
+export const freestylePreviewTableHeadersFactory = ({ discipline }: { discipline: 'sr' | 'wh' }) => (options: Options<Option>) => {
+  const isWH = discipline === 'wh'
   if (isWH) {
     return {
       headers: [
@@ -464,6 +465,8 @@ export const freestylePreviewTableHeaders = (options: Options<Option>) => {
         { text: 'Pres (P)', key: 'P', formatter: formatFactor },
         { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
         { text: 'Misses (am)', key: 'am', formatter: roundToCurry(0) },
+        { text: 'Breaks (ab)', key: 'ab', formatter: roundToCurry(0) },
+        { text: 'Violations (av)', key: 'av', formatter: roundToCurry(0) },
         { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
         { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) },
       ],
@@ -496,24 +499,12 @@ export const freestyleResultTableHeaders: TableDefinition = {
   ],
 }
 
-export default {
-  id: 'ijru.freestyle.sr@4.0.0',
-  name: 'IJRU Single Rope Freestyle v4.0.0',
-  options: [
-    { id: 'discipline', name: 'Discipline', type: 'enum', enum: ['sr'] },
-    { id: 'interactions', name: 'Has Interactions', type: 'boolean' },
-    { id: 'maxRqGymnasticsPower', name: 'Power/Gymnastics Required Elements', type: 'number', min: 0, step: 1 },
-    { id: 'maxRqMultiples', name: 'Multiples Required Elements', type: 'number', min: 0, step: 1 },
-    { id: 'maxRqRopeManipulation', name: 'Rope Manipulation Required Elements', type: 'number', min: 0, step: 1 },
-    { id: 'maxRqInteractions', name: 'Interactions Required Elements', type: 'number', min: 0, step: 1 },
-  ],
-  judges: [presentationJudge, technicalJudge, difficultyJudgeFactory('Dp', 'Difficulty - Power and Gymnastics'), difficultyJudgeFactory('Dm', 'Difficulty - Multiples'), difficultyJudgeFactory('Dr', 'Difficulty - Rope Manipulation')],
-
-  calculateEntry: (meta, res, options) => {
+export function calculateEntryFactory ({ discipline }: { discipline: 'sr' | 'wh' }): CompetitionEventModel<Option>['calculateEntry'] {
+  return function calculateEntry (meta, res, options) {
     const results = res.filter(r => matchMeta(r.meta, meta))
     if (!results.length) return
 
-    const isWH = options.discipline === 'wh'
+    const isWH = discipline === 'wh'
     const hasInteractions = options.interactions === true
     const diffTypes = isWH ? ['A', 'B'] : ['P', 'M', 'R']
     const techReqEls = isWH
@@ -587,7 +578,23 @@ export default {
       result: raw,
       statuses: {},
     }
-  },
+  }
+}
+
+export default {
+  id: 'ijru.freestyle.sr@4.0.0',
+  name: 'IJRU Single Rope Freestyle v4.0.0',
+  options: [
+    { id: 'interactions', name: 'Has Interactions', type: 'boolean' },
+    { id: 'rqFullCreditThresholdLevel', name: 'Required Elements Full Credit Threshold Level', type: 'enum', enum: [0.5, 1, 2, 3, 4, 5, 6, 7, 8] },
+    { id: 'maxRqGymnasticsPower', name: 'Power/Gymnastics Required Elements', type: 'number', min: 0, step: 1 },
+    { id: 'maxRqMultiples', name: 'Multiples Required Elements', type: 'number', min: 0, step: 1 },
+    { id: 'maxRqRopeManipulation', name: 'Rope Manipulation Required Elements', type: 'number', min: 0, step: 1 },
+    { id: 'maxRqInteractions', name: 'Interactions Required Elements', type: 'number', min: 0, step: 1 },
+  ],
+  judges: [presentationJudge, technicalJudgeFactory({ discipline: 'sr' }), difficultyJudgeFactory('Dp', 'Difficulty - Power and Gymnastics', { discipline: 'sr' }), difficultyJudgeFactory('Dm', 'Difficulty - Multiples', { discipline: 'sr' }), difficultyJudgeFactory('Dr', 'Difficulty - Rope Manipulation', { discipline: 'sr' })],
+
+  calculateEntry: calculateEntryFactory({ discipline: 'sr' }),
   rankEntries: (res, options) => {
     let results = [...res]
     // const tiePriority = ['R', 'M', 'Q', 'P', 'D'] as const
@@ -621,6 +628,6 @@ export default {
     return results
   },
 
-  previewTable: options => freestylePreviewTableHeaders(options),
+  previewTable: options => freestylePreviewTableHeadersFactory({ discipline: 'sr' })(options),
   resultTable: options => freestyleResultTableHeaders,
 } satisfies CompetitionEventModel<Option>

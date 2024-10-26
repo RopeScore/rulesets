@@ -1,7 +1,7 @@
-import { RSRWrongJudgeTypeError } from './errors.js'
-import type { GenericMark, Mark } from './models/types.js'
-import { type JudgeFieldDefinition, type ScoreTally, isClearMark, isUndoMark, type Meta, type EntryResult, type TallyScoresheet, type MarkScoresheet } from './models/types.js'
-import { type CompetitionEventDefinition } from './preconfigured/types.js'
+import { RSRWrongJudgeTypeError } from '../errors.js'
+import type { GenericMark, Mark } from '../models/types.js'
+import { type JudgeFieldDefinition, type ScoreTally, isClearMark, isUndoMark, type Meta, type EntryResult, type TallyScoresheet, type MarkScoresheet } from '../models/types.js'
+import { type CompetitionEventDefinition } from '../preconfigured/types.js'
 
 export function isObject (x: unknown): x is Record<string, unknown> {
   return typeof x === 'object' && x != null && !Array.isArray(x)

@@ -1,4 +1,4 @@
-import { simpleCalculateTallyFactory, clampNumber, filterMarkStream, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple } from './helpers.js'
+import { simpleCalculateTallyFactory, clampNumber, filterMarkStream, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple } from './helpers/helpers.js'
 import assert from 'node:assert'
 import test from 'node:test'
 import type { GenericMark, JudgeMeta, Mark } from './models/types.js'

@@ -104,7 +104,7 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
       participantId: '1',
       competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0',
     }
-    const judge = mod.technicalJudge
+    const judge = mod.technicalJudgeFactory({ discipline: 'sr' })
 
     assert.strictEqual(judge({}).id, 'T')
 
@@ -183,7 +183,7 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
       participantId: '1',
       competitionEvent: 'e.ijru.fs.sr.srif.1.75@3.0.0',
     }
-    const judge = mod.difficultyJudgeFactory('Dm', 'Difficulty - Multiples')
+    const judge = mod.difficultyJudgeFactory('Dm', 'Difficulty - Multiples', { discipline: 'sr' })
 
     assert.strictEqual(judge({}).id, 'Dm')
 

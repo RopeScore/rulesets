@@ -1,4 +1,4 @@
-import { isObject } from '../helpers.js'
+import { isObject } from '../helpers/helpers.js'
 import { type CompetitionEventDefinition } from '../preconfigured/types.js'
 
 export interface JudgeType<MarkSchema extends string, TallySchema extends string = MarkSchema> {
@@ -82,7 +82,7 @@ export interface MarkBase<Schema extends string> {
    * additional marks with schemas that are unknown to the scoring model, if so
    * these will be ignored.
    */
-  readonly schema: Schema | 'clear' | 'undo'
+  readonly schema: Schema
 }
 
 export interface GenericMark<Schema extends string> extends MarkBase<Schema> {
