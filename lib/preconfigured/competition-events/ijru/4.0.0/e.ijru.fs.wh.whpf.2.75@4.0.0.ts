@@ -5,6 +5,6 @@ export default partiallyConfigureCompetitionEventModel(ijruFreestyleWh400, {
   options: {
     interactions: true,
   },
-  id: 'e.ijru.fs.wh.whpf.2.75@3.0.0',
+  id: 'e.ijru.fs.wh.whpf.2.75@4.0.0',
   name: 'Wheel Pair Freestyle',
 })
