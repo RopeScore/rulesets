@@ -115,8 +115,8 @@ export const difficultyJumperJudge: JudgeTypeGetter<Option> = options => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally = filterTally(scsh.tally, tallyDefinitions)
 
-      const sumScore = tallyDefinitions.map(f => (tally[f.schema] ?? 0) * L(markLevels[f.schema as DiffTallySchema])).reduce((a, b) => a + b)
-      const numMarks = tallyDefinitions.map(f => (tally[f.schema] ?? 0)).reduce((a, b) => a + b)
+      const sumScore = tallyDefinitions.map(f => (tally[f.schema] ?? 0) * L(markLevels[f.schema as DiffTallySchema])).reduce((a, b) => a + b, 0)
+      const numMarks = tallyDefinitions.map(f => (tally[f.schema] ?? 0)).reduce((a, b) => a + b, 0)
       const d = sumScore / numMarks
 
       return {

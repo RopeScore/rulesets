@@ -416,8 +416,8 @@ export const difficultyJudgeFactory: (id: string, name: string, opts: { discipli
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally = filterTally(scsh.tally, fieldDefinitions)
-      const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
-      const rq = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * (levels[f.schema] < (options.rqFullCreditThresholdLevel as number | undefined ?? 3) ? 0.5 : 1)).reduce((a, b) => a + b)
+      const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b, 0)
+      const rq = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * (levels[f.schema] < (options.rqFullCreditThresholdLevel as number | undefined ?? 3) ? 0.5 : 1)).reduce((a, b) => a + b, 0)
 
       const rqType = id.charAt(1).toLocaleUpperCase()
       let maxRqType = 6
@@ -530,7 +530,7 @@ export function calculateEntryFactory ({ discipline }: { discipline: 'sr' | 'wh'
       }
     }
     raw.D = roundTo(
-      diffTypes.map(diffType => raw[`d${diffType}`]).filter(el => typeof el === 'number').reduce((a, b) => a + b) /
+      diffTypes.map(diffType => raw[`d${diffType}`]).filter(el => typeof el === 'number').reduce((a, b) => a + b, 0) /
       diffTypes.length,
       2
     )
@@ -547,7 +547,7 @@ export function calculateEntryFactory ({ discipline }: { discipline: 'sr' | 'wh'
       raw[`q${reqEl}`] = Math.round(ijruAverage(aqScores))
     }
     raw.Q = roundTo(
-      1 - (Fq * (['qP', 'qM', 'qR', 'qI'].map(score => raw[score] ?? 0).reduce((a, b) => a + b))),
+      1 - (Fq * (['qP', 'qM', 'qR', 'qI'].map(score => raw[score] ?? 0).reduce((a, b) => a + b, 0))),
       2
     )
 
