@@ -465,6 +465,8 @@ export const freestylePreviewTableHeadersFactory = ({ discipline }: { discipline
         { text: 'Pres (P)', key: 'P', formatter: formatFactor },
         { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
         { text: 'Misses (am)', key: 'am', formatter: roundToCurry(0) },
+        { text: 'Breaks (ab)', key: 'ab', formatter: roundToCurry(0) },
+        { text: 'Violations (av)', key: 'av', formatter: roundToCurry(0) },
         { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
         { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) },
       ],
