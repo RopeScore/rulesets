@@ -102,7 +102,7 @@ export function filterMarkStream <Schema extends string> (rawMarks: Readonly<Arr
       idx--
     }
   }
-  return marks
+  return marks as Array<GenericMark<Schema>>
 }
 
 export function filterTally <Schema extends string> (_tally: ScoreTally, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>): ScoreTally<Schema> {
@@ -134,7 +134,7 @@ export function simpleCalculateTallyFactory <Schema extends string> (judgeTypeId
     let tally: ScoreTally<Schema> = isTallyScoresheet<Schema>(scoresheet) ? { ...(scoresheet.tally ?? {}) } : {}
 
     for (const mark of filterMarkStream(scoresheet.marks)) {
-      tally[mark.schema as Schema] = (tally[mark.schema as Schema] ?? 0) + (mark.value ?? 1)
+      tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
     }
 
     tally = filterTally(tally, fieldDefinitions)
