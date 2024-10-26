@@ -1,5 +1,6 @@
-export const ijruAverage = (scores: number[]): number => {
+export const ijruAverage = (_scores: readonly number[]): number => {
   // sort ascending
+  const scores = [..._scores]
   scores.sort(function (a, b) {
     return a - b
   })
