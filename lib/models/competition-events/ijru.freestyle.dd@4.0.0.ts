@@ -117,7 +117,7 @@ export const difficultyJumperJudge: JudgeTypeGetter<Option> = options => {
 
       const sumScore = tallyDefinitions.map(f => (tally[f.schema] ?? 0) * L(markLevels[f.schema as DiffTallySchema])).reduce((a, b) => a + b, 0)
       const numMarks = tallyDefinitions.map(f => (tally[f.schema] ?? 0)).reduce((a, b) => a + b, 0)
-      const d = sumScore / numMarks
+      const d = numMarks === 0 ? 0 : sumScore / numMarks
 
       return {
         meta: scsh.meta,
@@ -284,17 +284,17 @@ export default {
 
     const raw: Record<string, number> = {}
 
-    const Dj = roundTo(ijruAverage(results
+    raw.Dj = roundTo(ijruAverage(results
       .filter(el => el.meta.judgeTypeId === 'Dj')
       .map(el => el.result.d)
       .filter(el => typeof el === 'number')), 2)
-    const Dt = roundTo(ijruAverage(results
+    raw.Dt = roundTo(ijruAverage(results
       .filter(el => el.meta.judgeTypeId === 'Dt')
       .map(el => el.result.d)
       .filter(el => typeof el === 'number')), 2)
 
     raw.D = roundTo(
-      (Dj * Fdj) + (Dt * Fdt),
+      (raw.Dj * Fdj) + (raw.Dt * Fdt),
       2
     )
 

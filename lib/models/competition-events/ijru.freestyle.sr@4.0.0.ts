@@ -268,6 +268,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
 export const technicalJudgeFactory = ({ discipline }: { discipline: 'sr' | 'wh' | 'dd' }): JudgeTypeGetter<Option> => options => {
   const isWH = discipline === 'wh'
   const isSR = discipline === 'sr'
+  const isDD = discipline === 'dd'
   const hasInteractions = options.interactions === true
 
   const maxRq = getRqMax(options)
@@ -292,12 +293,17 @@ export const technicalJudgeFactory = ({ discipline }: { discipline: 'sr' | 'wh' 
       min: 0,
       step: 1,
     },
-    {
-      schema: 'break',
-      name: 'Breaks',
-      min: 0,
-      step: 1,
-    },
+    ...(!isDD
+      ? [
+          {
+            schema: 'break',
+            name: 'Breaks',
+            min: 0,
+            step: 1,
+          },
+        ]
+      : []
+    ),
 
     ...(isWH
       ? [{
@@ -353,8 +359,11 @@ export const technicalJudgeFactory = ({ discipline }: { discipline: 'sr' | 'wh' 
         meta: scsh.meta,
         result: {
           nm: tally.miss ?? 0,
-          nb: tally.break ?? 0,
           nv: (tally.timeViolation ?? 0) + (tally.spaceViolation ?? 0),
+          ...(!isDD
+            ? { nb: tally.break ?? 0 }
+            : {}
+          ),
 
           ...(isWH
             ? {
@@ -508,7 +517,7 @@ export function calculateEntryFactory ({ discipline }: { discipline: 'sr' | 'wh'
     const hasInteractions = options.interactions === true
     const diffTypes = isWH ? ['A', 'B'] : ['P', 'M', 'R']
     const techReqEls = isWH
-      ? (hasInteractions ? ['P', 'M', 'R', 'I'] : ['P', 'M', 'R'])
+      ? ['P', 'M', 'R', 'I']
       : (hasInteractions ? ['I'] : [])
 
     const raw: Record<string, number> = {}

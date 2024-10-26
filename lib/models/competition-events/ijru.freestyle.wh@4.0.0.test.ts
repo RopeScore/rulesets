@@ -6,7 +6,7 @@ import { type JudgeResult, type EntryMeta, type JudgeMeta } from '../types.js'
 import { RSRWrongJudgeTypeError } from '../../errors.js'
 import { markGeneratorFactory } from '../../helpers.test.js'
 
-void test('ijru.freestyle.sr@4.0.0', async t => {
+void test('ijru.freestyle.wh@4.0.0', async t => {
   await t.test('technicalJudge', async t => {
     const meta: JudgeMeta = {
       judgeId: '1',
@@ -199,8 +199,8 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
         { meta: jMeta('21', 'T'), result: { nb: 5, nm: 3, nv: 4, aqP: 0, aqM: 2, aqR: 2, aqI: 2 }, statuses: {} },
         { meta: jMeta('31', 'Da'), result: { d: 10.5 }, statuses: {} },
         { meta: jMeta('32', 'Da'), result: { d: 31.22 }, statuses: {} },
-        { meta: jMeta('33', 'Db'), result: { d: 35 }, statuses: {} },
-        { meta: jMeta('33', 'Db'), result: { d: 39 }, statuses: {} },
+        { meta: jMeta('41', 'Db'), result: { d: 35 }, statuses: {} },
+        { meta: jMeta('42', 'Db'), result: { d: 39 }, statuses: {} },
       ]
       const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
@@ -208,16 +208,17 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
         result: {
           D: 28.93,
           P: 0.8,
-          Q: 0.9,
+          Q: 0.85,
           M: 0.32,
-          R: 15,
+          R: 14.16,
 
-          dA: 10.5,
-          dB: 31.22,
+          dA: 20.86,
+          dB: 37,
 
           qM: 1,
-          qP: 0,
+          qP: 1,
           qR: 2,
+          qI: 2,
 
           am: 3,
           ab: 5,
@@ -233,35 +234,37 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
     await t.test('Can\'t go below 0', () => {
       const options = {}
       const scores: JudgeResult[] = [
-        { meta: jMeta('1', 'P'), result: { p: 20, nm: 20 }, statuses: {} },
-        { meta: jMeta('2', 'P'), result: { p: 12, nm: 20 }, statuses: {} },
-        { meta: jMeta('21', 'T'), result: { nb: 4, nm: 20, nv: 4 }, statuses: {} },
-        { meta: jMeta('21', 'T'), result: { nb: 5, nm: 20, nv: 4 }, statuses: {} },
-        { meta: jMeta('31', 'Dm'), result: { d: 10.5, aqM: 1 }, statuses: {} },
-        { meta: jMeta('32', 'Dp'), result: { d: 31.22, aqP: 0 }, statuses: {} },
-        { meta: jMeta('33', 'Dr'), result: { d: 35, aqR: 2 }, statuses: {} },
+        { meta: jMeta('1', 'P'), result: { p: 20, nm: 10 }, statuses: {} },
+        { meta: jMeta('2', 'P'), result: { p: 12, nm: 10 }, statuses: {} },
+        { meta: jMeta('21', 'T'), result: { nb: 4, nm: 10, nv: 4, aqP: 2, aqM: 0, aqR: 2, aqI: 1 }, statuses: {} },
+        { meta: jMeta('21', 'T'), result: { nb: 5, nm: 10, nv: 4, aqP: 0, aqM: 2, aqR: 2, aqI: 2 }, statuses: {} },
+        { meta: jMeta('31', 'Da'), result: { d: 10.5 }, statuses: {} },
+        { meta: jMeta('32', 'Da'), result: { d: 31.22 }, statuses: {} },
+        { meta: jMeta('33', 'Db'), result: { d: 35 }, statuses: {} },
+        { meta: jMeta('33', 'Db'), result: { d: 39 }, statuses: {} },
       ]
       const result = mod.default.calculateEntry(eMeta, scores, options)
       assert.deepStrictEqual(result, {
         meta: eMeta,
         result: {
-          D: 25.57,
+          D: 28.93,
           P: 0.8,
-          Q: 0.93,
+          Q: 0.85,
           M: 0,
           R: 0,
 
-          dM: 10.5,
-          dP: 31.22,
-          dR: 35,
-          qM: 1,
-          qP: 0,
-          qR: 2,
+          dA: 20.86,
+          dB: 37,
 
-          am: 20,
+          qM: 1,
+          qP: 1,
+          qR: 2,
+          qI: 2,
+
+          am: 10,
           ab: 5,
           av: 4,
-          m: 1.925,
+          m: 0.925,
           b: 0.25,
           v: 0.2,
         },
