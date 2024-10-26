@@ -79,12 +79,12 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
             form: 15,
             music: 25,
             crea: 5,
-            vari: 21,
+            vari: 23,
 
             miss: 2,
           },
         }),
-        { meta, result: { nm: 2, p: 13.45 }, statuses: {} }
+        { meta, result: { nm: 2, p: 15.75 }, statuses: {} }
       )
     })
 
