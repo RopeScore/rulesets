@@ -205,7 +205,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
         miss: 0,
       }
 
-      const stageOneMarks = ['miss', ...components.flatMap(c => [`${c}Plus`, `${c}Minus`])]
+      const stageOneMarks = components.flatMap(c => [`${c}Plus`, `${c}Minus`])
 
       for (const mark of marks) {
         if (stageOneMarks.includes(mark.schema)) {
@@ -213,6 +213,11 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
           const schema = mark.schema.replace(/(Plus|Minus)$/, '') as TallySchema
 
           tally[schema] = tally[schema] + ((mark.value ?? 1) * sign)
+        } else if (mark.schema === 'miss') {
+          tally.miss += 1
+          for (const component of components) {
+            tally[component] -= 1
+          }
         }
       }
 
@@ -246,7 +251,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
       let p = 0
 
       for (const component of components) {
-        let cScore = (tally[component] ?? 12) - (tally.miss ?? 0)
+        let cScore = (tally[component] ?? 12)
         cScore = clampNumber(cScore, { min: 0, max: 24, step: 1 })
 
         p += cScore * presWeights[component]
