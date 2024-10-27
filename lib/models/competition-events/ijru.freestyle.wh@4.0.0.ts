@@ -6,11 +6,11 @@ export default {
   id: 'ijru.freestyle.wh@4.0.0',
   name: 'IJRU Wheel Freestyle v4.0.0',
   options: SR.options,
-  judges: [presentationJudge, technicalJudgeFactory({ discipline: 'sr' }), difficultyJudgeFactory('Da', 'Difficulty - Athlete A', { discipline: 'sr' }), difficultyJudgeFactory('Db', 'Difficulty - Athlete B', { discipline: 'sr' })],
+  judges: [presentationJudge, technicalJudgeFactory({ discipline: 'wh' }), difficultyJudgeFactory('Da', 'Difficulty - Athlete A', { discipline: 'wh' }), difficultyJudgeFactory('Db', 'Difficulty - Athlete B', { discipline: 'wh' })],
 
   calculateEntry: calculateEntryFactory({ discipline: 'wh' }),
   rankEntries: SR.rankEntries,
 
-  previewTable: options => freestylePreviewTableHeadersFactory({ discipline: 'sr' })(options),
+  previewTable: options => freestylePreviewTableHeadersFactory({ discipline: 'wh' })(options),
   resultTable: options => freestyleResultTableHeaders,
 } satisfies CompetitionEventModel<Option>
