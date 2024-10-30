@@ -114,14 +114,14 @@ export function normaliseTally <TallySchema extends string> (tallyDefinitions: R
     tally[field.schema] = clampNumber(v, field)
   }
 
-  return tally
+  return tally as Required<ScoreTally<TallySchema>>
 }
 
 export interface MarkReducerCacheEntry <MarkSchema extends string, TallySchema extends string = MarkSchema> {
   tally: ScoreTally<TallySchema>
   marks: Array<GenericMark<MarkSchema>>
 }
-export type MarkReducer<MarkSchema extends string, TallySchema extends string = MarkSchema> = (tally: ScoreTally<TallySchema>, mark: Readonly<GenericMark<MarkSchema>>, marks: Readonly<Array<Readonly<GenericMark<MarkSchema>>>>) => ScoreTally<TallySchema>
+export type MarkReducer<MarkSchema extends string, TallySchema extends string = MarkSchema> = (tally: Required<ScoreTally<TallySchema>>, mark: Readonly<GenericMark<MarkSchema>>, marks: Readonly<Array<Readonly<GenericMark<MarkSchema>>>>) => Required<ScoreTally<TallySchema>>
 export interface MarkReducerReturn <MarkSchema extends string, TallySchema extends string = MarkSchema> {
   tally: Readonly<ScoreTally<TallySchema>>
   addMark: (mark: Mark<MarkSchema> | Omit<Mark<MarkSchema>, 'sequence' | 'timestamp'>) => void
@@ -132,7 +132,7 @@ export function createMarkReducer <MarkSchema extends string, TallySchema extend
 ): MarkReducerReturn<MarkSchema, TallySchema> {
   let nextSeq = 0
   let marks: Array<GenericMark<MarkSchema>> = []
-  const tallies = new Map<number, Readonly<ScoreTally<TallySchema>>>()
+  const tallies = new Map<number, Readonly<Required<ScoreTally<TallySchema>>>>()
 
   return {
     get tally () {
@@ -188,23 +188,22 @@ export function createMarkReducer <MarkSchema extends string, TallySchema extend
   }
 }
 
+export const simpleReducer: MarkReducer<string, string> = (tally, mark) => {
+  tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
+  return tally
+}
+
 /**
  * Takes a mark scoresheet and returns a tally.
  *
  * Each value of the tally will also be clamped to the specified max, min and
  * step size for that field schema.
  */
-export function simpleCalculateTallyFactory <Schema extends string> (judgeTypeId: string, tallyDefinitions: Readonly<Array<JudgeTallyFieldDefinition<Schema>>>) {
-  return function simpleCalculateTally (scoresheet: MarkScoresheet<Schema>) {
+export function calculateTallyFactory <MarkSchema extends string, TallySchema extends string = MarkSchema> (judgeTypeId: string, reducerFn: MarkReducer<MarkSchema, TallySchema>, tallyDefinitions: Readonly<Array<JudgeTallyFieldDefinition<TallySchema>>>) {
+  return function calculateTally (scoresheet: MarkScoresheet<MarkSchema>) {
     if (!matchMeta(scoresheet.meta, { judgeTypeId })) throw new RSRWrongJudgeTypeError(scoresheet.meta.judgeTypeId, judgeTypeId)
 
-    const reducer = createMarkReducer<Schema>(
-      (tally, mark) => {
-        tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
-        return tally
-      },
-      tallyDefinitions
-    )
+    const reducer = createMarkReducer<MarkSchema, TallySchema>(reducerFn, tallyDefinitions)
 
     for (const mark of scoresheet.marks) {
       reducer.addMark(mark)

@@ -1,4 +1,4 @@
-import { simpleCalculateTallyFactory, clampNumber, filterMarkStream, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple } from './helpers.js'
+import { calculateTallyFactory, clampNumber, filterMarkStream, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple, simpleReducer } from './helpers.js'
 import type { GenericMark, JudgeMeta, JudgeTallyFieldDefinition, Mark } from '../models/types.js'
 import assert from 'node:assert'
 import test from 'node:test'
@@ -127,7 +127,7 @@ void test('helpers', async t => {
     }
   })
 
-  await t.test('simpleCalculateTallyFactory', async t => {
+  await t.test('calculateTallyFactory', async t => {
     const meta: JudgeMeta = {
       judgeId: '1',
       judgeTypeId: 'S',
@@ -153,7 +153,7 @@ void test('helpers', async t => {
         formCheck: 1,
         formMinus: 0,
       }
-      assert.deepStrictEqual(simpleCalculateTallyFactory(meta.judgeTypeId, tallyDefinitions)({ meta, marks }), { meta, tally })
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
     })
 
     await t.test('Should return tally for MarkScoresheet with undo of last mark', () => {
@@ -169,7 +169,7 @@ void test('helpers', async t => {
         formCheck: 1,
         formMinus: 0,
       }
-      assert.deepStrictEqual(simpleCalculateTallyFactory(meta.judgeTypeId, tallyDefinitions)({ meta, marks }), { meta, tally })
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
     })
 
     await t.test('Should return tally for MarkScoresheet with undo of first mark', () => {
@@ -185,7 +185,7 @@ void test('helpers', async t => {
         formCheck: 1,
         formMinus: 0,
       }
-      assert.deepStrictEqual(simpleCalculateTallyFactory(meta.judgeTypeId, tallyDefinitions)({ meta, marks }), { meta, tally })
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
     })
 
     await t.test('Should return tally for MarkScoresheet with undo of early mark', () => {
@@ -201,7 +201,7 @@ void test('helpers', async t => {
         formCheck: 0,
         formMinus: 0,
       }
-      assert.deepStrictEqual(simpleCalculateTallyFactory(meta.judgeTypeId, tallyDefinitions)({ meta, marks }), { meta, tally })
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
     })
 
     await t.test('Should return tally for MarkScoresheet with clear mark', () => {
@@ -220,7 +220,7 @@ void test('helpers', async t => {
         formCheck: 0,
         formMinus: 0,
       }
-      assert.deepStrictEqual(simpleCalculateTallyFactory(meta.judgeTypeId, tallyDefinitions)({ meta, marks }), { meta, tally })
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
     })
 
     await t.test('Should return tally for MarkScoresheet with clear mark and undo targetting before clear', () => {
@@ -240,7 +240,7 @@ void test('helpers', async t => {
         formCheck: 0,
         formMinus: 0,
       }
-      assert.deepStrictEqual(simpleCalculateTallyFactory(meta.judgeTypeId, tallyDefinitions)({ meta, marks }), { meta, tally })
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
     })
   })
 

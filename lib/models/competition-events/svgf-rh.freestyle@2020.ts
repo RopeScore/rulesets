@@ -1,6 +1,7 @@
 import { RSRWrongJudgeTypeError } from '../../errors'
-import { clampNumber, filterMarkStream, normaliseTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers'
-import { type ScoreTally, type JudgeTypeGetter, type TableDefinition, type CompetitionEventModel } from '../types'
+import type { MarkReducer } from '../../helpers/helpers'
+import { clampNumber, normaliseTally, matchMeta, roundTo, roundToCurry, calculateTallyFactory, createMarkReducer, simpleReducer } from '../../helpers/helpers'
+import { type JudgeTypeGetter, type TableDefinition, type CompetitionEventModel } from '../types'
 import { ijruAverage } from '../../helpers/ijru'
 
 type Option = 'discipline'
@@ -36,7 +37,8 @@ export const difficultyJudge: JudgeTypeGetter<Option> = options => {
     name: 'Difficulty',
     markDefinitions: fieldDefinitions,
     tallyDefinitions: fieldDefinitions,
-    calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
+    createMarkReducer: () => createMarkReducer(simpleReducer, fieldDefinitions),
+    calculateTally: calculateTallyFactory(id, simpleReducer, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
       const tally = normaliseTally(fieldDefinitions, scsh.tally)
@@ -107,24 +109,20 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
       step: 0.5,
     },
   ]
+
+  const reducer: MarkReducer<typeof fieldDefinitions[number]['schema']> = (tally, mark) => {
+    tally[mark.schema] = mark.value ?? 1
+    return tally
+  }
+
   const id = 'P'
   return {
     id,
     name: 'Presentation',
     markDefinitions: fieldDefinitions,
     tallyDefinitions: fieldDefinitions,
-    calculateTally: scsh => {
-      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      let tally: ScoreTally = {}
-
-      for (const mark of filterMarkStream(scsh.marks)) {
-        tally[mark.schema] = mark.value
-      }
-
-      tally = normaliseTally(fieldDefinitions, tally)
-
-      return { meta: scsh.meta, tally }
-    },
+    createMarkReducer: () => createMarkReducer(reducer, fieldDefinitions),
+    calculateTally: calculateTallyFactory(id, reducer, fieldDefinitions),
     calculateJudgeResult: scsh => {
       const tally = normaliseTally(fieldDefinitions, scsh.tally)
 
