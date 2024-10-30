@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors'
-import { clampNumber, filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers'
+import { clampNumber, filterMarkStream, normaliseTally, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers'
 import { type ScoreTally, type JudgeTypeGetter, type TableDefinition, type CompetitionEventModel } from '../types'
 import { ijruAverage } from '../../helpers/ijru'
 
@@ -39,7 +39,7 @@ export const difficultyJudge: JudgeTypeGetter<Option> = options => {
     calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const tally = normaliseTally(fieldDefinitions, scsh.tally)
       const D = fieldDefinitions.map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
       return {
         meta: scsh.meta,
@@ -121,12 +121,12 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
         tally[mark.schema] = mark.value
       }
 
-      tally = filterTally(tally, fieldDefinitions)
+      tally = normaliseTally(fieldDefinitions, tally)
 
       return { meta: scsh.meta, tally }
     },
     calculateJudgeResult: scsh => {
-      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const tally = normaliseTally(fieldDefinitions, scsh.tally)
 
       const score = fieldDefinitions.map(f => tally[f.schema] ?? 0).reduce((a, b) => a + b)
 

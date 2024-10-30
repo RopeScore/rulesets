@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { clampNumber, filterMarkStream, filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers.js'
+import { clampNumber, filterMarkStream, normaliseTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers.js'
 import type { CompetitionEventModel, JudgeTypeGetter, Options, ScoreTally, TableDefinition } from '../types.js'
 import { ijruAverage } from '../../helpers/ijru.js'
 
@@ -149,6 +149,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
       min: 0,
       max: 24,
       step: 1,
+      default: 12,
     },
     {
       schema: 'form',
@@ -156,6 +157,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
       min: 0,
       max: 24,
       step: 1,
+      default: 12,
     },
     {
       schema: 'music',
@@ -163,6 +165,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
       min: 0,
       max: 24,
       step: 1,
+      default: 12,
     },
     {
       schema: 'crea',
@@ -170,6 +173,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
       min: 0,
       max: 24,
       step: 1,
+      default: 12,
     },
     {
       schema: 'vari',
@@ -177,6 +181,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
       min: 0,
       max: 24,
       step: 1,
+      default: 12,
     },
     {
       schema: 'miss',
@@ -247,7 +252,7 @@ export const presentationJudge: JudgeTypeGetter<Option> = options => {
     },
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, tallyDefinitions)
+      const tally = normaliseTally(tallyDefinitions, scsh.tally)
       let p = 0
 
       for (const component of components) {
@@ -359,7 +364,7 @@ export const technicalJudgeFactory = ({ discipline }: { discipline: 'sr' | 'wh' 
     calculateTally: simpleCalculateTallyFactory(id, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const tally = normaliseTally(fieldDefinitions, scsh.tally)
       return {
         meta: scsh.meta,
         result: {
@@ -429,7 +434,7 @@ export const difficultyJudgeFactory: (id: string, name: string, opts: { discipli
     calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const tally = normaliseTally(fieldDefinitions, scsh.tally)
       const d = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b, 0)
       const rq = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * (levels[f.schema] < (options.rqFullCreditThresholdLevel as number | undefined ?? 3) ? 0.5 : 1)).reduce((a, b) => a + b, 0)
 

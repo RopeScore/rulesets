@@ -3,6 +3,7 @@ import test from 'node:test'
 import * as mod from './ijru.speed@1.0.0.js'
 import type { EntryMeta, EntryResult, JudgeMeta } from '../types.js'
 import { RSRWrongJudgeTypeError } from '../../errors.js'
+import { markGeneratorFactory } from '../../helpers/helpers.test.js'
 
 void test('ijru.speed@3.0.0', async t => {
   await t.test('speedJudge', async t => {
@@ -41,14 +42,15 @@ void test('ijru.speed@3.0.0', async t => {
     })
 
     await t.test('calculates a mark scoresheet', () => {
+      const m = markGeneratorFactory()
       assert.deepStrictEqual(
         mod.speedJudge({}).calculateTally({
           meta,
           marks: [
-            { timestamp: Date.now(), sequence: 1, schema: 'step' },
-            { timestamp: Date.now(), sequence: 2, schema: 'step' },
-            { timestamp: Date.now(), sequence: 3, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 4, schema: 'step' },
+            m('step'),
+            m('step'),
+            m('undo', { target: 1 }),
+            m('step'),
           ],
         }),
         { meta, tally: { step: 2 } }
@@ -106,30 +108,32 @@ void test('ijru.speed@3.0.0', async t => {
     })
 
     await t.test('calculates a mark scoresheet', () => {
+      const m = markGeneratorFactory()
       assert.deepStrictEqual(
         mod.speedHeadJudge({}).calculateTally({
           meta,
           marks: [
-            { timestamp: Date.now(), sequence: 1, schema: 'step' },
-            { timestamp: Date.now(), sequence: 2, schema: 'step' },
-            { timestamp: Date.now(), sequence: 3, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 4, schema: 'step' },
+            m('step'),
+            m('step'),
+            m('undo', { target: 1 }),
+            m('step'),
           ],
         }),
-        { meta, tally: { step: 2 } }
+        { meta, tally: { step: 2, falseStart: 0 } }
       )
     })
 
     await t.test('calculates a mark scoresheet with false start', () => {
+      const m = markGeneratorFactory()
       assert.deepStrictEqual(
         mod.speedHeadJudge({}).calculateTally({
           meta,
           marks: [
-            { timestamp: Date.now(), sequence: 1, schema: 'falseStart' },
-            { timestamp: Date.now(), sequence: 2, schema: 'step' },
-            { timestamp: Date.now(), sequence: 3, schema: 'step' },
-            { timestamp: Date.now(), sequence: 4, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 5, schema: 'step' },
+            m('falseStart'),
+            m('step'),
+            m('step'),
+            m('undo', { target: 1 }),
+            m('step'),
           ],
         }),
         { meta, tally: { step: 2, falseStart: 1 } }
@@ -137,35 +141,37 @@ void test('ijru.speed@3.0.0', async t => {
     })
 
     await t.test('calculates a mark scoresheet with false switches', () => {
+      const m = markGeneratorFactory()
       assert.deepStrictEqual(
         mod.speedHeadJudge({ falseSwitches: 1 }).calculateTally({
           meta,
           marks: [
-            { timestamp: Date.now(), sequence: 1, schema: 'step' },
-            { timestamp: Date.now(), sequence: 2, schema: 'step' },
-            { timestamp: Date.now(), sequence: 3, schema: 'falseSwitch' },
-            { timestamp: Date.now(), sequence: 4, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 5, schema: 'step' },
+            m('step'),
+            m('step'),
+            m('falseSwitch'),
+            m('undo', { target: 1 }),
+            m('step'),
           ],
         }),
-        { meta, tally: { step: 2, falseSwitch: 1 } }
+        { meta, tally: { step: 2, falseSwitch: 1, falseStart: 0 } }
       )
     })
 
     await t.test('calculates a mark scoresheet with capped false switches', () => {
+      const m = markGeneratorFactory()
       assert.deepStrictEqual(
         mod.speedHeadJudge({ falseSwitches: 1 }).calculateTally({
           meta,
           marks: [
-            { timestamp: Date.now(), sequence: 1, schema: 'step' },
-            { timestamp: Date.now(), sequence: 2, schema: 'step' },
-            { timestamp: Date.now(), sequence: 3, schema: 'falseSwitch' },
-            { timestamp: Date.now(), sequence: 4, schema: 'undo', target: 2 },
-            { timestamp: Date.now(), sequence: 5, schema: 'step' },
-            { timestamp: Date.now(), sequence: 6, schema: 'falseSwitch' },
+            m('step'),
+            m('step'),
+            m('falseSwitch'),
+            m('undo', { target: 1 }),
+            m('step'),
+            m('falseSwitch'),
           ],
         }),
-        { meta, tally: { step: 2, falseSwitch: 1 } }
+        { meta, tally: { step: 2, falseSwitch: 1, falseStart: 0 } }
       )
     })
   })

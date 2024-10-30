@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry } from '../../helpers/helpers.js'
+import { filterMarkStream, normaliseTally, matchMeta, roundTo, roundToCurry } from '../../helpers/helpers.js'
 import type { CompetitionEventModel, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
 import { average } from './svgf-vh.speed@2023.js'
 
@@ -48,7 +48,7 @@ export const timingJudge: JudgeTypeGetter<Option> = options => {
     },
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof tallyDefinitions)[number]['schema']> = filterTally(scsh.tally, tallyDefinitions)
+      const tally: ScoreTally<(typeof tallyDefinitions)[number]['schema']> = normaliseTally(tallyDefinitions, scsh.tally)
       return {
         meta: scsh.meta,
         result: {

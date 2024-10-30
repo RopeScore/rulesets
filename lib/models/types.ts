@@ -22,7 +22,7 @@ export interface JudgeType<MarkSchema extends string, TallySchema extends string
    * calculateTally, and some validation parameters for them. These can be used
    * to generate tabulator interfaces.
    */
-  tallyDefinitions: Readonly<Array<JudgeFieldDefinition<TallySchema>>>
+  tallyDefinitions: Readonly<Array<JudgeTallyFieldDefinition<TallySchema>>>
   /**
    *
    */
@@ -50,7 +50,7 @@ export interface JudgeMarkDefinition<Schema extends string> {
   name: string
 }
 
-export interface JudgeFieldDefinition<Schema extends string> extends JudgeMarkDefinition<Schema> {
+export interface JudgeTallyFieldDefinition<Schema extends string> extends JudgeMarkDefinition<Schema> {
   /** the minimum value for this field, if not set the value is not capped */
   min?: number
   /** the maximum value for this field, if not set the value is not capped */
@@ -61,6 +61,11 @@ export interface JudgeFieldDefinition<Schema extends string> extends JudgeMarkDe
    * whereas setting it to 1 would only allow steps of 1 (0, 1, 2...)
    */
   step?: number
+  /**
+   * The default tally value for this field
+   * @default 0
+   */
+  default?: number
 }
 
 export type ScoreTally<Schema extends string = string> = Partial<Record<Schema, number>>

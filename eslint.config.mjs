@@ -75,6 +75,7 @@ export default [
         functions: 'never',
       }],
       'no-void': 'off',
+      'no-console': 'warn',
     },
   },
   {

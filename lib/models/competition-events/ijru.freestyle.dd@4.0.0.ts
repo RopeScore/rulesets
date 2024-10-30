@@ -1,5 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { clampNumber, filterMarkStream, filterTally, formatFactor, matchMeta, roundTo, roundToCurry } from '../../helpers/helpers.js'
+import { clampNumber, filterMarkStream, normaliseTally, formatFactor, matchMeta, roundTo, roundToCurry } from '../../helpers/helpers.js'
 import { ijruAverage } from '../../helpers/ijru.js'
 import type { CompetitionEventModel, GenericMark, JudgeTypeGetter, Mark, ScoreTally, TableDefinition } from '../types.js'
 import { presentationJudge, technicalJudgeFactory } from './ijru.freestyle.sr@4.0.0.js'
@@ -108,12 +108,12 @@ export const difficultyJumperJudge: JudgeTypeGetter<Option> = options => {
 
       return {
         meta: scsh.meta,
-        tally: filterTally(tally, tallyDefinitions),
+        tally: normaliseTally(tallyDefinitions, tally),
       }
     },
     calculateJudgeResult: (scsh) => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, tallyDefinitions)
+      const tally = normaliseTally(tallyDefinitions, scsh.tally)
 
       const sumScore = tallyDefinitions.map(f => (tally[f.schema] ?? 0) * L(markLevels[f.schema as DiffTallySchema])).reduce((a, b) => a + b, 0)
       const numMarks = tallyDefinitions.map(f => (tally[f.schema] ?? 0)).reduce((a, b) => a + b, 0)
@@ -207,12 +207,12 @@ export const difficultyTurnerJudge: JudgeTypeGetter<Option> = options => {
 
       return {
         meta: scsh.meta,
-        tally: filterTally(tally, tallyDefinitions),
+        tally: normaliseTally(tallyDefinitions, tally),
       }
     },
     calculateJudgeResult: (scsh) => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, tallyDefinitions)
+      const tally = normaliseTally(tallyDefinitions, scsh.tally)
 
       const numSkills = typeof options.diffTurnerSkillDivisor === 'number' && options.diffTurnerSkillDivisor > 0
         ? options.diffTurnerSkillDivisor
