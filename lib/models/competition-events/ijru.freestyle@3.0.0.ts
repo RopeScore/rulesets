@@ -1,6 +1,6 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { filterTally, formatFactor, matchMeta, roundTo, roundToCurry, simpleCalculateTallyFactory } from '../../helpers/helpers.js'
-import type { CompetitionEventModel, JudgeFieldDefinition, JudgeTypeGetter, TableDefinition } from '../types.js'
+import { normaliseTally, formatFactor, matchMeta, roundTo, roundToCurry, calculateTallyFactory, createMarkReducer, simpleReducer } from '../../helpers/helpers.js'
+import type { CompetitionEventModel, JudgeTallyFieldDefinition, JudgeTypeGetter, TableDefinition } from '../types.js'
 import { ijruAverage } from '../../helpers/ijru.js'
 
 type Option = 'noMusicality' | 'discipline' | 'interactions'
@@ -76,10 +76,11 @@ export const routinePresentationJudge: JudgeTypeGetter<Option> = options => {
     name: 'Routine Presentation',
     markDefinitions: fieldDefinitions,
     tallyDefinitions: fieldDefinitions,
-    calculateTally: simpleCalculateTallyFactory(id, fieldDefinitions),
+    createMarkReducer: () => createMarkReducer(simpleReducer, fieldDefinitions),
+    calculateTally: calculateTallyFactory(id, simpleReducer, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const tally = normaliseTally(fieldDefinitions, scsh.tally)
 
       const enTop = 3 * ((tally.entertainmentPlus ?? 0) - (tally.entertainmentMinus ?? 0))
       const enBottom = (tally.entertainmentPlus ?? 0) + (tally.entertainmentCheck ?? 0) + (tally.entertainmentMinus ?? 0)
@@ -139,10 +140,11 @@ export const athletePresentationJudge: JudgeTypeGetter<Option> = options => {
     name: 'Athlete Presentation',
     markDefinitions: fieldDefinitions,
     tallyDefinitions: fieldDefinitions,
-    calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
+    createMarkReducer: () => createMarkReducer(simpleReducer, fieldDefinitions),
+    calculateTally: calculateTallyFactory(id, simpleReducer, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const tally = normaliseTally(fieldDefinitions, scsh.tally)
 
       const top = 3 * ((tally.formExecutionPlus ?? 0) - (tally.formExecutionMinus ?? 0))
       const bottom = (tally.formExecutionPlus ?? 0) + (tally.formExecutionCheck ?? 0) + (tally.formExecutionMinus ?? 0)
@@ -223,17 +225,18 @@ export const requiredElementsJudge: JudgeTypeGetter<Option> = options => {
       : []),
   ] as const
   const rqFields = fieldDefinitions.filter(f => f.schema.startsWith('rq'))
-  const max: number = rqFields.reduce((acc, f: JudgeFieldDefinition<string>) => (acc + (f.max ?? 0)), 0)
+  const max: number = rqFields.reduce((acc, f: JudgeTallyFieldDefinition<string>) => (acc + (f.max ?? 0)), 0)
   const id = 'R'
   return {
     id,
     name: 'Required Elements',
     markDefinitions: fieldDefinitions,
     tallyDefinitions: fieldDefinitions,
-    calculateTally: simpleCalculateTallyFactory(id, fieldDefinitions),
+    createMarkReducer: () => createMarkReducer(simpleReducer, fieldDefinitions),
+    calculateTally: calculateTallyFactory(id, simpleReducer, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const tally = normaliseTally(fieldDefinitions, scsh.tally)
 
       let score = rqFields.map(f => tally[f.schema] ?? 0).reduce((a, b) => a + b)
       score = score > max ? max : score
@@ -283,10 +286,11 @@ export const difficultyJudge: JudgeTypeGetter<Option> = options => {
     name: 'Difficulty',
     markDefinitions: fieldDefinitions,
     tallyDefinitions: fieldDefinitions,
-    calculateTally: simpleCalculateTallyFactory<string>(id, fieldDefinitions),
+    createMarkReducer: () => createMarkReducer(simpleReducer, fieldDefinitions),
+    calculateTally: calculateTallyFactory(id, simpleReducer, fieldDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, fieldDefinitions)
+      const tally = normaliseTally(fieldDefinitions, scsh.tally)
 
       const D = fieldDefinitions.filter(f => f.schema !== 'rep').map(f => (tally[f.schema] ?? 0) * L(levels[f.schema])).reduce((a, b) => a + b)
       return {

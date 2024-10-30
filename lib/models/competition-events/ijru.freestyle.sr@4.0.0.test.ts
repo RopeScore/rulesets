@@ -3,7 +3,7 @@ import test from 'node:test'
 import * as mod from './ijru.freestyle.sr@4.0.0.js'
 import { type JudgeResult, type EntryMeta, type JudgeMeta } from '../types.js'
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { markGeneratorFactory } from '../../helpers.test.js'
+import { markGeneratorFactory } from '../../helpers/helpers.test.js'
 
 void test('ijru.freestyle.sr@4.0.0', async t => {
   await t.test('L', async t => {
@@ -126,7 +126,7 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
           meta,
           marks: [m('miss'), m('miss'), m('rqInteractions')],
         }),
-        { meta, tally: { miss: 2 } }
+        { meta, tally: { break: 0, miss: 2, spaceViolation: 0, timeViolation: 0 } }
       )
     })
 
@@ -227,6 +227,8 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
             diffL6: 7,
             diffL7: 8,
             diffL8: 9,
+
+            rep: 0,
           },
         }
       )

@@ -1,6 +1,7 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { filterMarkStream, filterTally, matchMeta, roundTo, roundToCurry } from '../../helpers/helpers.js'
-import type { CompetitionEventModel, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
+import type { MarkReducer } from '../../helpers/helpers.js'
+import { normaliseTally, matchMeta, roundTo, roundToCurry, createMarkReducer, calculateTallyFactory } from '../../helpers/helpers.js'
+import type { CompetitionEventModel, GenericMark, JudgeTypeGetter, ScoreTally, TableDefinition } from '../types.js'
 import { average } from './svgf-vh.speed@2023.js'
 
 type Option = never
@@ -8,7 +9,9 @@ type Option = never
 // ======
 // JUDGES
 // ======
-export const timingJudge: JudgeTypeGetter<Option> = options => {
+  type MarkSchema = 'start' | 'pause'
+  type TallySchema = 'seconds'
+export const timingJudge: JudgeTypeGetter<Option, MarkSchema, TallySchema> = options => {
   const markDefinitions = [{
     schema: 'start',
     name: 'Start Timer',
@@ -22,33 +25,32 @@ export const timingJudge: JudgeTypeGetter<Option> = options => {
     min: 0,
     step: 1,
   }] as const
+
+  const reducer: MarkReducer<MarkSchema, TallySchema> = (tally, mark, marks) => {
+    if (mark.schema === 'pause') {
+      let lastStartMark: GenericMark<MarkSchema> | undefined
+      for (let idx = marks.length - 1; idx >= 0; idx--) {
+        if (marks[idx].schema === 'pause') break
+        else if (marks[idx].schema === 'start') lastStartMark = marks[idx]
+      }
+      if (lastStartMark != null) {
+        tally.seconds += Math.round((mark.timestamp - lastStartMark.timestamp) / 1000)
+      }
+    }
+    return tally
+  }
+
   const id = 'T'
   return {
     id,
     name: 'Timing',
     markDefinitions,
     tallyDefinitions,
-    calculateTally: scsh => {
-      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof tallyDefinitions)[number]['schema']> = {}
-
-      let lastStart: undefined | number
-      for (const mark of filterMarkStream(scsh.marks)) {
-        if (lastStart == null && mark.schema === 'start') {
-          lastStart = mark.timestamp
-        } else if (lastStart != null && mark.schema === 'pause') {
-          tally.seconds = (tally.seconds ?? 0) + Math.round((mark.timestamp - lastStart) / 1000)
-        }
-      }
-
-      return {
-        meta: scsh.meta,
-        tally,
-      }
-    },
+    createMarkReducer: () => createMarkReducer(reducer, tallyDefinitions),
+    calculateTally: calculateTallyFactory(id, reducer, tallyDefinitions),
     calculateJudgeResult: scsh => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally: ScoreTally<(typeof tallyDefinitions)[number]['schema']> = filterTally(scsh.tally, tallyDefinitions)
+      const tally: ScoreTally<(typeof tallyDefinitions)[number]['schema']> = normaliseTally(tallyDefinitions, scsh.tally)
       return {
         meta: scsh.meta,
         result: {
@@ -81,7 +83,7 @@ export default {
   id: 'svgf-vh.timing@2023',
   name: 'SvGF Vikingahoppet Timing 2023',
   options: [],
-  judges: [timingJudge],
+  judges: [timingJudge as JudgeTypeGetter<Option>],
 
   calculateEntry (meta, res, options) {
     const results = res.filter(r => matchMeta(r.meta, meta))

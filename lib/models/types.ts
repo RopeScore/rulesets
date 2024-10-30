@@ -1,3 +1,4 @@
+import type { MarkReducerReturn } from '../helpers/helpers.js'
 import { isObject } from '../helpers/helpers.js'
 import { type CompetitionEventDefinition } from '../preconfigured/types.js'
 
@@ -22,9 +23,23 @@ export interface JudgeType<MarkSchema extends string, TallySchema extends string
    * calculateTally, and some validation parameters for them. These can be used
    * to generate tabulator interfaces.
    */
-  tallyDefinitions: Readonly<Array<JudgeFieldDefinition<TallySchema>>>
+  tallyDefinitions: Readonly<Array<JudgeTallyFieldDefinition<TallySchema>>>
   /**
+   * This returns what we call a mark reducer, an addMark function which you can
+   * pass marks to one at a time, likely live as the marks get made by the
+   * judges, and the current tally.
+   */
+  createMarkReducer: () => MarkReducerReturn<MarkSchema, TallySchema>
+  /**
+   * This takes a mark scoresheet and calculates an intermediate tally which is
+   * the "human readable" format that can be viewed and edited in a tabulator
+   * view, or submitted on physical scoresheets.
    *
+   * This is usually just a wrapper for createMarkReducer that is easier to work
+   * with when you have a complete scoresheet and locked markstream and don't
+   * want to call addMark one by one. However, when finalising scores this
+   * function should be used as it may sometimes do slightly more sophisticated
+   * checks on the scores.
    */
   calculateTally: (scoresheet: MarkScoresheet<MarkSchema>) => TallyScoresheet<TallySchema>
   /**
@@ -50,7 +65,7 @@ export interface JudgeMarkDefinition<Schema extends string> {
   name: string
 }
 
-export interface JudgeFieldDefinition<Schema extends string> extends JudgeMarkDefinition<Schema> {
+export interface JudgeTallyFieldDefinition<Schema extends string> extends JudgeMarkDefinition<Schema> {
   /** the minimum value for this field, if not set the value is not capped */
   min?: number
   /** the maximum value for this field, if not set the value is not capped */
@@ -61,6 +76,11 @@ export interface JudgeFieldDefinition<Schema extends string> extends JudgeMarkDe
    * whereas setting it to 1 would only allow steps of 1 (0, 1, 2...)
    */
   step?: number
+  /**
+   * The default tally value for this field
+   * @default 0
+   */
+  default?: number
 }
 
 export type ScoreTally<Schema extends string = string> = Partial<Record<Schema, number>>

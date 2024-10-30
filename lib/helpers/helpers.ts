@@ -1,6 +1,5 @@
 import { RSRWrongJudgeTypeError } from '../errors.js'
-import type { GenericMark, Mark } from '../models/types.js'
-import { type JudgeFieldDefinition, type ScoreTally, isClearMark, isUndoMark, type Meta, type EntryResult, type TallyScoresheet, type MarkScoresheet } from '../models/types.js'
+import { type GenericMark, type Mark, type JudgeTallyFieldDefinition, type ScoreTally, isClearMark, isUndoMark, type Meta, type EntryResult, type TallyScoresheet, type MarkScoresheet } from '../models/types.js'
 import { type CompetitionEventDefinition } from '../preconfigured/types.js'
 
 export function isObject (x: unknown): x is Record<string, unknown> {
@@ -105,43 +104,114 @@ export function filterMarkStream <Schema extends string> (rawMarks: Readonly<Arr
   return marks as Array<GenericMark<Schema>>
 }
 
-export function filterTally <Schema extends string> (_tally: ScoreTally, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>): ScoreTally<Schema> {
-  if (fieldDefinitions == null) return _tally as ScoreTally<Schema>
-  const tally: ScoreTally<Schema> = {}
+export function normaliseTally <TallySchema extends string> (tallyDefinitions: Readonly<Array<Readonly<JudgeTallyFieldDefinition<TallySchema>>>>, _tally?: Readonly<ScoreTally<TallySchema>>) {
+  const tally: ScoreTally<TallySchema> = {}
 
-  for (const field of fieldDefinitions) {
-    const v = _tally[field.schema]
+  for (const field of tallyDefinitions) {
+    const v = _tally?.[field.schema] ?? field.default ?? 0
     if (typeof v !== 'number') continue
 
     tally[field.schema] = clampNumber(v, field)
   }
 
+  return tally as Required<ScoreTally<TallySchema>>
+}
+
+export interface MarkReducerCacheEntry <MarkSchema extends string, TallySchema extends string = MarkSchema> {
+  tally: ScoreTally<TallySchema>
+  marks: Array<GenericMark<MarkSchema>>
+}
+export type MarkReducer<MarkSchema extends string, TallySchema extends string = MarkSchema> = (tally: Required<ScoreTally<TallySchema>>, mark: Readonly<GenericMark<MarkSchema>>, marks: Readonly<Array<Readonly<GenericMark<MarkSchema>>>>) => Required<ScoreTally<TallySchema>>
+export interface MarkReducerReturn <MarkSchema extends string, TallySchema extends string = MarkSchema> {
+  tally: Readonly<ScoreTally<TallySchema>>
+  addMark: (mark: Mark<MarkSchema> | Omit<Mark<MarkSchema>, 'sequence' | 'timestamp'>) => void
+}
+export function createMarkReducer <MarkSchema extends string, TallySchema extends string = MarkSchema> (
+  reducer: MarkReducer<MarkSchema, TallySchema>,
+  tallyDefinitions: Readonly<Array<Readonly<JudgeTallyFieldDefinition<TallySchema>>>>
+): MarkReducerReturn<MarkSchema, TallySchema> {
+  let nextSeq = 0
+  let marks: Array<GenericMark<MarkSchema>> = []
+  const tallies = new Map<number, Readonly<Required<ScoreTally<TallySchema>>>>()
+
+  return {
+    get tally () {
+      return { ...(tallies.get(nextSeq - 1) ?? normaliseTally(tallyDefinitions)) }
+    },
+    addMark (_mark) {
+      const mark: Mark<MarkSchema> = 'timestamp' in _mark && 'sequence' in _mark
+        ? _mark
+        : {
+            sequence: nextSeq,
+            timestamp: Date.now(),
+            ..._mark,
+          } as Mark<MarkSchema>
+
+      if (mark.sequence !== nextSeq) throw new TypeError('Marks must be provided with sequence in order with a starting sequence of 0')
+
+      if (isClearMark(mark)) {
+        marks = []
+        tallies.set(nextSeq, normaliseTally(tallyDefinitions))
+      } else if (isUndoMark(mark)) {
+        const targetIdx = marks.findLastIndex(searchMark => searchMark.sequence === mark.target)
+
+        if (targetIdx >= 0 && !isUndoMark(marks[targetIdx]) && !isClearMark(marks[targetIdx])) {
+          marks.splice(targetIdx, 1)
+
+          const prevMarkSeq = marks[targetIdx - 1]?.sequence ?? -1
+          let tally = { ...(tallies.get(prevMarkSeq) ?? normaliseTally(tallyDefinitions)) }
+
+          for (let idx = targetIdx; idx < marks.length; idx++) {
+            const markSlice = marks.slice(0, idx + 1)
+            const mark = markSlice.at(-1)
+            if (mark != null) {
+              tally = reducer({ ...tally }, mark, markSlice)
+              tallies.set(mark.sequence, normaliseTally(tallyDefinitions, tally))
+            }
+          }
+
+          // if we undid the latest mark there won't be any marks to process in
+          // the loop
+          tallies.set(nextSeq, normaliseTally(tallyDefinitions, tally))
+        } else {
+          const tally = { ...(tallies.get(nextSeq - 1) ?? normaliseTally(tallyDefinitions)) }
+          tallies.set(nextSeq, tally)
+        }
+      } else {
+        marks.push(mark)
+        const tally = reducer({ ...(tallies.get(nextSeq - 1) ?? normaliseTally(tallyDefinitions)) }, mark, marks)
+        tallies.set(nextSeq, normaliseTally(tallyDefinitions, tally))
+      }
+
+      nextSeq++
+    },
+  }
+}
+
+export const simpleReducer: MarkReducer<string, string> = (tally, mark) => {
+  tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
   return tally
 }
 
 /**
- * Takes a scoresheet and returns a tally
- *
- * if a MarkScoresheet is provided the marks array will be tallied taking undos
- * into account.
+ * Takes a mark scoresheet and returns a tally.
  *
  * Each value of the tally will also be clamped to the specified max, min and
  * step size for that field schema.
  */
-export function simpleCalculateTallyFactory <Schema extends string> (judgeTypeId: string, fieldDefinitions?: Readonly<Array<JudgeFieldDefinition<Schema>>>) {
-  return function simpleCalculateTally (scoresheet: MarkScoresheet<Schema>) {
+export function calculateTallyFactory <MarkSchema extends string, TallySchema extends string = MarkSchema> (judgeTypeId: string, reducerFn: MarkReducer<MarkSchema, TallySchema>, tallyDefinitions: Readonly<Array<JudgeTallyFieldDefinition<TallySchema>>>) {
+  return function calculateTally (scoresheet: MarkScoresheet<MarkSchema>) {
     if (!matchMeta(scoresheet.meta, { judgeTypeId })) throw new RSRWrongJudgeTypeError(scoresheet.meta.judgeTypeId, judgeTypeId)
-    let tally: ScoreTally<Schema> = isTallyScoresheet<Schema>(scoresheet) ? { ...(scoresheet.tally ?? {}) } : {}
 
-    for (const mark of filterMarkStream(scoresheet.marks)) {
-      tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
+    const reducer = createMarkReducer<MarkSchema, TallySchema>(reducerFn, tallyDefinitions)
+
+    for (const mark of scoresheet.marks) {
+      reducer.addMark(mark)
     }
-
-    tally = filterTally(tally, fieldDefinitions)
 
     return {
       meta: scoresheet.meta,
-      tally,
+      tally: reducer.tally,
     }
   }
 }

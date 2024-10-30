@@ -4,7 +4,7 @@ import * as mod from './ijru.freestyle.dd@4.0.0.js'
 import * as srMod from './ijru.freestyle.sr@4.0.0.js'
 import { type JudgeResult, type EntryMeta, type JudgeMeta } from '../types.js'
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { markGeneratorFactory } from '../../helpers.test.js'
+import { markGeneratorFactory } from '../../helpers/helpers.test.js'
 
 void test('ijru.freestyle.dd@4.0.0', async t => {
   await t.test('L', async t => {
@@ -53,7 +53,7 @@ void test('ijru.freestyle.dd@4.0.0', async t => {
           meta,
           marks: [m('miss'), m('miss'), m('rqInteractions')],
         }),
-        { meta, tally: { miss: 2 } }
+        { meta, tally: { miss: 2, spaceViolation: 0, timeViolation: 0 } }
       )
     })
 
@@ -127,14 +127,27 @@ void test('ijru.freestyle.dd@4.0.0', async t => {
         {
           meta,
           tally: {
+            diffL1Minus: 0,
             diffL1: 2,
-            diffL2: 3,
-            diffL3: 4,
-            diffL4: 5,
-            diffL5: 6,
-            break: 2,
             diffL1Plus: 1,
+
+            diffL2Minus: 0,
+            diffL2: 3,
+            diffL2Plus: 0,
+
+            diffL3Minus: 0,
+            diffL3: 4,
+            diffL3Plus: 0,
+
+            diffL4Minus: 0,
+            diffL4: 5,
+            diffL4Plus: 0,
+
             diffL5Minus: 1,
+            diffL5: 6,
+            diffL5Plus: 0,
+
+            break: 2,
           },
         }
       )
@@ -208,13 +221,25 @@ void test('ijru.freestyle.dd@4.0.0', async t => {
         {
           meta,
           tally: {
+            diffL1Minus: 0,
             diffL1: 2,
-            diffL2: 3,
-            diffL3: 4,
-            diffL4: 5,
-            diffL5: 6,
             diffL1Plus: 1,
+
+            diffL2Minus: 0,
+            diffL2: 3,
+            diffL2Plus: 0,
+
+            diffL3Minus: 0,
+            diffL3: 4,
+            diffL3Plus: 0,
+
+            diffL4Minus: 0,
+            diffL4: 5,
+            diffL4Plus: 0,
+
             diffL5Minus: 1,
+            diffL5: 6,
+            diffL5Plus: 0,
           },
         }
       )

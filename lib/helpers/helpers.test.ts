@@ -1,7 +1,7 @@
-import { simpleCalculateTallyFactory, clampNumber, filterMarkStream, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple } from './helpers/helpers.js'
+import { calculateTallyFactory, clampNumber, filterMarkStream, formatFactor, isObject, parseCompetitionEventDefinition, roundTo, roundToCurry, roundToMultiple, simpleReducer } from './helpers.js'
+import type { GenericMark, JudgeMeta, JudgeTallyFieldDefinition, Mark } from '../models/types.js'
 import assert from 'node:assert'
 import test from 'node:test'
-import type { GenericMark, JudgeMeta, Mark } from './models/types.js'
 
 export function markGeneratorFactory () {
   let sequence = 0
@@ -127,7 +127,7 @@ void test('helpers', async t => {
     }
   })
 
-  await t.test('simpleCalculateTallyFactory', async t => {
+  await t.test('calculateTallyFactory', async t => {
     const meta: JudgeMeta = {
       judgeId: '1',
       judgeTypeId: 'S',
@@ -135,6 +135,12 @@ void test('helpers', async t => {
       participantId: '1',
       competitionEvent: 'e.ijru.sp.sr.srss.1.30@1.0.0',
     }
+
+    const tallyDefinitions: Array<JudgeTallyFieldDefinition<string>> = [
+      { schema: 'formPlus', name: 'Form +' },
+      { schema: 'formCheck', name: 'Form c' },
+      { schema: 'formMinus', name: 'Form -' },
+    ]
 
     await t.test('Should return tally for MarkScoresheet', () => {
       const marks: Array<Mark<string>> = [
@@ -145,22 +151,96 @@ void test('helpers', async t => {
       const tally = {
         formPlus: 2,
         formCheck: 1,
+        formMinus: 0,
       }
-      assert.deepStrictEqual(simpleCalculateTallyFactory(meta.judgeTypeId)({ meta, marks }), { meta, tally })
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
     })
 
-    await t.test('Should return tally for MarkScoresheet with undo marks', () => {
+    await t.test('Should return tally for MarkScoresheet with undo of last mark', () => {
+      const m = markGeneratorFactory()
       const marks: Array<Mark<string>> = [
-        { sequence: 0, schema: 'formPlus', timestamp: 1 },
-        { sequence: 1, schema: 'formCheck', timestamp: 15 },
-        { sequence: 2, schema: 'formPlus', timestamp: 30 },
-        { sequence: 3, schema: 'undo', timestamp: 45, target: 2 },
+        m('formPlus'),
+        m('formCheck'),
+        m('formPlus'),
+        m('undo', { target: 2 }),
       ]
       const tally = {
         formPlus: 1,
         formCheck: 1,
+        formMinus: 0,
       }
-      assert.deepStrictEqual(simpleCalculateTallyFactory(meta.judgeTypeId)({ meta, marks }), { meta, tally })
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
+    })
+
+    await t.test('Should return tally for MarkScoresheet with undo of first mark', () => {
+      const m = markGeneratorFactory()
+      const marks: Array<Mark<string>> = [
+        m('formPlus'),
+        m('formCheck'),
+        m('formPlus'),
+        m('undo', { target: 0 }),
+      ]
+      const tally = {
+        formPlus: 1,
+        formCheck: 1,
+        formMinus: 0,
+      }
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
+    })
+
+    await t.test('Should return tally for MarkScoresheet with undo of early mark', () => {
+      const m = markGeneratorFactory()
+      const marks: Array<Mark<string>> = [
+        m('formPlus'),
+        m('formCheck'),
+        m('formPlus'),
+        m('undo', { target: 1 }),
+      ]
+      const tally = {
+        formPlus: 2,
+        formCheck: 0,
+        formMinus: 0,
+      }
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
+    })
+
+    await t.test('Should return tally for MarkScoresheet with clear mark', () => {
+      const m = markGeneratorFactory()
+      const marks: Array<Mark<string>> = [
+        m('formPlus'),
+        m('formCheck'),
+        m('formPlus'),
+        m('clear'),
+        m('formPlus'),
+        m('formPlus'),
+        m('formPlus'),
+      ]
+      const tally = {
+        formPlus: 3,
+        formCheck: 0,
+        formMinus: 0,
+      }
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
+    })
+
+    await t.test('Should return tally for MarkScoresheet with clear mark and undo targetting before clear', () => {
+      const m = markGeneratorFactory()
+      const marks: Array<Mark<string>> = [
+        m('formPlus'),
+        m('formCheck'),
+        m('formPlus'),
+        m('clear'),
+        m('formPlus'),
+        m('formPlus'),
+        m('formPlus'),
+        m('undo', { target: 1 }),
+      ]
+      const tally = {
+        formPlus: 3,
+        formCheck: 0,
+        formMinus: 0,
+      }
+      assert.deepStrictEqual(calculateTallyFactory(meta.judgeTypeId, simpleReducer, tallyDefinitions)({ meta, marks }), { meta, tally })
     })
   })
 

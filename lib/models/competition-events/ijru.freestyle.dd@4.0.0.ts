@@ -1,7 +1,8 @@
 import { RSRWrongJudgeTypeError } from '../../errors.js'
-import { clampNumber, filterMarkStream, filterTally, formatFactor, matchMeta, roundTo, roundToCurry } from '../../helpers/helpers.js'
+import type { MarkReducer } from '../../helpers/helpers.js'
+import { clampNumber, normaliseTally, formatFactor, matchMeta, roundTo, roundToCurry, createMarkReducer, calculateTallyFactory } from '../../helpers/helpers.js'
 import { ijruAverage } from '../../helpers/ijru.js'
-import type { CompetitionEventModel, GenericMark, JudgeTypeGetter, Mark, ScoreTally, TableDefinition } from '../types.js'
+import type { CompetitionEventModel, GenericMark, JudgeTypeGetter, Mark, TableDefinition } from '../types.js'
 import { presentationJudge, technicalJudgeFactory } from './ijru.freestyle.sr@4.0.0.js'
 
 export type Option = 'diffTurnerSkillDivisor'
@@ -75,45 +76,36 @@ export const difficultyJumperJudge: JudgeTypeGetter<Option> = options => {
     ] as const)) as Record<Exclude<DiffTallySchema, 'break'>, number>,
   }
 
+  const reducer: MarkReducer<DiffMarkSchema, DiffTallySchema> = (tally, mark, marks) => {
+    if (mark.schema === 'diffMinus' || mark.schema === 'diffPlus') {
+      const type = mark.schema.endsWith('Plus') ? 'Plus' : 'Minus'
+      const prevMark = marks.at(-2)
+
+      // A plus/minus mark must come directly after a difficulty mark to be valid
+      // And the tally must have a score above 0 for that level (unlikely it
+      // won't since we checked that we just gave such a mark, but hey)
+      if (prevMark != null && isDiffMark(prevMark) && tally[prevMark.schema] > 0) {
+        tally[prevMark.schema] -= mark.value ?? 1
+        tally[`${prevMark.schema}${type}`] += mark.value ?? 1
+      }
+    } else {
+      tally[mark.schema] += mark.value ?? 1
+    }
+
+    return tally
+  }
+
   const id = 'Dj'
   return {
     id,
     name: 'Difficulty - Jumpers',
     markDefinitions,
     tallyDefinitions,
-    calculateTally: (scsh) => {
-      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const marks = filterMarkStream(scsh.marks) as Array<GenericMark<DiffMarkSchema>>
-      const tally: ScoreTally<DiffTallySchema> = {}
-
-      for (let idx = 0; idx < marks.length; idx++) {
-        const mark = marks[idx]
-        if (mark.schema === 'break') {
-          tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
-        } else if (mark.schema === 'diffMinus' || mark.schema === 'diffPlus') {
-          const type = mark.schema.endsWith('Plus') ? 'Plus' : 'Minus'
-          const prevMark = marks[idx - 1]
-
-          // A plus/minus mark must come directly after a difficulty mark to be valid
-          if (prevMark == null || !isDiffMark(prevMark)) continue
-          // A plus/minus mark needs to have some marks in the tally to count
-          if ((tally[prevMark.schema] ?? 0) <= 0) continue
-
-          tally[prevMark.schema] = (tally[prevMark.schema] ?? 0) - (mark.value ?? 1)
-          tally[`${prevMark.schema}${type}`] = (tally[`${prevMark.schema}${type}`] ?? 0) + (mark.value ?? 1)
-        } else if (isDiffMark(mark)) {
-          tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
-        }
-      }
-
-      return {
-        meta: scsh.meta,
-        tally: filterTally(tally, tallyDefinitions),
-      }
-    },
+    createMarkReducer: () => createMarkReducer(reducer as unknown as MarkReducer<string, string>, tallyDefinitions),
+    calculateTally: calculateTallyFactory(id, reducer as unknown as MarkReducer<string, string>, tallyDefinitions),
     calculateJudgeResult: (scsh) => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, tallyDefinitions)
+      const tally = normaliseTally(tallyDefinitions, scsh.tally)
 
       const sumScore = tallyDefinitions.map(f => (tally[f.schema] ?? 0) * L(markLevels[f.schema as DiffTallySchema])).reduce((a, b) => a + b, 0)
       const numMarks = tallyDefinitions.map(f => (tally[f.schema] ?? 0)).reduce((a, b) => a + b, 0)
@@ -163,8 +155,8 @@ export const difficultyTurnerJudge: JudgeTypeGetter<Option> = options => {
     ] as const),
   ]
 
-  type DiffMarkSchema = 'break' | `diff${'Plus' | 'Minus'}` | `diffL${1 | 2 | 3 | 4 | 5}`
-  type DiffTallySchema = 'break' | `diffL${1 | 2 | 3 | 4 | 5}${'' | 'Plus' | 'Minus'}`
+  type DiffMarkSchema = `diff${'Plus' | 'Minus'}` | `diffL${1 | 2 | 3 | 4 | 5}`
+  type DiffTallySchema = `diffL${1 | 2 | 3 | 4 | 5}${'' | 'Plus' | 'Minus'}`
   const diffMarkRegex = /^diffL[0-5]$/
   function isDiffMark (x: Mark<DiffMarkSchema>): x is GenericMark<Exclude<DiffMarkSchema, 'break' | 'diffPlus' | 'diffMinus'>> {
     return diffMarkRegex.test(x.schema)
@@ -176,43 +168,36 @@ export const difficultyTurnerJudge: JudgeTypeGetter<Option> = options => {
     [`diffL${lev}Minus`, lev - 0.25],
   ]) as Array<[`diffL${1 | 2 | 3 | 4 | 5}${'' | 'Plus' | 'Minus'}`, number]>
 
+  const reducer: MarkReducer<DiffMarkSchema, DiffTallySchema> = (tally, mark, marks) => {
+    if (mark.schema === 'diffMinus' || mark.schema === 'diffPlus') {
+      const type = mark.schema.endsWith('Plus') ? 'Plus' : 'Minus'
+      const prevMark = marks.at(-2)
+
+      // A plus/minus mark must come directly after a difficulty mark to be valid
+      // And the tally must have a score above 0 for that level (unlikely it
+      // won't since we checked that we just gave such a mark, but hey)
+      if (prevMark != null && isDiffMark(prevMark) && tally[prevMark.schema] > 0) {
+        tally[prevMark.schema] -= mark.value ?? 1
+        tally[`${prevMark.schema}${type}`] += mark.value ?? 1
+      }
+    } else {
+      tally[mark.schema] += mark.value ?? 1
+    }
+
+    return tally
+  }
+
   const id = 'Dt'
   return {
     id,
     name: 'Difficulty - Turners',
     markDefinitions,
     tallyDefinitions,
-    calculateTally: (scsh) => {
-      if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const marks = filterMarkStream(scsh.marks) as Array<GenericMark<DiffMarkSchema>>
-      const tally: ScoreTally<DiffTallySchema> = {}
-
-      for (let idx = 0; idx < marks.length; idx++) {
-        const mark = marks[idx]
-        if (mark.schema === 'diffMinus' || mark.schema === 'diffPlus') {
-          const type = mark.schema.endsWith('Plus') ? 'Plus' : 'Minus'
-          const prevMark = marks[idx - 1]
-
-          // A plus/minus mark must come directly after a difficulty mark to be valid
-          if (prevMark == null || !isDiffMark(prevMark)) continue
-          // A plus/minus mark needs to have some marks in the tally to count
-          if ((tally[prevMark.schema] ?? 0) <= 0) continue
-
-          tally[prevMark.schema] = (tally[prevMark.schema] ?? 0) - (mark.value ?? 1)
-          tally[`${prevMark.schema}${type}`] = (tally[`${prevMark.schema}${type}`] ?? 0) + (mark.value ?? 1)
-        } else if (isDiffMark(mark)) {
-          tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
-        }
-      }
-
-      return {
-        meta: scsh.meta,
-        tally: filterTally(tally, tallyDefinitions),
-      }
-    },
+    createMarkReducer: () => createMarkReducer(reducer as unknown as MarkReducer<string, string>, tallyDefinitions),
+    calculateTally: calculateTallyFactory(id, reducer as unknown as MarkReducer<string, string>, tallyDefinitions),
     calculateJudgeResult: (scsh) => {
       if (!matchMeta(scsh.meta, { judgeTypeId: id })) throw new RSRWrongJudgeTypeError(scsh.meta.judgeTypeId, id)
-      const tally = filterTally(scsh.tally, tallyDefinitions)
+      const tally = normaliseTally(tallyDefinitions, scsh.tally)
 
       const numSkills = typeof options.diffTurnerSkillDivisor === 'number' && options.diffTurnerSkillDivisor > 0
         ? options.diffTurnerSkillDivisor

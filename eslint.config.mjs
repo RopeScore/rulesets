@@ -75,6 +75,7 @@ export default [
         functions: 'never',
       }],
       'no-void': 'off',
+      'no-console': 'warn',
     },
   },
   {
@@ -88,6 +89,13 @@ export default [
         'ts-check': false,
         minimumDescriptionLength: 3,
       }],
+    },
+  },
+  {
+    name: 'RopeScore/bin',
+    files: ['bin/*.ts', 'bin/*.js'],
+    rules: {
+      'no-console': 'off',
     },
   },
 ]
