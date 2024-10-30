@@ -45,7 +45,7 @@ export function L (l: number): number {
 // ======
 // JUDGES
 // ======
-export const presentationJudge: JudgeTypeGetter<Option> = options => {
+export const presentationJudge: JudgeTypeGetter = options => {
   const components = ['ent', 'form', 'music', 'crea', 'vari'] as const
   const markDefinitions = [
     {
