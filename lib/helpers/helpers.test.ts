@@ -127,10 +127,6 @@ void test('helpers', async t => {
     }
   })
 
-  await t.test('normaliseTally', async t => {
-
-  })
-
   await t.test('simpleCalculateTallyFactory', async t => {
     const meta: JudgeMeta = {
       judgeId: '1',

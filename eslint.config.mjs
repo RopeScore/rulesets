@@ -91,4 +91,11 @@ export default [
       }],
     },
   },
+  {
+    name: 'RopeScore/bin',
+    files: ['bin/*.ts', 'bin/*.js'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ]
