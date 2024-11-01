@@ -4,6 +4,8 @@ export {
   filterMarkStream,
   isMarkScoresheet,
   isTallyScoresheet,
+  createMarkReducer,
+  simpleReducer,
 } from './helpers/helpers.js'
 export * from './errors.js'
 export * from './import-tools.js'
