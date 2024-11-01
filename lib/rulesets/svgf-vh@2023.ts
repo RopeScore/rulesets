@@ -18,6 +18,11 @@ import eSvgfSpSrSrss1302023 from '../preconfigured/competition-events/svgf/2023/
 import eSvgfOaDdVhto402023 from '../preconfigured/overalls/svgf/2023/e.svgf.oa.dd.vhto.4.0@2023.js'
 import eSvgfOaSrVhio102023 from '../preconfigured/overalls/svgf/2023/e.svgf.oa.sr.vhio.1.0@2023.js'
 import eSvgfOaSrVhto402023 from '../preconfigured/overalls/svgf/2023/e.svgf.oa.sr.vhto.4.0@2023.js'
+import eSvgfFsSrSrpfVh2752023 from '../preconfigured/competition-events/svgf/2023/e.svgf.fs.sr.srpf-vh.2.75@2023.js'
+import eSvgfSpSrSrdp22x302023 from '../preconfigured/competition-events/svgf/2023/e.svgf.sp.sr.srdp.2.2x30@2023.js'
+import eSvgfSpSrSrpe22x602023 from '../preconfigured/competition-events/svgf/2023/e.svgf.sp.sr.srpe.2.2x60@2023.js'
+import eSvgfSpSrSrps22x302023 from '../preconfigured/competition-events/svgf/2023/e.svgf.sp.sr.srps.2.2x30@2023.js'
+import eSvgfOaSrVhpo202023 from '../preconfigured/overalls/svgf/2023/e.svgf.oa.sr.vhpo.2.0@2023.js'
 
 export default {
   id: 'svgf-vh@2023',
@@ -35,11 +40,17 @@ export default {
     eSvgfSpDdDdsr42x452023,
     eSvgfSpDdDdut402023,
     eSvgfFsDdDdpfVh41202023,
+
+    eSvgfSpSrSrps22x302023,
+    eSvgfSpSrSrpe22x602023,
+    eSvgfSpSrSrdp22x302023,
+    eSvgfFsSrSrpfVh2752023,
   ],
   overalls: [
     eSvgfOaSrVhio102023,
     eSvgfOaSrVhto402023,
     eSvgfOaDdVhto402023,
+    eSvgfOaSrVhpo202023,
   ],
   competitionEventModels: [
     svgfVhFreestyle2023,
