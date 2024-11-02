@@ -104,10 +104,10 @@ export function filterMarkStream <Schema extends string> (rawMarks: Readonly<Arr
   return marks as Array<GenericMark<Schema>>
 }
 
-export function normaliseTally <TallySchema extends string> (tallyDefinitions: Readonly<Array<Readonly<JudgeTallyFieldDefinition<TallySchema>>>>, _tally?: Readonly<ScoreTally<TallySchema>>) {
+export function normaliseTally <TallySchema extends string> (tallyDefinitions?: Readonly<Array<Readonly<JudgeTallyFieldDefinition<TallySchema>>>>, _tally?: Readonly<ScoreTally<TallySchema>>) {
   const tally: ScoreTally<TallySchema> = {}
 
-  for (const field of tallyDefinitions) {
+  for (const field of (tallyDefinitions ?? [])) {
     const v = _tally?.[field.schema] ?? field.default ?? 0
     if (typeof v !== 'number') continue
 
@@ -128,7 +128,7 @@ export interface MarkReducerReturn <MarkSchema extends string, TallySchema exten
 }
 export function createMarkReducer <MarkSchema extends string, TallySchema extends string = MarkSchema> (
   reducer: MarkReducer<MarkSchema, TallySchema>,
-  tallyDefinitions: Readonly<Array<Readonly<JudgeTallyFieldDefinition<TallySchema>>>>
+  tallyDefinitions?: Readonly<Array<Readonly<JudgeTallyFieldDefinition<TallySchema>>>>
 ): MarkReducerReturn<MarkSchema, TallySchema> {
   let nextSeq = 0
   let marks: Array<GenericMark<MarkSchema>> = []
