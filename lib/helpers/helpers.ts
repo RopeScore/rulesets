@@ -105,13 +105,17 @@ export function filterMarkStream <Schema extends string> (rawMarks: Readonly<Arr
 }
 
 export function normaliseTally <TallySchema extends string> (tallyDefinitions?: Readonly<Array<Readonly<JudgeTallyFieldDefinition<TallySchema>>>>, _tally?: Readonly<ScoreTally<TallySchema>>) {
-  const tally: ScoreTally<TallySchema> = {}
+  let tally: ScoreTally<TallySchema> = {}
 
-  for (const field of (tallyDefinitions ?? [])) {
-    const v = _tally?.[field.schema] ?? field.default ?? 0
-    if (typeof v !== 'number') continue
+  if (tallyDefinitions != null) {
+    for (const field of tallyDefinitions) {
+      const v = _tally?.[field.schema] ?? field.default ?? 0
+      if (typeof v !== 'number') continue
 
-    tally[field.schema] = clampNumber(v, field)
+      tally[field.schema] = clampNumber(v, field)
+    }
+  } else if (_tally != null) {
+    tally = { ..._tally }
   }
 
   return tally as Required<ScoreTally<TallySchema>>
