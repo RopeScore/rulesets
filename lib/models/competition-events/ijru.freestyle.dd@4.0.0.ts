@@ -21,6 +21,11 @@ export function L (l: number): number {
   return roundTo(Math.pow(1.5, l), 2)
 }
 
+export function formatPresentationFactor (value: number) {
+  if (typeof value !== 'number' || isNaN(value)) return ''
+  return formatFactor(1 + value)
+}
+
 // ======
 // JUDGES
 // ======
@@ -236,7 +241,7 @@ export const freestylePreviewTableHeaders = {
     { text: 'Diff Jump', key: 'Dj', formatter: roundToCurry(2) },
     { text: 'Diff Turn', key: 'Dt', formatter: roundToCurry(2) },
     { text: 'Diff (D)', key: 'D', formatter: roundToCurry(2) },
-    { text: 'Pres (P)', key: 'P', formatter: formatFactor },
+    { text: 'Pres (P)', key: 'P', formatter: formatPresentationFactor },
     { text: 'Misses (am)', key: 'am', formatter: roundToCurry(0) },
     { text: 'Violations (av)', key: 'av', formatter: roundToCurry(0) },
     { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
@@ -247,7 +252,7 @@ export const freestylePreviewTableHeaders = {
 export const freestyleResultTableHeaders: TableDefinition = {
   headers: [
     { text: 'Diff', key: 'D', color: 'gray', formatter: roundToCurry(2) },
-    { text: 'Pres', key: 'P', color: 'gray', formatter: formatFactor },
+    { text: 'Pres', key: 'P', color: 'gray', formatter: formatPresentationFactor },
     { text: 'Deduc', key: 'M', color: 'gray', formatter: formatFactor },
 
     { text: 'Score', key: 'R', formatter: roundToCurry(2), primary: 'score' },

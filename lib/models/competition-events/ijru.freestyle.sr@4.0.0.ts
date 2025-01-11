@@ -36,6 +36,11 @@ export function getRqMax (options: Options<Option>) {
   }
 }
 
+export function formatPresentationFactor (value: number) {
+  if (typeof value !== 'number' || isNaN(value)) return ''
+  return formatFactor(1 + value)
+}
+
 // diff
 export function L (l: number): number {
   if (l === 0) return 0
@@ -523,7 +528,7 @@ export const freestylePreviewTableHeadersFactory = ({ discipline }: { discipline
         { text: 'Diff (dA)', key: 'dA', formatter: roundToCurry(2) },
         { text: 'Diff (dB)', key: 'dB', formatter: roundToCurry(2) },
         { text: 'Diff (D)', key: 'D', formatter: roundToCurry(2) },
-        { text: 'Pres (P)', key: 'P', formatter: formatFactor },
+        { text: 'Pres (P)', key: 'P', formatter: formatPresentationFactor },
         { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
         { text: 'Misses (am)', key: 'am', formatter: roundToCurry(0) },
         { text: 'Breaks (ab)', key: 'ab', formatter: roundToCurry(0) },
@@ -539,7 +544,7 @@ export const freestylePreviewTableHeadersFactory = ({ discipline }: { discipline
         { text: 'Diff (dM)', key: 'dM', formatter: roundToCurry(2) },
         { text: 'Diff (dR)', key: 'dR', formatter: roundToCurry(2) },
         { text: 'Diff (D)', key: 'D', formatter: roundToCurry(2) },
-        { text: 'Pres (P)', key: 'P', formatter: formatFactor },
+        { text: 'Pres (P)', key: 'P', formatter: formatPresentationFactor },
         { text: 'Req. El (Q)', key: 'Q', formatter: formatFactor },
         { text: 'Deduc (M)', key: 'M', formatter: formatFactor },
         { text: 'Result (R)', key: 'R', formatter: roundToCurry(2) },
@@ -551,7 +556,7 @@ export const freestylePreviewTableHeadersFactory = ({ discipline }: { discipline
 export const freestyleResultTableHeaders: TableDefinition = {
   headers: [
     { text: 'Diff', key: 'D', color: 'gray', formatter: roundToCurry(2) },
-    { text: 'Pres', key: 'P', color: 'gray', formatter: formatFactor },
+    { text: 'Pres', key: 'P', color: 'gray', formatter: formatPresentationFactor },
     { text: 'Req. El', key: 'Q', color: 'gray', formatter: formatFactor },
     { text: 'Deduc', key: 'M', color: 'gray', formatter: formatFactor },
 
