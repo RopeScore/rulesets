@@ -254,6 +254,22 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
       )
     })
 
+    await t.test('calculates reqEl deduction config', async t => {
+      const judgeScore = { meta, tally: { 'diffL0.5': 5, diffL1: 4, diffL2: 3, diffL3: 0, diffL4: 0, diffL5: 0, diffL6: 0, diffL7: 0, diffL8: 0 } }
+
+      await t.test('default config, missing all reqEl', () => {
+        assert.equal(judge({}).calculateJudgeResult(judgeScore).result.aqM, 6)
+      })
+
+      await t.test('higher requirement, missing all reqEl', () => {
+        assert.equal(judge({ maxRqMultiples: 10 }).calculateJudgeResult(judgeScore).result.aqM, 10)
+      })
+
+      await t.test('lower level', () => {
+        assert.equal(judge({ rqFullCreditThresholdLevel: 2 }).calculateJudgeResult(judgeScore).result.aqM, 6 - (3 * 0.23))
+      })
+    })
+
     await t.test('Correct default values for empty scoresheet', () => {
       assert.deepStrictEqual(
         judge({}).calculateJudgeResult({ meta, tally: {} }),
