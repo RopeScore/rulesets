@@ -255,18 +255,25 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
     })
 
     await t.test('calculates reqEl deduction config', async t => {
-      const judgeScore = { meta, tally: { 'diffL0.5': 5, diffL1: 4, diffL2: 3, diffL3: 0, diffL4: 0, diffL5: 0, diffL6: 0, diffL7: 0, diffL8: 0 } }
+      const judgeScore = { meta, tally: { 'diffL0.5': 0, diffL1: 1, diffL2: 3, diffL3: 1, diffL4: 0, diffL5: 0, diffL6: 0, diffL7: 0, diffL8: 0 } }
+      const l1 = judgeScore.tally.diffL1
+      const l2 = judgeScore.tally.diffL2
+      const l3 = judgeScore.tally.diffL3
 
-      await t.test('default config, missing all reqEl', () => {
-        assert.equal(judge({}).calculateJudgeResult(judgeScore).result.aqM, 6)
+      await t.test('default config, partial credit', () => {
+        assert.equal(judge({}).calculateJudgeResult(judgeScore).result.aqM, 6 - (l1 + l2) * 0.5 - l3)
       })
 
-      await t.test('higher requirement, missing all reqEl', () => {
-        assert.equal(judge({ maxRqMultiples: 10 }).calculateJudgeResult(judgeScore).result.aqM, 10)
+      await t.test('maxRqMultiples: 10', () => {
+        assert.equal(judge({ maxRqMultiples: 10 }).calculateJudgeResult(judgeScore).result.aqM, 10 - ((l1 + l2) * 0.5) - l3)
       })
 
-      await t.test('lower level', () => {
-        assert.equal(judge({ rqFullCreditThresholdLevel: 2 }).calculateJudgeResult(judgeScore).result.aqM, 6 - (3 * 0.23))
+      await t.test('rqFullCreditThresholdLevel = 2', () => {
+        assert.equal(judge({ rqFullCreditThresholdLevel: 2 }).calculateJudgeResult(judgeScore).result.aqM, 6 - (l1 * 0.5) - l2 - l3)
+      })
+
+      await t.test('rqFullCreditThresholdLevel = 0', () => {
+        assert.equal(judge({ rqFullCreditThresholdLevel: 0 }).calculateJudgeResult(judgeScore).result.aqM, 6 - (l1 + l2) - l3)
       })
     })
 
