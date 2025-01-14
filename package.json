@@ -1,6 +1,6 @@
 {
   "name": "@ropescore/rulesets",
-  "version": "0.13.4",
+  "version": "0.13.5",
   "description": "Collection of rulesets to calculate rope skipping results",
   "author": "Svante Bengtson <svante@swantzter.se> (https://swantzter.se)",
   "license": "MIT",
