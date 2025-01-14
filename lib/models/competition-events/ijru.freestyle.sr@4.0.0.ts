@@ -333,7 +333,7 @@ export const technicalJudgeFactory = ({ discipline }: { discipline: 'sr' | 'wh' 
       schema: 'timeViolation',
       name: 'Time Violations',
       min: 0,
-      max: 2,
+      max: isDD ? 13 : 2,
       step: 1,
     },
     {
