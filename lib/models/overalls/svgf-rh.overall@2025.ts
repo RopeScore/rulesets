@@ -164,7 +164,7 @@ export default {
 
     ranked.sort((a, b) => {
       if (a.result.T !== b.result.T) return a.result.T - b.result.T
-      return a.result.PSum - b.result.PSum
+      return b.result.PSum - a.result.PSum
     })
 
     for (const result of ranked) {
