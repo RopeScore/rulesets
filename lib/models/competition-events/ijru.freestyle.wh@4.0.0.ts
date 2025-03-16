@@ -1,6 +1,6 @@
 import type { CompetitionEventModel } from '../types'
 import type { Option } from './ijru.freestyle.sr@4.0.0'
-import { default as SR, calculateEntryFactory, difficultyJudgeFactory, freestylePreviewTableHeadersFactory, freestyleResultTableHeaders, presentationJudge, technicalJudgeFactory } from './ijru.freestyle.sr@4.0.0'
+import SR, { calculateEntryFactory, difficultyJudgeFactory, freestylePreviewTableHeadersFactory, freestyleResultTableHeaders, presentationJudge, technicalJudgeFactory } from './ijru.freestyle.sr@4.0.0'
 
 export default {
   id: 'ijru.freestyle.wh@4.0.0',
