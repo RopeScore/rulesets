@@ -254,6 +254,8 @@ export interface TableDefinition {
 export interface TableHeader {
   text: string
   key: string
+  // If the value should be read from the score statuses rather than the results
+  status?: boolean
   /**
    * Columns marked as primary may be displayed with extra prominence in
    * renders. A column can be further categories as primary score or primary

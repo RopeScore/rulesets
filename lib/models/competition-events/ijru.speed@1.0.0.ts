@@ -98,7 +98,7 @@ export const speedPreviewTableHeaders: TableDefinition = {
     { text: 'Deduc (m)', key: 'm' },
     { text: 'Result (R)', key: 'R' },
 
-    { text: 'Reskip Allowed', key: 'withinThree', formatter: (n) => n === 1 ? 'No' : 'Yes' },
+    { text: 'Reskip Allowed', status: true, key: 'withinThree', formatter: (n) => n ? 'No' : 'Yes' },
   ],
 }
 
