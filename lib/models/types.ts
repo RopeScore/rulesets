@@ -251,11 +251,12 @@ export interface TableDefinition {
   headers: TableHeader[]
 }
 
-export interface TableHeader {
+export type TableHeader = TableHeaderScore | TableHeaderStatus
+
+export interface TableHeaderScore {
   text: string
   key: string
-  // If the value should be read from the score statuses rather than the results
-  status?: boolean
+  status?: false
   /**
    * Columns marked as primary may be displayed with extra prominence in
    * renders. A column can be further categories as primary score or primary
@@ -265,14 +266,22 @@ export interface TableHeader {
    */
   primary?: 'score' | 'rank' | boolean
   formatter?: (n: number) => string
-  color?: 'red' | 'green' | 'gray'
+  color?: 'red' | 'green' | 'gray' | 'blue'
   component?: CompetitionEventDefinition
+}
+
+export interface TableHeaderStatus {
+  text: string
+  key: string
+  status: true
+  formatter?: (n: unknown) => string
+  color?: 'red' | 'green' | 'gray' | 'blue'
 }
 
 export interface TableHeaderGroup {
   text: string
   key: string
-  color?: 'red' | 'green' | 'gray'
+  color?: 'red' | 'green' | 'gray' | 'blue'
   rowspan?: number
   colspan?: number
 }
