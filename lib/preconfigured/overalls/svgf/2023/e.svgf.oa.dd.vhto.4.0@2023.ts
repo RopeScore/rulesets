@@ -9,5 +9,5 @@ export default partiallyConfigureOverallModel(svgfVhOverall2023, {
     'e.svgf.fs.dd.ddpf-vh.4.120@2023': { name: 'Double Dutch Pair Freestyle' },
   },
   id: 'e.svgf.oa.dd.vhto.4.0@2023',
-  name: 'Individuell Overall',
+  name: 'Dubbelrep Overall',
 })
