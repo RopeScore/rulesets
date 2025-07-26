@@ -71,7 +71,7 @@ void test('ijru.freestyle.wh@4.0.0', async t => {
         {
           meta,
           result: {
-            aqI: 3,
+            aqI: 1,
             aqM: 0,
             aqP: 4,
             aqR: 5,
@@ -90,7 +90,7 @@ void test('ijru.freestyle.wh@4.0.0', async t => {
         {
           meta,
           result: {
-            aqI: 6,
+            aqI: 4,
             aqM: 6,
             aqP: 6,
             aqR: 6,

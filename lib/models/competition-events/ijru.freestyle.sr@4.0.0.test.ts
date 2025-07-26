@@ -170,7 +170,7 @@ void test('ijru.freestyle.sr@4.0.0', async t => {
 
       assert.deepStrictEqual(
         judge({ interactions: true }).calculateJudgeResult({ meta, tally: {} }),
-        { meta, result: { aqI: 6, nb: 0, nm: 0, nv: 0 }, statuses: {} }
+        { meta, result: { aqI: 4, nb: 0, nm: 0, nv: 0 }, statuses: {} }
       )
     })
   })

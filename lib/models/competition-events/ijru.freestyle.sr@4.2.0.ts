@@ -9,7 +9,7 @@ export function getRqNumSkills (options: Options<ijruFreestyleSr400.Option>) {
     rqGymnasticsPower: typeof options.maxRqGymnasticsPower === 'number' ? options.maxRqGymnasticsPower : 6,
     rqMultiples: typeof options.maxRqMultiples === 'number' ? options.maxRqMultiples : 6,
     rqRopeManipulation: typeof options.maxRqRopeManipulation === 'number' ? options.maxRqRopeManipulation : 6,
-    rqInteractions: typeof options.maxRqInteractions === 'number' ? options.maxRqInteractions : 6,
+    rqInteractions: typeof options.maxRqInteractions === 'number' ? options.maxRqInteractions : 4,
   }
 }
 
